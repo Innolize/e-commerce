@@ -3,11 +3,12 @@ import { Sequelize } from "sequelize"
 import { TYPES } from './inversify.types'
 
 function configureDatabase() {
-    return new Sequelize({ dialect: "postgres", storage: './data/database.db' })
+    return new Sequelize("postgres://localhost:5432/test", { logging: false, username: "postgres", password: "gor2rancio" })
 }
 
-const dependencyContainer = new Container({ defaultScope: "Singleton" })
+const dependencyContainer = new Container()
 dependencyContainer.bind<Sequelize>(TYPES.database).toConstantValue(configureDatabase())
+
 
 // dependencyContainer.get<Sequelize>("database")
 

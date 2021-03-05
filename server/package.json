@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc-watch --onSuccess \"node . \"",
-    "dev": "tsc -w & node ."
+    "dev": "tsc -w & node .",
+    "dbconfig": "tsc-watch --onSuccess \"node ./dist/config/database/dbConfig.js\""
   },
   "license": "MIT",
   "dependencies": {
