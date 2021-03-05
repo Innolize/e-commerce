@@ -5,20 +5,45 @@ import { Model } from "sequelize";
 class ProductModel extends Model {
     static setup(database: Sequelize) {
         ProductModel.init({
-            // id: {
-            //     primaryKey: true,
-            //     type: DataTypes.INTEGER,
-            //     allowNull: false,
-            //     autoIncrement: true
-            // },
-            nombre: {
+            id: {
+                primaryKey: true,
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                autoIncrement: true
+            },
+            name: {
                 type: DataTypes.STRING,
                 allowNull: false,
                 validate: {
                     min: 4,
                     max: 20
                 }
+            },
+            brand: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                validate: {
+                    min: 4,
+                    max: 20
+                }
+            },
+            image: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            description: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            price: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            stock: {
+                type: DataTypes.INTEGER,
+                allowNull: false
             }
+
         }, {
             sequelize: database,
             modelName: "Product",
