@@ -1,8 +1,9 @@
+require('dotenv').config()
 import express, { Response, Request } from "express"
 import container from './config/inversify'
 import { init } from "./module/product/module"
 const app = express()
-const port = 3000
+const port = process.env.PORT
 
 init(app, container)
 
