@@ -1,3 +1,4 @@
+import "reflect-metadata";
 require('dotenv').config()
 import { Sequelize } from 'sequelize/types';
 import ProductModel from '../../module/product/model/productModel';
@@ -6,7 +7,7 @@ import { TYPES } from '../inversify.types';
 
 
 
-const database = container.get<Sequelize>(TYPES.database);
+const database = container.get<Sequelize>(TYPES.Database);
 ProductModel.setup(database);
 
 (async function configureDatabase() {

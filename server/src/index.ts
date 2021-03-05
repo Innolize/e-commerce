@@ -1,9 +1,12 @@
+import "reflect-metadata";
 require('dotenv').config()
 import express, { Response, Request } from "express"
-import container from './config/inversify'
+import container, { configProductModel } from './config/inversify'
 import { init } from "./module/product/module"
 const app = express()
 const port = process.env.PORT
+
+console.log(configProductModel(container))
 
 init(app, container)
 

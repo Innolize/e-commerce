@@ -1,3 +1,7 @@
 export const TYPES = {
-    database: Symbol("database")
+    Database: Symbol("Database"),
+    ProductRepository: Symbol("ProductRepository"),
+    ProductController: Symbol("ProductController"),
+    ProductService: Symbol("ProductController"),
+    ProductModel: Symbol("ProductModel")
 }

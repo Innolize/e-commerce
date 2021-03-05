@@ -1,7 +1,10 @@
+import { decorate, inject, injectable } from "inversify";
 import { DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
 
+decorate(injectable(), (Model))
 
+@injectable()
 class ProductModel extends Model {
     static setup(database: Sequelize) {
         ProductModel.init({
