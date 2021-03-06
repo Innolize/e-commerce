@@ -4,8 +4,8 @@ export class Product {
     id: number;
     name: string;
     brand: string;
-    image: string;
-    description: string;
+    image: string | null;
+    description: string | null;
     price: number;
     stock: number;
     constructor({ id, name, brand, image, description, price, stock }: IProduct) {

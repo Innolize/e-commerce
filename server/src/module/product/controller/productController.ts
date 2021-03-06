@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify'
 import { TYPES } from '../../../config/inversify.types'
 import { AbstractController } from '../../abstractClasses/abstractController'
 import { ProductService } from '../service/productService'
+import { Request, Response } from 'express'
 
 @injectable()
 class ProductController extends AbstractController {
@@ -18,12 +19,13 @@ class ProductController extends AbstractController {
 
     configureRoutes(app: App) {
         const ROUTE = this.ROUTE_BASE
-        app.get(`${ROUTE}`, this.index.bind(this))
+        app.get(`${ROUTE}/:id`, this.index.bind(this))
         app.get(`${ROUTE}/findByName`, this.findProductByName.bind(this))
     }
 
-    async index() {
-        await this.productService.test()
+    async index(req: Request, res: Response) {
+        const { id } = req.params
+        await this.productService.deleteProduct(Number(id))
     }
 
     findProductByName() {

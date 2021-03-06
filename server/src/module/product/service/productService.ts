@@ -12,7 +12,7 @@ export class ProductService extends AbstractService {
         super()
         this.productRepository = repository
     }
-    async test(){
-        this.productRepository.getAllProducts()
+    async deleteProduct(id: number) {
+        this.productRepository.deleteProduct(id)
     }
 }
