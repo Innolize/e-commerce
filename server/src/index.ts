@@ -5,7 +5,8 @@ import container, { configProductModel } from './config/inversify'
 import { init } from "./module/product/module"
 const app = express()
 const port = process.env.PORT
-
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 console.log(configProductModel(container))
 
 init(app, container)

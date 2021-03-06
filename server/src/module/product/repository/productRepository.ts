@@ -49,7 +49,7 @@ export class ProductRepository extends AbstractRepository {
             throw Error(e)
         }
     }
-    public async deleteProduct(productId: number): Promise<Error | { message: string }> {
+    public async deleteProduct(productId: number): Promise<Error | Boolean> {
         if (!productId && productId !== 0) {
             throw Error('missing product')
         }
@@ -59,11 +59,9 @@ export class ProductRepository extends AbstractRepository {
         })
 
         if (!response) {
-            throw Error("there is not product with that id")
+            return false
         }
-        return {
-            message: "Product successfully deleted"
-        }
+        return true
     }
 
     public async editProduct(product: Product) {
@@ -74,5 +72,19 @@ export class ProductRepository extends AbstractRepository {
         console.log(editableProduct)
 
     }
+    public async getProductsByName(name: string) {
+        if (!name) {
+            throw Error("missing product name")
+        }
+        try {
+            const response = await this.productModel.findAll({ where: { name } })
+            if (!response) {
+                throw Error("No products found with that name")
+            }
+            return response.map(fromDbToEntity)
+        } catch (e) {
+            throw Error(e)
+        }
 
+    }
 }
