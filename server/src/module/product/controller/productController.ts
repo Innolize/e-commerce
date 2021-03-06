@@ -19,18 +19,42 @@ class ProductController extends AbstractController {
 
     configureRoutes(app: App) {
         const ROUTE = this.ROUTE_BASE
-        app.get(`${ROUTE}/:id`, this.index.bind(this))
-        app.get(`${ROUTE}/findByName`, this.findProductByName.bind(this))
+        app.get(`${ROUTE}`, this.index.bind(this))
+        app.post(`${ROUTE}`, this.createProduct.bind(this))
+        app.get(`${ROUTE}/:id`, this.findProductById.bind(this))
+        app.get(`${ROUTE}/findByName/:name`, this.findProductByName.bind(this))
+        app.delete(`${ROUTE}/:id`, this.deleteProduct.bind(this))
+
     }
 
     async index(req: Request, res: Response) {
-        const { id } = req.params
-        await this.productService.deleteProduct(Number(id))
-    }
-
-    findProductByName() {
+        console.log("123")
+        res.send('no implementado')
         return "no implementado"
     }
+
+    async createProduct(req: Request, res: Response) {
+        return "no implementado"
+    }
+
+    async findProductByName(req: Request, res: Response) {
+        return "no implementado"
+    }
+
+    async findProductById(req: Request, res: Response) {
+        return "no implementado"
+    }
+
+    async updateProduct(req: Request, res: Response) {
+        return "no implementado"
+    }
+
+    async deleteProduct(req: Request, res: Response) {
+        const { id } = req.params
+        await this.productService.deleteProduct(Number(id))
+
+    }
+
 
 }
 

@@ -7,7 +7,12 @@ import { ProductService } from "../module/product/service/productService"
 import { TYPES } from './inversify.types'
 
 function configureDatabase() {
-    return new Sequelize(<string>process.env.DATABASE_URL, { logging: false, username: process.env.DATABASE_USERNAME, password: process.env.DATABASE_PASSWORD })
+    return new Sequelize(<string>process.env.DATABASE_URL, {
+        logging: false,
+        username: process.env.DATABASE_USERNAME,
+        password: process.env.DATABASE_PASSWORD,
+        
+    })
 }
 
 export function configProductModel(container: Container) {
