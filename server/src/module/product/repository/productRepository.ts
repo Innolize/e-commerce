@@ -2,10 +2,10 @@ import { inject, injectable } from "inversify";
 import { Op } from "sequelize";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
+import { FullProduct } from "../entity/FullProduct";
 import { Product } from "../entity/Product";
 import { IEditableProduct } from "../interfaces/IEditableProduct";
-import { IProduct } from "../interfaces/IProduct";
-import { fromDbToEntity } from "../mapper/productMapper";
+import { fromDbToFullProduct, fromDbToProduct } from "../mapper/productMapper";
 import { ProductModel } from "../model/productModel";
 
 @injectable()
@@ -18,35 +18,46 @@ export class ProductRepository extends AbstractRepository {
         this.productModel = productModel
     }
 
-    public async getAllProduct(): Promise<Error | IProduct[]> {
-        const response = await this.productModel.findAll()
-        if (!response) {
-            throw new Error()
+    public async getAllProduct(): Promise<Error | FullProduct[]> {
 
+        try {
+            const response = await this.productModel.findAll({ include: "category" })
+
+            if (!response) {
+                throw new Error()
+
+            }
+            return response.map(fromDbToFullProduct)
+        } catch (err) {
+            console.log("error: ", err)
+            throw Error(err)
         }
-        return response.map(fromDbToEntity)
+
     }
 
-    public async getById(id: number): Promise<Error | IProduct> {
+    public async getById(id: number): Promise<Error | FullProduct> {
         if (!id) {
             throw Error("missing id")
         }
-        const response = await this.productModel.findByPk(id)
+        const response = await this.productModel.findByPk(id, { include: "category" })
         if (!response) {
             throw Error("product not found")
         }
 
-        return fromDbToEntity(response)
+        return fromDbToFullProduct(response)
     }
 
-    public async createProduct(product: IProduct): Promise<Error | IProduct> {
+    public async createProduct(product: Product): Promise<Error | Product> {
         if (!product) {
             throw Error('missing product')
         }
         try {
-            const response = await this.productModel.create(product)
-            return fromDbToEntity(response)
+
+            const response = await this.productModel.create(product, { include: "category" })
+            console.log(response)
+            return fromDbToProduct(response)
         } catch (e) {
+            console.log(e)
             throw Error(e)
         }
     }
@@ -64,7 +75,7 @@ export class ProductRepository extends AbstractRepository {
         return true
     }
 
-    public async modifyProduct(product: IEditableProduct): Promise<Error | Product> {
+    public async modifyProduct(product: IEditableProduct): Promise<Error | FullProduct> {
         if (!product.id) {
             throw Error("Product should have an id.")
         }
@@ -73,7 +84,7 @@ export class ProductRepository extends AbstractRepository {
             // update returns an array, first argument is the number of elements updated in the
             // database. Second argument are the array of elements. Im updating by id so there is only 
             // one element in the array.
-            const newProduct = fromDbToEntity(editableProduct[1][0])
+            const newProduct = fromDbToFullProduct(editableProduct[1][0])
             return newProduct
 
         } catch (err) {
@@ -81,7 +92,7 @@ export class ProductRepository extends AbstractRepository {
         }
     }
 
-    public async getProductsByName(name: string): Promise<Product[] | Error> {
+    public async getProductsByName(name: string): Promise<FullProduct[] | Error> {
         if (!name) {
             throw Error("missing product name")
         }
@@ -91,9 +102,10 @@ export class ProductRepository extends AbstractRepository {
                     name: {
                         [Op.substring]: name
                     }
-                }
+                },
+                include: "category"
             })
-            return response.map(fromDbToEntity)
+            return response.map(fromDbToFullProduct)
         } catch (e) {
             throw Error(e)
         }

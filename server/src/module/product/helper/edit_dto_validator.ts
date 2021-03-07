@@ -13,4 +13,5 @@ export const validateEditProductDto = Joi.object({
         .max(20),
     price: Joi.number(),
     stock: Joi.boolean(),
+    id_category: Joi.number()
 })

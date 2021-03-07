@@ -1,6 +1,7 @@
 import { injectable } from "inversify";
 import { DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
+import { ProductModel } from "../../product/module";
 import { ICategory } from "../interfaces/ICategory";
 
 // decorate(injectable(), (Model))

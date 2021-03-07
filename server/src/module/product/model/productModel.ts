@@ -1,12 +1,15 @@
 import { decorate, injectable } from "inversify";
 import { DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
-import { IProduct } from "../interfaces/IProduct";
+import { CategoryModel } from "../../category/module";
+import { IProductModel } from "../interfaces/IProduct";
+import { IFullProduct } from '../entity/FullProduct'
 
 decorate(injectable(), (Model))
 
 @injectable()
-export class ProductModel extends Model<IProduct>{
+export class ProductModel extends Model<IProductModel | IFullProduct>{
+
 
     static setup(database: Sequelize): typeof ProductModel {
         ProductModel.init({
@@ -48,7 +51,6 @@ export class ProductModel extends Model<IProduct>{
                 type: DataTypes.BOOLEAN,
                 allowNull: false
             }
-
         }, {
             sequelize: database,
             modelName: "Product",
@@ -56,5 +58,12 @@ export class ProductModel extends Model<IProduct>{
             updatedAt: "modificadoEn",
         })
         return ProductModel
+    }
+    static setupCategoryAssociation(model: typeof CategoryModel): void {
+        ProductModel.belongsTo(model, {
+            as: "category",
+            foreignKey: "id_category",
+
+        })
     }
 }

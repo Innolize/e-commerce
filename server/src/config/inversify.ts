@@ -32,6 +32,7 @@ function configureDatabase() {
 
 export function configProductModel(container: Container): typeof ProductModel {
     ProductModel.setup(container.get(TYPES.Common.Database))
+    ProductModel.setupCategoryAssociation(container.get(TYPES.Category.Model))
     return ProductModel
 }
 
@@ -62,8 +63,8 @@ function configureCategoryContainer(container: Container): void {
 function configureDIC() {
     const dependencyContainer = new Container()
     configureCommonContainer(dependencyContainer)
-    configureProductContainer(dependencyContainer)
     configureCategoryContainer(dependencyContainer)
+    configureProductContainer(dependencyContainer)
     return dependencyContainer
 }
 

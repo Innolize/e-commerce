@@ -1,7 +1,6 @@
 import Joi from "joi"
 
 export const validateCreateProductDto = Joi.object({
-    id: Joi.number(),
     name: Joi.string()
         .min(3)
         .max(20)
@@ -18,4 +17,6 @@ export const validateCreateProductDto = Joi.object({
         .required(),
     stock: Joi.boolean()
         .required(),
+    id_category: Joi.number()
+        .required()
 })

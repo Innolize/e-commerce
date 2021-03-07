@@ -10,8 +10,8 @@ import { validateCreateProductDto } from '../helper/create_dto_validator'
 import { bodyValidator, mapperMessageError } from '../../common/helpers/bodyValidator'
 import { validateEditProductDto } from '../helper/edit_dto_validator'
 import { Product } from '../entity/Product'
-import { IProduct } from '../interfaces/IProduct'
 import { IEditableProduct } from '../interfaces/IEditableProduct'
+import { ICreateProduct } from '../interfaces/ICreateProduct'
 
 @injectable()
 export class ProductController extends AbstractController {
@@ -49,9 +49,10 @@ export class ProductController extends AbstractController {
 
     async createProduct(req: Request, res: Response): Promise<Response> {
         try {
-            const dto: IProduct = req.body
-            await bodyValidator(validateCreateProductDto, dto)
-            const product = new Product(dto)
+            const dto: ICreateProduct = req.body
+            const validatedDto = await bodyValidator(validateCreateProductDto, dto)
+            const product = new Product(validatedDto)
+            console.log('entre al crear')
             const response = await this.productService.createProduct(product)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
@@ -65,16 +66,16 @@ export class ProductController extends AbstractController {
         }
     }
 
-    async findProductByName(req: Request, res: Response): Promise<void> {
+    async findProductByName(req: Request, res: Response): Promise<Error | Response> {
         const { name } = req.params
         if (!name) {
             throw Error("Query param 'name' is missing")
         }
         try {
             const response = await this.productService.findProductByName(name)
-            res.status(StatusCodes.OK).send(response)
+            return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            console.log('hubo un error')
+            throw Error(err.message)
         }
 
     }
