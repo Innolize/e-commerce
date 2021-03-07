@@ -41,9 +41,7 @@ class ProductController extends AbstractController {
     async getAllProducts(req: Request, res: Response): Promise<void> {
         try {
             const products = await this.productService.getAllProducts()
-            res
-                .status(StatusCodes.OK)
-                .send(products)
+            res.status(StatusCodes.OK).send(products)
         } catch (err) {
             res.status(StatusCodes.NOT_FOUND).send('no se que poner')
         }
@@ -55,9 +53,7 @@ class ProductController extends AbstractController {
             await bodyValidator(validateCreateProductDto, dto)
             const product = new Product(dto)
             const response = await this.productService.createProduct(product)
-            return res
-                .status(StatusCodes.OK)
-                .send(response)
+            return res.status(StatusCodes.OK).send(response)
         } catch (err) {
             if (err.isJoi === true) {
                 const errorArray = mapperMessageError(err)
