@@ -4,6 +4,7 @@ import { TYPES } from './inversify.types'
 import multer, { memoryStorage, Multer } from 'multer'
 import { ProductController, ProductRepository, ProductService, ProductModel } from '../module/product/module'
 import { CategoryController, CategoryRepository, CategoryService, CategoryModel } from '../module/category/module'
+import { BrandController, BrandModel, BrandRepository, BrandService } from '../module/brand/module'
 // import path from 'path'
 
 
@@ -41,6 +42,11 @@ export function configCategoryModel(container: Container): typeof CategoryModel 
     return CategoryModel
 }
 
+export function configBrandModel(container: Container): typeof BrandModel {
+    BrandModel.setup(container.get(TYPES.Common.Database))
+    return BrandModel
+}
+
 function configureProductContainer(container: Container): void {
     container.bind<typeof ProductModel>(TYPES.Product.Model).toConstantValue(configProductModel(container));
     container.bind<ProductRepository>(TYPES.Product.Repository).to(ProductRepository)
@@ -60,11 +66,19 @@ function configureCategoryContainer(container: Container): void {
     container.bind<CategoryController>(TYPES.Category.Controller).to(CategoryController)
 }
 
+function configureBrandContainer(container: Container): void {
+    container.bind<typeof BrandModel>(TYPES.Brand.Model).toConstantValue(configBrandModel(container))
+    container.bind<BrandRepository>(TYPES.Brand.Repository).to(BrandRepository)
+    container.bind<BrandService>(TYPES.Brand.Service).to(BrandService)
+    container.bind<BrandController>(TYPES.Brand.Controller).to(BrandController)
+}
+
 function configureDIC() {
     const dependencyContainer = new Container()
     configureCommonContainer(dependencyContainer)
     configureCategoryContainer(dependencyContainer)
     configureProductContainer(dependencyContainer)
+    configureBrandContainer(dependencyContainer)
     return dependencyContainer
 }
 

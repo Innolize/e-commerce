@@ -1,4 +1,4 @@
-export interface ICategory {
+export interface IBrand {
     id?: number,
     name: string,
 }

@@ -1,16 +1,15 @@
 import { injectable } from "inversify";
 import { DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
-import { ProductModel } from "../../product/module";
-import { ICategory } from "../interfaces/ICategory";
+import { IBrand } from "../interfaces/IBrand";
 
 // decorate(injectable(), (Model))
 
 @injectable()
-export class CategoryModel extends Model<ICategory>{
+export class BrandModel extends Model<IBrand>{
 
-    static setup(database: Sequelize): typeof CategoryModel {
-        CategoryModel.init({
+    static setup(database: Sequelize): typeof BrandModel {
+        BrandModel.init({
             id: {
                 primaryKey: true,
                 type: DataTypes.INTEGER,
@@ -27,8 +26,8 @@ export class CategoryModel extends Model<ICategory>{
             }
         }, {
             sequelize: database,
-            modelName: "Category",
+            modelName: "Brand",
         })
-        return CategoryModel
+        return BrandModel
     }
 }

@@ -63,7 +63,6 @@ export class ProductModel extends Model<IProductModel | IFullProduct>{
         ProductModel.belongsTo(model, {
             as: "category",
             foreignKey: "id_category",
-
         })
     }
 }

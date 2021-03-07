@@ -52,7 +52,6 @@ export class ProductController extends AbstractController {
             const dto: ICreateProduct = req.body
             const validatedDto = await bodyValidator(validateCreateProductDto, dto)
             const product = new Product(validatedDto)
-            console.log('entre al crear')
             const response = await this.productService.createProduct(product)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
@@ -119,7 +118,7 @@ export class ProductController extends AbstractController {
             res.status(StatusCodes.OK)
                 .send({ message: "Product successfully deleted" })
         } catch (e) {
-            res.status(StatusCodes.BAD_REQUEST).send({ message: ReasonPhrases.BAD_REQUEST })
+            res.status(StatusCodes.BAD_REQUEST).send({ message: e })
         }
     }
 }

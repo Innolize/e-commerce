@@ -6,14 +6,17 @@ import { ProductModel } from '../../module/product/model/productModel';
 import { CategoryModel } from '../../module/category/model/categoryModel'
 import container from '../inversify'
 import { TYPES } from '../inversify.types';
+import { BrandModel } from '../../module/brand/module';
 
 
 
 const database = container.get<Sequelize>(TYPES.Common.Database);
 CategoryModel.drop({ cascade: true })
 ProductModel.drop({ cascade: true })
+BrandModel.drop({ cascade: true })
 ProductModel.setup(database);
 CategoryModel.setup(database);
+BrandModel.setup(database)
 ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.Category.Model));
 
 

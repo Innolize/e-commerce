@@ -1,9 +1,9 @@
-import { ICategory } from "../interfaces/ICategory";
+import { IBrand } from "../interfaces/IBrand";
 
-export class Category {
+export class Brand {
     id?: number;
     name: string;
-    constructor({ id, name }: ICategory) {
+    constructor({ id, name }: IBrand) {
         if (id) {
             this.id = id
         }
