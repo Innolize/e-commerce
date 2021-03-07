@@ -2,12 +2,10 @@ import { inject, injectable } from "inversify";
 import { Op } from "sequelize";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
+import { Category } from "../entity/Category";
 import { ICategory } from "../interfaces/ICategory";
-import { fromDbToCategory } from "../mapper/productMapper";
-// import { Product } from "../entity/Product";
-// import { IEditableProduct } from "../interfaces/IEditableProduct";
-// import { ICategory } from "../interfaces/ICategory";
-// import { fromDbToEntity } from "../mapper/productMapper";
+import { IEditableCategory } from "../interfaces/IEditableCategory";
+import { fromDbToCategory } from "../mapper/categoryMapper";
 import { CategoryModel } from "../model/categoryModel";
 
 @injectable()
@@ -38,75 +36,82 @@ export class CategoryRepository extends AbstractRepository {
 
     }
 
-    // public async getById(id: number): Promise<Error | ICategory> {
-    //     if (!id) {
-    //         throw Error("missing id")
-    //     }
-    //     const response = await this.categoryModel.findByPk(id)
-    //     if (!response) {
-    //         throw Error("product not found")
-    //     }
+    public async findCategoryById(id: number): Promise<Error | ICategory> {
+        if (!id) {
+            throw Error("missing id")
+        }
+        const response = await this.categoryModel.findByPk(id)
+        if (!response) {
+            throw Error("product not found")
+        }
 
-    //     return fromDbToEntity(response)
-    // }
+        return fromDbToCategory(response)
+    }
 
-    // public async createProduct(product: ICategory): Promise<Error | ICategory> {
-    //     if (!product) {
-    //         throw Error('missing product')
-    //     }
-    //     try {
-    //         const response = await this.categoryModel.create(product)
-    //         return fromDbToEntity(response)
-    //     } catch (e) {
-    //         throw Error(e)
-    //     }
-    // }
-    // public async deleteProduct(productId: number): Promise<Error | boolean> {
-    //     if (!productId && productId !== 0) {
-    //         throw Error('missing product')
-    //     }
-    //     const response = await this.categoryModel.destroy({
-    //         where:
-    //             { id: productId }
-    //     })
-    //     if (!response) {
-    //         return false
-    //     }
-    //     return true
-    // }
+    public async createCategory(category: ICategory): Promise<Error | ICategory> {
+        if (!category) {
+            throw Error('missing product')
+        }
+        try {
+            const response = await this.categoryModel.create(category)
+            return fromDbToCategory(response)
+        } catch (e) {
+            throw Error(e)
+        }
+    }
 
-    // public async modifyProduct(product: IEditableProduct): Promise<Error | Product> {
-    //     if (!product.id) {
-    //         throw Error("Product should have an id.")
-    //     }
-    //     try {
-    //         const editableProduct = await this.categoryModel.update(product, { where: { id: product.id }, returning: true })
-    //         // update returns an array, first argument is the number of elements updated in the
-    //         // database. Second argument are the array of elements. Im updating by id so there is only 
-    //         // one element in the array.
-    //         const newProduct = fromDbToEntity(editableProduct[1][0])
-    //         return newProduct
+    public async deleteCategory(categoryId: number): Promise<Error | boolean> {
+        if (!categoryId && categoryId !== 0) {
+            throw Error('missing product')
+        }
+        try {
+            const response = await this.categoryModel.destroy({
+                where:
+                    { id: categoryId }
+            })
+            console.log(typeof (response))
+            if (!response) {
+                console.log(12312312312)
+                throw Error("not found")
+            }
+        } catch (err) {
+            throw Error(err)
+        }
+        return true
+    }
 
-    //     } catch (err) {
-    //         throw Error(err)
-    //     }
-    // }
+    public async modifyCategory(product: IEditableCategory): Promise<Error | Category> {
+        if (!product.id) {
+            throw Error("Product should have an id.")
+        }
+        try {
+            const editableProduct = await this.categoryModel.update(product, { where: { id: product.id }, returning: true })
+            // update returns an array, first argument is the number of elements updated in the
+            // database. Second argument are the array of elements. Im updating by id so there is only 
+            // one element in the array.
+            const newProduct = fromDbToCategory(editableProduct[1][0])
+            return newProduct
 
-    // public async getProductsByName(name: string): Promise<Product[] | Error> {
-    //     if (!name) {
-    //         throw Error("missing product name")
-    //     }
-    //     try {
-    //         const response = await this.categoryModel.findAll({
-    //             where: {
-    //                 name: {
-    //                     [Op.substring]: name
-    //                 }
-    //             }
-    //         })
-    //         return response.map(fromDbToEntity)
-    //     } catch (e) {
-    //         throw Error(e)
-    //     }
-    // }
+        } catch (err) {
+            throw Error(err)
+        }
+    }
+
+    public async getCategoryByName(name: string): Promise<Category[] | Error> {
+        if (!name) {
+            throw Error("missing product name")
+        }
+        try {
+            const response = await this.categoryModel.findAll({
+                where: {
+                    name: {
+                        [Op.substring]: name
+                    }
+                }
+            })
+            return response.map(fromDbToCategory)
+        } catch (e) {
+            throw Error(e)
+        }
+    }
 }

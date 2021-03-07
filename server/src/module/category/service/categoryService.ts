@@ -1,7 +1,9 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractService } from "../../abstractClasses/abstractService";
+import { Category } from "../entity/Category";
 import { ICategory } from "../interfaces/ICategory";
+import { IEditableCategory } from "../interfaces/IEditableCategory";
 import { CategoryRepository } from "../repository/categoryRepository";
 
 
@@ -20,24 +22,24 @@ export class CategoryService extends AbstractService {
         return await this.categoryRepository.getAllCategories()
     }
 
-    // async deleteProduct(id: number): Promise<boolean | Error> {
-    //     return await this.categoryRepository.deleteProduct(id)
-    // }
+    async deleteCategory(id: number): Promise<boolean | Error> {
+        return await this.categoryRepository.deleteCategory(id)
+    }
 
 
 
-    // async modifyProduct(product: IEditableProduct): Promise<Product | Error> {
-    //     return await this.categoryRepository.modifyProduct(product)
-    // }
+    async modifyCategory(product: IEditableCategory): Promise<Category | Error> {
+        return await this.categoryRepository.modifyCategory(product)
+    }
 
-    // async createProduct(product: Product): Promise<IProduct | Error> {
-    //     return await this.categoryRepository.createProduct(product)
-    // }
-    // async findProductById(id: number): Promise<Error | IProduct> {
-    //     return await this.categoryRepository.getById(id)
-    // }
-    // async findProductByName(productName: string): Promise<Product[] | Error> {
-    //     return await this.categoryRepository.getProductsByName(productName)
-    // }
+    async createCategory(category: Category): Promise<Category | Error> {
+        return await this.categoryRepository.createCategory(category)
+    }
+    async findCategoryById(id: number): Promise<Error | Category> {
+        return await this.categoryRepository.findCategoryById(id)
+    }
+    async findProductByName(productName: string): Promise<Category[] | Error> {
+        return await this.categoryRepository.getCategoryByName(productName)
+    }
 
 }

@@ -12,3 +12,4 @@ export function init(app: App, container: Container): void {
     const controller = container.get<CategoryController>(TYPES.Category.Controller)
     controller.configureRoutes(app)
 }
+
