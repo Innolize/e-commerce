@@ -10,6 +10,8 @@ import { validateCreateProductDto } from '../helper/create_dto_validator'
 import { bodyValidator, mapperMessageError } from '../../common/helpers/bodyValidator'
 import { validateEditProductDto } from '../helper/edit_dto_validator'
 import { Product } from '../entity/Product'
+import { IProduct } from '../interfaces/IProduct'
+import { IEditableProduct } from '../interfaces/IEditableProduct'
 
 @injectable()
 class ProductController extends AbstractController {
@@ -26,7 +28,7 @@ class ProductController extends AbstractController {
         this.uploadMiddleware = uploadMiddleware
     }
 
-    configureRoutes(app: App) {
+    configureRoutes(app: App): void {
         const ROUTE = this.ROUTE_BASE
         app.get(`${ROUTE}`, this.getAllProducts.bind(this))
         app.post(`${ROUTE}`, this.uploadMiddleware.single("bulbasaur"), this.createProduct.bind(this))
@@ -36,7 +38,7 @@ class ProductController extends AbstractController {
         app.get(`${ROUTE}/findById/:id`, this.findProductById.bind(this))
     }
 
-    async getAllProducts(req: Request, res: Response) {
+    async getAllProducts(req: Request, res: Response): Promise<void> {
         try {
             const products = await this.productService.getAllProducts()
             res
@@ -47,13 +49,13 @@ class ProductController extends AbstractController {
         }
     }
 
-    async createProduct(req: Request, res: Response) {
-
+    async createProduct(req: Request, res: Response): Promise<Response> {
         try {
-            const dto = await bodyValidator(validateCreateProductDto, req.body)
+            const dto: IProduct = req.body
+            await bodyValidator(validateCreateProductDto, dto)
             const product = new Product(dto)
             const response = await this.productService.createProduct(product)
-            res
+            return res
                 .status(StatusCodes.OK)
                 .send(response)
         } catch (err) {
@@ -65,11 +67,9 @@ class ProductController extends AbstractController {
             }
             return res.send(err)
         }
-        // console.log(req.file)
-        // await this.productService.createProduct
     }
 
-    async findProductByName(req: Request, res: Response) {
+    async findProductByName(req: Request, res: Response): Promise<void> {
         const { name } = req.params
         if (!name) {
             throw Error("Query param 'name' is missing")
@@ -83,7 +83,7 @@ class ProductController extends AbstractController {
 
     }
 
-    async findProductById(req: Request, res: Response) {
+    async findProductById(req: Request, res: Response): Promise<void> {
         const { id } = req.params
         console.log("id:", id)
         if (!id) {
@@ -98,13 +98,12 @@ class ProductController extends AbstractController {
         }
     }
 
-    async modifyProduct(req: Request, res: Response) {
-
+    async modifyProduct(req: Request, res: Response): Promise<Response> {
         try {
-            console.log(req.body)
-            const dto = await bodyValidator(validateEditProductDto, req.body)
+            const dto: IEditableProduct = req.body
+            await bodyValidator(validateEditProductDto, dto)
             const response = await this.productService.modifyProduct(dto)
-            res.status(StatusCodes.OK).send(response)
+            return res.status(StatusCodes.OK).send(response)
         } catch (err) {
             if (err.isJoi === true) {
                 const errorArray = mapperMessageError(err)
@@ -116,7 +115,7 @@ class ProductController extends AbstractController {
         }
     }
 
-    async deleteProduct(req: Request, res: Response) {
+    async deleteProduct(req: Request, res: Response): Promise<void> {
         const { id } = req.params
         try {
             await this.productService.deleteProduct(Number(id))

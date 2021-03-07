@@ -1,5 +1,6 @@
+import dotenv from 'dotenv'
+dotenv.config()
 import "reflect-metadata";
-require('dotenv').config()
 import { Sequelize } from 'sequelize/types';
 import ProductModel from '../../module/product/model/productModel';
 import container from '../inversify'

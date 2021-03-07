@@ -6,7 +6,7 @@ import { ProductRepository } from "../module/product/repository/productRepositor
 import { ProductService } from "../module/product/service/productService"
 import { TYPES } from './inversify.types'
 import multer, { memoryStorage, Multer } from 'multer'
-import path from 'path'
+// import path from 'path'
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -31,7 +31,7 @@ function configureDatabase() {
     })
 }
 
-export function configProductModel(container: Container) {
+export function configProductModel(container: Container): typeof ProductModel {
     ProductModel.setup(container.get(TYPES.Database))
     return ProductModel
 }

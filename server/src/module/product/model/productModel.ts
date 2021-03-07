@@ -1,14 +1,14 @@
-import { decorate, inject, injectable } from "inversify";
+import { decorate, injectable } from "inversify";
 import { DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
-import { IProduct, IProductOptional } from "../interfaces/IProduct";
+import { IProduct } from "../interfaces/IProduct";
 
 decorate(injectable(), (Model))
 
 @injectable()
-class ProductModel extends Model<IProduct, IProductOptional>{
+class ProductModel extends Model<IProduct>{
 
-    static setup(database: Sequelize) {
+    static setup(database: Sequelize): typeof ProductModel {
         ProductModel.init({
             id: {
                 primaryKey: true,

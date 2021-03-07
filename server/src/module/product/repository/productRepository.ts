@@ -1,6 +1,5 @@
 import { inject, injectable } from "inversify";
 import { Op } from "sequelize";
-import { Model } from "sequelize/types";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Product } from "../entity/Product";
@@ -51,7 +50,7 @@ export class ProductRepository extends AbstractRepository {
             throw Error(e)
         }
     }
-    public async deleteProduct(productId: number): Promise<Error | Boolean> {
+    public async deleteProduct(productId: number): Promise<Error | boolean> {
         if (!productId && productId !== 0) {
             throw Error('missing product')
         }
@@ -82,7 +81,7 @@ export class ProductRepository extends AbstractRepository {
         }
     }
 
-    public async getProductsByName(name: string) {
+    public async getProductsByName(name: string): Promise<Product[] | Error> {
         if (!name) {
             throw Error("missing product name")
         }
