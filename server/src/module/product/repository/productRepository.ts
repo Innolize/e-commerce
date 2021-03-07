@@ -1,8 +1,10 @@
 import { inject, injectable } from "inversify";
+import { Op } from "sequelize";
 import { Model } from "sequelize/types";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Product } from "../entity/Product";
+import { IEditableProduct } from "../interfaces/IEditableProduct";
 import { IProduct } from "../interfaces/IProduct";
 import { fromDbToEntity } from "../mapper/productMapper";
 import ProductModel from "../model/productModel";
@@ -57,34 +59,44 @@ export class ProductRepository extends AbstractRepository {
             where:
                 { id: productId }
         })
-
         if (!response) {
             return false
         }
         return true
     }
 
-    public async editProduct(product: Product) {
+    public async modifyProduct(product: IEditableProduct): Promise<Error | Product> {
         if (!product.id) {
             throw Error("Product should have an id.")
         }
-        const editableProduct = await this.productModel.update(product, { where: { id: product.id } })
-        console.log(editableProduct)
+        try {
+            const editableProduct = await this.productModel.update(product, { where: { id: product.id }, returning: true })
+            // update returns an array, first argument is the number of elements updated in the
+            // database. Second argument are the array of elements. Im updating by id so there is only 
+            // one element in the array.
+            const newProduct = fromDbToEntity(editableProduct[1][0])
+            return newProduct
 
+        } catch (err) {
+            throw Error(err)
+        }
     }
+
     public async getProductsByName(name: string) {
         if (!name) {
             throw Error("missing product name")
         }
         try {
-            const response = await this.productModel.findAll({ where: { name } })
-            if (!response) {
-                throw Error("No products found with that name")
-            }
+            const response = await this.productModel.findAll({
+                where: {
+                    name: {
+                        [Op.substring]: name
+                    }
+                }
+            })
             return response.map(fromDbToEntity)
         } catch (e) {
             throw Error(e)
         }
-
     }
 }

@@ -1,13 +1,13 @@
 import { Optional } from "sequelize/types";
 
 export interface IProduct {
-    id: number,
+    id?: number,
     name: string,
     brand: string,
     image: string | null,
     description: string | null,
     price: number,
-    stock: number
+    stock: boolean
 }
 
 export interface IProductOptional extends Optional<IProduct, "id">{}

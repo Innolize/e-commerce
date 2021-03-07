@@ -6,7 +6,7 @@ import { init } from "./module/product/module"
 const app = express()
 const port = process.env.PORT
 app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: false }))
 console.log(configProductModel(container))
 
 init(app, container)

@@ -5,18 +5,20 @@ import ProductModel from "../module/product/model/productModel"
 import { ProductRepository } from "../module/product/repository/productRepository"
 import { ProductService } from "../module/product/service/productService"
 import { TYPES } from './inversify.types'
-import multer, { Multer } from 'multer'
+import multer, { memoryStorage, Multer } from 'multer'
 import path from 'path'
 
 function configureUploadMiddleware() {
-    const storage = multer.diskStorage({
-        destination: function (req, file, cb) {
-            cb(null, <string>process.env.PRODUCT_IMAGE_FOLDER)
-        },
-        filename: function (req, file, cb) {
-            cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
-        }
-    })
+    const storage = memoryStorage()
+        // multer.diskStorage({
+        //     destination: function (req, file, cb) {
+        //         cb(null, <string>process.env.PRODUCT_IMAGE_FOLDER)
+        //     },
+        //     filename: function (req, file, cb) {
+        //         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+        //     }
+        // })
+
     return multer({ storage })
 }
 

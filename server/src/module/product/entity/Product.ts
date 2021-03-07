@@ -1,16 +1,18 @@
 import { IProduct } from '../interfaces/IProduct'
 
 export class Product {
-    id: number;
+    id?: number;
     name: string;
     brand: string;
     image: string | null;
     description: string | null;
     price: number;
-    stock: number;
+    stock: boolean;
     constructor({ id, name, brand, image, description, price, stock }: IProduct) {
-        this.id = id,
-            this.name = name,
+        if (id) {
+            this.id = id
+        }
+        this.name = name,
             this.brand = brand,
             this.image = image,
             this.description = description,
