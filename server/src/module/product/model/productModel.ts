@@ -6,7 +6,7 @@ import { IProduct } from "../interfaces/IProduct";
 decorate(injectable(), (Model))
 
 @injectable()
-class ProductModel extends Model<IProduct>{
+export class ProductModel extends Model<IProduct>{
 
     static setup(database: Sequelize): typeof ProductModel {
         ProductModel.init({
@@ -58,5 +58,3 @@ class ProductModel extends Model<IProduct>{
         return ProductModel
     }
 }
-
-export default ProductModel

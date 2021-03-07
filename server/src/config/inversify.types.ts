@@ -1,9 +1,18 @@
 export const TYPES = {
-    Database: Symbol("Database"),
-    UploadMiddleware: Symbol("UploadMiddleware"),
-    ProductRepository: Symbol("ProductRepository"),
-    ProductController: Symbol("ProductController"),
-    ProductService: Symbol("ProductController"),
-    ProductModel: Symbol("ProductModel"),
-
+    Common: {
+        Database: Symbol("Database"),
+        UploadMiddleware: Symbol("UploadMiddleware")
+    },
+    Product: {
+        Model: Symbol("ProductModel"),
+        Repository: Symbol("ProductRepository"),
+        Service: Symbol("ProductService"),
+        Controller: Symbol("ProductController"),
+    },
+    Category: {
+        Model: Symbol("CategoryModel"),
+        Repository: Symbol("CategoryRepository"),
+        Service: Symbol("CategoryService"),
+        Controller: Symbol("CategoryController"),
+    }
 }

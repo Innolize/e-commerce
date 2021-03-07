@@ -6,13 +6,13 @@ import { Product } from "../entity/Product";
 import { IEditableProduct } from "../interfaces/IEditableProduct";
 import { IProduct } from "../interfaces/IProduct";
 import { fromDbToEntity } from "../mapper/productMapper";
-import ProductModel from "../model/productModel";
+import { ProductModel } from "../model/productModel";
 
 @injectable()
 export class ProductRepository extends AbstractRepository {
     private productModel: typeof ProductModel
     constructor(
-        @inject(TYPES.ProductModel) productModel: typeof ProductModel
+        @inject(TYPES.Product.Model) productModel: typeof ProductModel
     ) {
         super()
         this.productModel = productModel

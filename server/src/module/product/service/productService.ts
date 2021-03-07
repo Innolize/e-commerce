@@ -10,7 +10,7 @@ import { ProductRepository } from "../repository/productRepository";
 export class ProductService extends AbstractService {
     private productRepository: ProductRepository
     constructor(
-        @inject(TYPES.ProductRepository) repository: ProductRepository
+        @inject(TYPES.Product.Repository) repository: ProductRepository
     ) {
         super()
         this.productRepository = repository

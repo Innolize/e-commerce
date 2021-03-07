@@ -14,13 +14,13 @@ import { IProduct } from '../interfaces/IProduct'
 import { IEditableProduct } from '../interfaces/IEditableProduct'
 
 @injectable()
-class ProductController extends AbstractController {
+export class ProductController extends AbstractController {
     public ROUTE_BASE: string
     public productService: ProductService
     public uploadMiddleware: Multer
     constructor(
-        @inject(TYPES.ProductService) productService: ProductService,
-        @inject(TYPES.UploadMiddleware) uploadMiddleware: Multer
+        @inject(TYPES.Product.Service) productService: ProductService,
+        @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer
     ) {
         super()
         this.ROUTE_BASE = "/product"
@@ -122,5 +122,3 @@ class ProductController extends AbstractController {
         }
     }
 }
-
-export default ProductController
