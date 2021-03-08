@@ -4,6 +4,7 @@ import { Model } from "sequelize";
 import { CategoryModel } from "../../category/module";
 import { IProductModel } from "../interfaces/IProduct";
 import { IFullProduct } from '../entity/FullProduct'
+import { BrandModel } from "../../brand/module";
 
 decorate(injectable(), (Model))
 
@@ -20,14 +21,6 @@ export class ProductModel extends Model<IProductModel | IFullProduct>{
                 autoIncrement: true
             },
             name: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                validate: {
-                    min: 4,
-                    max: 20
-                }
-            },
-            brand: {
                 type: DataTypes.STRING,
                 allowNull: false,
                 validate: {
@@ -63,6 +56,12 @@ export class ProductModel extends Model<IProductModel | IFullProduct>{
         ProductModel.belongsTo(model, {
             as: "category",
             foreignKey: "id_category",
+        })
+    }
+    static setupBrandAssociation(model: typeof BrandModel): void {
+        ProductModel.belongsTo(model, {
+            as: "brand",
+            foreignKey: "id_brand",
         })
     }
 }

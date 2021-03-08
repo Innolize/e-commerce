@@ -12,7 +12,7 @@ import { BrandModel } from "../model/brandModel";
 export class BrandRepository extends AbstractRepository {
     private brandModel: typeof BrandModel
     constructor(
-        @inject(TYPES.Category.Model) brandModel: typeof BrandModel
+        @inject(TYPES.Brand.Model) brandModel: typeof BrandModel
     ) {
         super()
         this.brandModel = brandModel

@@ -21,7 +21,7 @@ export class ProductRepository extends AbstractRepository {
     public async getAllProduct(): Promise<Error | FullProduct[]> {
 
         try {
-            const response = await this.productModel.findAll({ include: "category" })
+            const response = await this.productModel.findAll({ include: ["category", "brand"] })
 
             if (!response) {
                 throw new Error()
@@ -39,7 +39,7 @@ export class ProductRepository extends AbstractRepository {
         if (!id) {
             throw Error("missing id")
         }
-        const response = await this.productModel.findByPk(id, { include: "category" })
+        const response = await this.productModel.findByPk(id, { include: ["category", "brand"] })
         if (!response) {
             throw Error("product not found")
         }
@@ -52,8 +52,8 @@ export class ProductRepository extends AbstractRepository {
             throw Error('missing product')
         }
         try {
-
-            const response = await this.productModel.create(product, { include: "category" })
+            console.log(product)
+            const response = await this.productModel.create(product, {include: ["category", "brand"]})
             console.log(response)
             return fromDbToProduct(response)
         } catch (e) {
@@ -103,7 +103,7 @@ export class ProductRepository extends AbstractRepository {
                         [Op.substring]: name
                     }
                 },
-                include: "category"
+                include: ["category", "brand"]
             })
             return response.map(fromDbToFullProduct)
         } catch (e) {

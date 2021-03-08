@@ -18,6 +18,7 @@ ProductModel.setup(database);
 CategoryModel.setup(database);
 BrandModel.setup(database)
 ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.Category.Model));
+ProductModel.setupBrandAssociation(container.get<typeof BrandModel>(TYPES.Brand.Model));
 
 
 (async function configureDatabase() {
@@ -25,9 +26,10 @@ ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.
 
     try {
         await CategoryModel.create({ name: "testname" })
-        await ProductModel.create({ name: "nombreDeProducto123", brand: "brand-test", image: "image-test", description: "description-test", price: 12345, stock: true, id_category: 1 })
-        await ProductModel.create({ name: "nombreDeProducto123-b", brand: "brand-test-b", image: "image-test-b", description: "description-test-b", price: 123456, stock: true, id_category: 1 })
-        const esto = await ProductModel.findAll({ where: { id_category: 1 }, include: "category" })
+        await BrandModel.create({ name: "brandTest" })
+        await ProductModel.create({ name: "nombreDeProducto123", id_brand: 1, image: "image-test", description: "description-test", price: 12345, stock: true, id_category: 1 })
+        await ProductModel.create({ name: "nombreDeProducto123-b", id_brand: 1, image: "image-test-b", description: "description-test-b", price: 123456, stock: true, id_category: 1 })
+        const esto = await ProductModel.findAll({ where: { id_category: 1 }, include: ["category", "brand"] })
         console.log(esto)
 
 

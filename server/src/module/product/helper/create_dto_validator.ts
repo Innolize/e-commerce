@@ -5,7 +5,7 @@ export const validateCreateProductDto = Joi.object({
         .min(3)
         .max(20)
         .required(),
-    brand: Joi.string()
+    id_brand: Joi.number()
         .required(),
     image: Joi.string()
         .required(),
