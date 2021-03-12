@@ -36,9 +36,7 @@ export class ProductRepository extends AbstractRepository {
     }
 
     public async getById(id: number): Promise<Error | FullProduct> {
-        if (!id) {
-            throw Error("missing id")
-        }
+
         const response = await this.productModel.findByPk(id, { include: ["category", "brand"] })
         if (!response) {
             throw Error("product not found")
@@ -48,16 +46,10 @@ export class ProductRepository extends AbstractRepository {
     }
 
     public async createProduct(product: Product): Promise<Error | Product> {
-        if (!product) {
-            throw Error('missing product')
-        }
         try {
-            console.log(product)
             const response = await this.productModel.create(product, {include: ["category", "brand"]})
-            console.log(response)
             return fromDbToProduct(response)
         } catch (e) {
-            console.log(e)
             throw Error(e)
         }
     }
