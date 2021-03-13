@@ -7,7 +7,7 @@
     "start": "tsc-watch --onSuccess \"node . \"",
     "dev": "tsc -w & node .",
     "dbconfig": "tsc-watch --onSuccess \"node ./dist/config/database/dbConfig.js\"",
-    "test": "jest --watch"
+    "test": "jest --watch --detectOpenHandles"
   },
   "license": "MIT",
   "dependencies": {
