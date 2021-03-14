@@ -19,27 +19,11 @@ export class CategoryRepository extends AbstractRepository {
     }
 
     public async getAllCategories(): Promise<Error | ICategory[]> {
-        console.log("llegue al repository")
-        try {
-            const response = await this.categoryModel.findAll()
-            console.log(response)
-            if (!response) {
-                throw new Error()
-
-            }
-            return response.map(fromDbToCategory)
-        } catch (err) {
-            console.log(err)
-            throw Error()
-        }
-
-
+        const response = await this.categoryModel.findAll()
+        return response.map(fromDbToCategory)
     }
 
     public async findCategoryById(id: number): Promise<Error | ICategory> {
-        if (!id) {
-            throw Error("missing id")
-        }
         const response = await this.categoryModel.findByPk(id)
         if (!response) {
             throw Error("product not found")
@@ -49,9 +33,7 @@ export class CategoryRepository extends AbstractRepository {
     }
 
     public async createCategory(category: ICategory): Promise<Error | ICategory> {
-        if (!category) {
-            throw Error('missing product')
-        }
+
         try {
             const response = await this.categoryModel.create(category)
             return fromDbToCategory(response)
@@ -61,17 +43,15 @@ export class CategoryRepository extends AbstractRepository {
     }
 
     public async deleteCategory(categoryId: number): Promise<Error | boolean> {
-        if (!categoryId && categoryId !== 0) {
-            throw Error('missing product')
+        if (categoryId <= 0) {
+            throw Error('Category Id should be higher than 0')
         }
         try {
             const response = await this.categoryModel.destroy({
                 where:
                     { id: categoryId }
             })
-            console.log(typeof (response))
             if (!response) {
-                console.log(12312312312)
                 throw Error("not found")
             }
         } catch (err) {
@@ -81,26 +61,21 @@ export class CategoryRepository extends AbstractRepository {
     }
 
     public async modifyCategory(product: IEditableCategory): Promise<Error | Category> {
-        if (!product.id) {
-            throw Error("Product should have an id.")
+        const [categoriesEdited, categoryArray] = await this.categoryModel.update(product, { where: { id: product.id }, returning: true })
+        // update returns an array, first argument is the number of elements updated in the
+        // database. Second argument are the array of elements. Im updating by id so there is only 
+        // one element in the array.
+        if (!categoriesEdited) {
+            throw new Error("Category not found")
         }
-        try {
-            const editableProduct = await this.categoryModel.update(product, { where: { id: product.id }, returning: true })
-            // update returns an array, first argument is the number of elements updated in the
-            // database. Second argument are the array of elements. Im updating by id so there is only 
-            // one element in the array.
-            const newProduct = fromDbToCategory(editableProduct[1][0])
-            return newProduct
+        const categoryEdited = categoryArray[0]
+        const newProduct = fromDbToCategory(categoryEdited)
+        return newProduct
 
-        } catch (err) {
-            throw Error(err)
-        }
     }
 
     public async getCategoryByName(name: string): Promise<Category[] | Error> {
-        if (!name) {
-            throw Error("missing product name")
-        }
+
         try {
             const response = await this.categoryModel.findAll({
                 where: {
