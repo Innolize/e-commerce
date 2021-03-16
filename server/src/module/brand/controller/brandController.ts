@@ -7,7 +7,7 @@ import { StatusCodes } from 'http-status-codes'
 import { Multer } from 'multer'
 import { BrandService } from '../service/brandService'
 import { IBrand } from '../interfaces/IBrand'
-import { Brand } from '../entity/Category'
+import { Brand } from '../entity/Brand'
 import { bodyValidator, mapperMessageError } from '../../common/helpers/bodyValidator'
 import { validateCreateBrandDto } from '../helper/create_dto_validator'
 import { IEditableBrand } from '../interfaces/IEditableBrand'
@@ -31,12 +31,12 @@ export class BrandController extends AbstractController {
 
     configureRoutes(app: App): void {
         const ROUTE = this.ROUTE_BASE
-        app.get(`${ROUTE}`, this.getAllBrands.bind(this))
-        app.post(`${ROUTE}`, this.uploadMiddleware.single("bulbasaur"), this.createBrand.bind(this))
-        app.put(`${ROUTE}`, this.modifyBrand.bind(this))
-        app.delete(`${ROUTE}/:id`, this.deleteBrand.bind(this))
-        app.get(`${ROUTE}/findByName/:name`, this.findBrandByName.bind(this))
-        app.get(`${ROUTE}/findById/:id`, this.findBrandById.bind(this))
+        app.get(`/api${ROUTE}`, this.getAllBrands.bind(this))
+        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("bulbasaur"), this.createBrand.bind(this))
+        app.put(`/api${ROUTE}`, this.modifyBrand.bind(this))
+        app.delete(`/api${ROUTE}/:id`, this.deleteBrand.bind(this))
+        app.get(`/api${ROUTE}/findByName/:name`, this.findBrandByName.bind(this))
+        app.get(`/api${ROUTE}/findById/:id`, this.findBrandById.bind(this))
     }
 
     async getAllBrands(req: Request, res: Response): Promise<void> {
@@ -97,7 +97,7 @@ export class BrandController extends AbstractController {
             const response = await this.brandService.findBrandById(Number(id))
             res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            res.status(StatusCodes.BAD_REQUEST).send({ errors: err.message })
+            res.status(StatusCodes.BAD_REQUEST).send({ message: err.message })
 
         }
     }
@@ -115,8 +115,7 @@ export class BrandController extends AbstractController {
                     errors: errorArray
                 })
             }
-            return res.status(StatusCodes.BAD_REQUEST).send(err)
-        }
+            return res.status(StatusCodes.BAD_REQUEST).send({message:err.message})        }
     }
 
     async deleteBrand(req: Request, res: Response): Promise<void> {

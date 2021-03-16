@@ -7,7 +7,7 @@ import { ProductModel } from "../../model/productModel"
 import { Product } from "../../entity/Product"
 import { CategoryModel } from "../../../category/module";
 import { BrandModel } from "../../../brand/module";
-import { Brand } from "../../../brand/entity/Category";
+import { Brand } from "../../../brand/entity/Brand";
 import { Category } from "../../../category/entity/Category";
 import { FullProduct } from "../../entity/FullProduct";
 
@@ -25,20 +25,20 @@ let product: typeof ProductModel
 
 let repository: ProductRepository
 
-beforeAll(async () => {
+// beforeAll(async () => {
+
+// })
+
+beforeEach(async (done) => {
+
     await sequelizeInstance.drop()
 
     brand = BrandModel.setup(sequelizeInstance)
     category = CategoryModel.setup(sequelizeInstance)
     product = ProductModel.setup(sequelizeInstance)
-    product.setupBrandAssociation(brand)
     product.setupCategoryAssociation(category)
+    product.setupBrandAssociation(brand)
     repository = new ProductRepository(product)
-})
-
-beforeEach(async (done) => {
-
-
     await sequelizeInstance.sync({ force: true });
     done();
 });
@@ -94,7 +94,7 @@ describe('Delete a product', () => {
         await expect(repository.deleteProduct(1)).resolves.toBe(true)
     })
     it("throw error when trying to delete an inexistent product", async () => {
-        await expect(repository.deleteProduct(123)).resolves.toBe(false)
+        await expect(repository.deleteProduct(123)).rejects.toThrowError()
     })
 })
 

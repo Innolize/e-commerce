@@ -4,7 +4,7 @@ import { TYPES } from '../../../config/inversify.types'
 import { AbstractController } from '../../abstractClasses/abstractController'
 import { ProductService } from '../service/productService'
 import { Request, Response } from 'express'
-import { ReasonPhrases, StatusCodes } from 'http-status-codes'
+import { StatusCodes } from 'http-status-codes'
 import { Multer } from 'multer'
 import { validateCreateProductDto } from '../helper/create_dto_validator'
 import { bodyValidator, mapperMessageError } from '../../common/helpers/bodyValidator'
@@ -30,12 +30,12 @@ export class ProductController extends AbstractController {
 
     configureRoutes(app: App): void {
         const ROUTE = this.ROUTE_BASE
-        app.get(`${ROUTE}`, this.getAllProducts.bind(this))
-        app.post(`${ROUTE}`, this.uploadMiddleware.single("bulbasaur"), this.createProduct.bind(this))
-        app.put(`${ROUTE}`, this.modifyProduct.bind(this))
-        app.delete(`${ROUTE}/:id`, this.deleteProduct.bind(this))
-        app.get(`${ROUTE}/findByName/:name`, this.findProductByName.bind(this))
-        app.get(`${ROUTE}/findById/:id`, this.findProductById.bind(this))
+        app.get(`/api${ROUTE}`, this.getAllProducts.bind(this))
+        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("bulbasaur"), this.createProduct.bind(this))
+        app.put(`/api${ROUTE}`, this.modifyProduct.bind(this))
+        app.delete(`/api${ROUTE}/:id`, this.deleteProduct.bind(this))
+        app.get(`/api${ROUTE}/findByName/:name`, this.findProductByName.bind(this))
+        app.get(`/api${ROUTE}/findById/:id`, this.findProductById.bind(this))
     }
 
     async getAllProducts(req: Request, res: Response): Promise<void> {
@@ -81,7 +81,6 @@ export class ProductController extends AbstractController {
 
     async findProductById(req: Request, res: Response): Promise<void> {
         const { id } = req.params
-        console.log("id:", id)
         if (!id) {
             throw Error("Query param 'name' is missing")
         }
@@ -107,7 +106,7 @@ export class ProductController extends AbstractController {
                     errors: errorArray
                 })
             }
-            return res.send(err)
+            return res.status(StatusCodes.BAD_REQUEST).send({message:err.message})
         }
     }
 
@@ -117,8 +116,8 @@ export class ProductController extends AbstractController {
             await this.productService.deleteProduct(Number(id))
             res.status(StatusCodes.OK)
                 .send({ message: "Product successfully deleted" })
-        } catch (e) {
-            res.status(StatusCodes.BAD_REQUEST).send({ message: e })
+        } catch (err) {
+            res.status(StatusCodes.BAD_REQUEST).send({ message: err.message })
         }
     }
 }

@@ -8,7 +8,9 @@
     "dev": "tsc -w & node .",
     "dbconfig": "tsc-watch --onSuccess \"node ./dist/config/database/dbConfig.js\"",
     "test": "jest --watch --detectOpenHandles",
-    "test:category": "jest --watch src/module/category --detectOpenHandles"
+    "test:product": "jest --watch src/module/product --detectOpenHandles",
+    "test:category": "jest --watch src/module/category --detectOpenHandles",
+    "test:brand": "jest --watch src/module/brand --detectOpenHandles"
   },
   "license": "MIT",
   "dependencies": {

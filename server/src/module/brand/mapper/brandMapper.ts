@@ -1,4 +1,4 @@
-import { Brand } from "../entity/Category"
+import { Brand } from "../entity/Brand"
 import { BrandModel } from "../model/brandModel"
 
 export const fromDbToBrand = (model: BrandModel): Brand => {

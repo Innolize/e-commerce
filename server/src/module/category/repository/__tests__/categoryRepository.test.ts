@@ -16,14 +16,14 @@ const sequelizeInstance = new Sequelize(<string>process.env.TEST_DATABASE_URL, {
 let category: typeof CategoryModel
 let repository: CategoryRepository
 
-beforeAll(async () => {
+// beforeAll(async () => {
+
+// })
+
+beforeEach(async (done) => {
     await sequelizeInstance.drop()
     category = CategoryModel.setup(sequelizeInstance)
     repository = new CategoryRepository(category)
-})
-
-beforeEach(async (done) => {
-
     await sequelizeInstance.sync({ force: true });
     done();
 });

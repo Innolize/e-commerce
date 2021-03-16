@@ -52,7 +52,7 @@ export class ProductRepository extends AbstractRepository {
                 { id: productId }
         })
         if (!response) {
-            return false
+            throw new Error("Product doesnt exist")
         }
         return true
     }
@@ -60,11 +60,15 @@ export class ProductRepository extends AbstractRepository {
     public async modifyProduct(product: IEditableProduct): Promise<Error | Product> {
 
         try {
-            const editableProduct = await this.productModel.update(product, { where: { id: product.id }, returning: true })
+            const [productEdited, productArray] = await this.productModel.update(product, { where: { id: product.id }, returning: true })
             // update returns an array, first argument is the number of elements updated in the
             // database. Second argument are the array of elements. Im updating by id so there is only 
             // one element in the array.
-            const newProduct = fromDbToProduct(editableProduct[1][0])
+            if(!productEdited){
+                throw new Error("Product not found")
+            }
+            const newProduct = fromDbToProduct(productArray[0])
+            
             return newProduct
 
         } catch (err) {

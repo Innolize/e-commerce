@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractService } from "../../abstractClasses/abstractService";
-import { Brand } from "../entity/Category";
+import { Brand } from "../entity/Brand";
 import { IBrand } from "../interfaces/IBrand";
 import { IEditableBrand } from "../interfaces/IEditableBrand";
 import { BrandRepository } from "../repository/brandRepository";

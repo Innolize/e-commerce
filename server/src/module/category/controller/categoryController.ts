@@ -31,12 +31,12 @@ export class CategoryController extends AbstractController {
 
     configureRoutes(app: App): void {
         const ROUTE = this.ROUTE_BASE
-        app.get(`${ROUTE}`, this.getAllCategories.bind(this))
-        app.post(`${ROUTE}`, this.uploadMiddleware.single("bulbasaur"), this.createCategory.bind(this))
-        app.put(`${ROUTE}`, this.modifyCategory.bind(this))
-        app.delete(`${ROUTE}/:id`, this.deleteCategory.bind(this))
-        app.get(`${ROUTE}/findByName/:name`, this.findCategoryByName.bind(this))
-        app.get(`${ROUTE}/findById/:id`, this.findCategoryById.bind(this))
+        app.get(`/api${ROUTE}`, this.getAllCategories.bind(this))
+        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("bulbasaur"), this.createCategory.bind(this))
+        app.put(`/api${ROUTE}`, this.modifyCategory.bind(this))
+        app.delete(`/api${ROUTE}/:id`, this.deleteCategory.bind(this))
+        app.get(`/api${ROUTE}/findByName/:name`, this.findCategoryByName.bind(this))
+        app.get(`/api${ROUTE}/findById/:id`, this.findCategoryById.bind(this))
     }
 
     async getAllCategories(req: Request, res: Response): Promise<void> {
@@ -112,7 +112,7 @@ export class CategoryController extends AbstractController {
                 })
             }
             console.log(err)
-            return res.status(StatusCodes.NOT_FOUND).send(err)
+            return res.status(StatusCodes.NOT_FOUND).send({message: err.message})
         }
     }
 

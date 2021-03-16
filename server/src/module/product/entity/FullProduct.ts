@@ -1,4 +1,4 @@
-import { Brand } from '../../brand/entity/Category';
+import { Brand } from '../../brand/entity/Brand';
 import { Category } from '../../category/entity/Category';
 
 export interface IFullProduct {
