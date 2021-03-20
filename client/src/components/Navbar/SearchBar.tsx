@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { createStyles, Theme, makeStyles, fade } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';

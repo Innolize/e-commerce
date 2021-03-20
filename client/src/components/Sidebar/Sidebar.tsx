@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useContext } from 'react';
 import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import List from '@material-ui/core/List';
@@ -15,6 +15,8 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import NightsStayIcon from '@material-ui/icons/NightsStay';
 import ListLink from './ListLink';
+import { CustomThemeContext } from '../../contexts/customThemeContext';
+import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: 250,
     },
     paper: {
-      backgroundColor: theme.palette.type === 'light' ? theme.palette.info.light : theme.palette.primary.main,
+      backgroundColor: theme.palette.primary.main,
     },
     sidebarHeader: {
       height: '64px',
@@ -37,15 +39,19 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type Props = {
+interface Props {
   state: boolean;
-  setState: (arg0: boolean) => void;
-  handleThemeChange: () => void;
-};
+  setState: (open: boolean) => void;
+}
 
-function Sidebar({ state, setState, handleThemeChange }: Props) {
+function Sidebar({ state, setState }: Props) {
   const classes = useStyles();
   const theme = useTheme();
+  const { currentTheme, setTheme } = useContext(CustomThemeContext);
+
+  const handleThemeChange = () => {
+    currentTheme === 'light' ? setTheme!('dark') : setTheme!('light');
+  };
 
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (
@@ -94,7 +100,7 @@ function Sidebar({ state, setState, handleThemeChange }: Props) {
 
           <Divider />
 
-          <ListItem button onClick={handleThemeChange}>
+          <ListItem onClick={handleThemeChange} button>
             <ListItemIcon>
               {theme.palette.type === 'light' ? <WbSunnyIcon /> : <NightsStayIcon />}
             </ListItemIcon>
@@ -102,6 +108,10 @@ function Sidebar({ state, setState, handleThemeChange }: Props) {
               {theme.palette.type === 'light' ? 'Change to dark' : 'Change to light'}
             </ListItemText>
           </ListItem>
+
+          <Divider />
+
+          <ListLink label="Go to admin panel" to="/admin" icon={<SupervisorAccountIcon />} />
         </List>
       </div>
     </SwipeableDrawer>

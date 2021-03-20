@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useContext } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -13,14 +13,15 @@ import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import NightsStayIcon from '@material-ui/icons/NightsStay';
 import IconButton from '@material-ui/core/IconButton';
 import { useTheme } from '@material-ui/core/styles';
-import SearchBar from 'components/Navbar/SearchBar';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
+import SearchBar from './SearchBar';
+import { CustomThemeContext } from '../../contexts/customThemeContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     topBar: {
-      backgroundColor: theme.palette.type === 'light' ? theme.palette.info.main : theme.palette.primary.dark,
+      backgroundColor: theme.palette.primary.dark,
     },
     link: {
       color: theme.palette.text.primary,
@@ -38,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) =>
     bottomBar: {
       height: '50px',
       minHeight: '50px',
-      backgroundColor: theme.palette.type === 'light' ? theme.palette.info.light : theme.palette.primary.main,
+      backgroundColor: theme.palette.primary.main,
     },
     switchMargin: {
       marginLeft: 'auto',
@@ -58,17 +59,18 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Props {
-  handleThemeChange: () => void;
-}
-
-function DesktopNavbar({ handleThemeChange }: Props) {
+function DesktopNavbar() {
   const classes = useStyles();
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
+  const { currentTheme, setTheme } = useContext(CustomThemeContext);
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
+  };
+
+  const handleThemeChange = () => {
+    currentTheme === 'light' ? setTheme!('dark') : setTheme!('light');
   };
 
   return (
@@ -86,6 +88,7 @@ function DesktopNavbar({ handleThemeChange }: Props) {
             <Link className={classes.link} component={RouterLink} to="/register">
               Register
             </Link>
+
             <Link className={classes.linkIcon} component={RouterLink} to="/cart">
               <Badge badgeContent={2} color="secondary">
                 <ShoppingCartIcon />
@@ -102,9 +105,12 @@ function DesktopNavbar({ handleThemeChange }: Props) {
             <Tab label="Products" to="/products" component={RouterLink} />
             <Tab label="Build your pc" to="/build" component={RouterLink} />
           </Tabs>
-          <IconButton className={classes.switchMargin} onClick={handleThemeChange}>
+          <IconButton onClick={handleThemeChange} className={classes.switchMargin}>
             {theme.palette.type === 'light' ? <WbSunnyIcon /> : <NightsStayIcon />}
           </IconButton>
+          <Link className={classes.link} component={RouterLink} to="/admin">
+            Admin panel
+          </Link>
         </Container>
       </Toolbar>
     </AppBar>

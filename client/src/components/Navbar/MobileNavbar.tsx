@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -9,13 +9,13 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import Badge from '@material-ui/core/Badge';
 import Link from '@material-ui/core/Link';
 import { Link as RouterLink } from 'react-router-dom';
-import Sidebar from 'components/Sidebar/Sidebar';
-import SearchBar from 'components/Navbar/SearchBar';
+import SearchBar from './SearchBar';
+import Sidebar from '../Sidebar/Sidebar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     toolbar: {
-      backgroundColor: theme.palette.type === 'light' ? theme.palette.info.main : theme.palette.primary.dark,
+      backgroundColor: theme.palette.primary.main,
       display: 'flex',
       justifyContent: 'space-between',
     },
@@ -24,17 +24,13 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: '0 10px',
       fontSize: '10px',
       '&:hover': {
-        color: theme.palette.primary.main,
+        color: theme.palette.primary.dark,
       },
     },
   })
 );
 
-interface Props {
-  handleThemeChange: () => void;
-}
-
-function DesktopNavbar({ handleThemeChange }: Props) {
+function DesktopNavbar() {
   const classes = useStyles();
   const [state, setState] = useState(false);
 
@@ -57,7 +53,7 @@ function DesktopNavbar({ handleThemeChange }: Props) {
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Sidebar handleThemeChange={handleThemeChange} state={state} setState={setState} />
+      <Sidebar state={state} setState={setState} />
     </>
   );
 }

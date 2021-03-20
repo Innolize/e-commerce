@@ -1,20 +1,9 @@
-import * as React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import Link from '@material-ui/core/Link';
+import { Link } from 'react-router-dom';
 import { Box, Divider } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary">
-      {'Copyright © '}
-      <Link color="inherit">Compra Gamer</Link> {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -24,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   footer: {
     padding: theme.spacing(3, 2),
     marginTop: 'auto',
-    backgroundColor: theme.palette.type === 'light' ? theme.palette.info.main : theme.palette.primary.dark,
+    backgroundColor: theme.palette.primary.main,
   },
   divider: {
     backgroundColor: 'rgba(0, 0, 0, 0.12)',
@@ -34,16 +23,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const Copyright = () => {
+  return (
+    <Typography variant="body2" color="textSecondary">
+      {'Copyright © '}
+      <Link to="/">Compra Gamer</Link> {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+};
+
 const Footer = () => {
   const classes = useStyles();
   return (
     <footer className={classes.footer}>
       <Container maxWidth="lg">
         <Typography variant="body1" component={Box}>
-          <Box textAlign="center">Pages</Box>
+          <Box textAlign="center">Home</Box>
         </Typography>
         <Typography variant="body1" component={Box}>
-          <Box textAlign="center">Pages</Box>
+          <Box textAlign="center">Products</Box>
+        </Typography>
+        <Typography variant="body1" component={Box}>
+          <Box textAlign="center">Build your pc</Box>
         </Typography>
 
         <Divider className={classes.divider} />

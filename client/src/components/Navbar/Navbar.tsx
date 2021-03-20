@@ -1,20 +1,11 @@
-import * as React from 'react';
 import useScreenSize from 'use-screen-size';
 import MobileNavbar from './MobileNavbar';
 import DesktopNavbar from './DesktopNavbar';
 
-interface Props {
-  handleThemeChange: () => void;
-}
-
-function Navbar({ handleThemeChange }: Props) {
+const Navbar = () => {
   const screenSize = useScreenSize();
 
-  return screenSize.width <= 768 ? (
-    <MobileNavbar handleThemeChange={handleThemeChange} />
-  ) : (
-    <DesktopNavbar handleThemeChange={handleThemeChange} />
-  );
-}
+  return screenSize.width <= 768 ? <MobileNavbar /> : <DesktopNavbar />;
+};
 
 export default Navbar;
