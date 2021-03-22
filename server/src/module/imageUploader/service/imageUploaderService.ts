@@ -5,6 +5,7 @@ import { AWSError, S3 } from 'aws-sdk'
 import { PutObjectRequest } from "aws-sdk/clients/s3";
 import { v4 as uuidV4 } from 'uuid'
 import { PromiseResult } from "aws-sdk/lib/request";
+import {obtainExtension,obtainFilename} from '../utils/utils'
 
 @injectable()
 export class ImageUploadService extends AbstractService {
@@ -19,19 +20,18 @@ export class ImageUploadService extends AbstractService {
     }
 
     async uploadProduct(imageBuffer: Buffer, originalName: string): Promise<S3.ManagedUpload.SendData> {
-        const imageExt = originalName.split(".").pop()
+        const imageExt = obtainExtension(originalName)
         const params: PutObjectRequest = {
             Bucket: <string>process.env.AWS_BUCKET,
             Key: `${this.PRODUCT_FOLDER}/${uuidV4()}.${imageExt}`,
             Body: imageBuffer
 
         }
-        console.log(params.Key)
         return this.imageStorage.upload(params).promise()
     }
 
     async uploadBrand(imageBuffer: Buffer, originalName: string): Promise<S3.ManagedUpload.SendData> {
-        const imageExt = originalName.split(".").pop()
+        const imageExt = obtainExtension(originalName)
         const params: PutObjectRequest = {
             Bucket: <string>process.env.AWS_BUCKET,
             Key: `${this.BRAND_FOLDER}/${uuidV4()}.${imageExt}`,
@@ -41,18 +41,19 @@ export class ImageUploadService extends AbstractService {
         return await this.imageStorage.upload(params).promise()
     }
     async deleteProduct(imageUrl: string): Promise<PromiseResult<S3.DeleteObjectOutput, AWSError>> {
-        const ImageName = imageUrl.split("/").pop()
+        const ImageName = obtainFilename(imageUrl)
         return await this.imageStorage.deleteObject({
             Bucket: <string>process.env.AWS_BUCKET,
-            Key: `${this.BRAND_FOLDER}/${ImageName}`,
+            Key: `${this.PRODUCT_FOLDER}/${ImageName}`,
         }).promise()
     }
 
-    async deleteBrand(brandName: string): Promise<PromiseResult<S3.DeleteObjectOutput, AWSError>> {
-
+    async deleteBrand(imageUrl: string): Promise<PromiseResult<S3.DeleteObjectOutput, AWSError>> {
+        const imageName = obtainFilename(imageUrl)
+        console.log(Image)
         return await this.imageStorage.deleteObject({
-            Bucket: this.PRODUCT_FOLDER,
-            Key: `${this.BRAND_FOLDER}/${brandName}`,
+            Bucket: <string>process.env.AWS_BUCKET,
+            Key: `${this.BRAND_FOLDER}/${imageName}`,
 
         }).promise()
     }

@@ -37,24 +37,16 @@ export class BrandController extends AbstractController {
     configureRoutes(app: App): void {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAllBrands.bind(this))
-        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("brand-logo"), this.createBrand.bind(this))
-        app.put(`/api${ROUTE}`, this.uploadMiddleware.single("brand-logo"), this.modifyBrand.bind(this))
+        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("brand_logo"), this.createBrand.bind(this))
+        app.put(`/api${ROUTE}`, this.uploadMiddleware.single("brand_logo"), this.modifyBrand.bind(this))
         app.delete(`/api${ROUTE}/:id`, this.deleteBrand.bind(this))
         app.get(`/api${ROUTE}/findByName/:name`, this.findBrandByName.bind(this))
         app.get(`/api${ROUTE}/findById/:id`, this.findBrandById.bind(this))
     }
 
     async getAllBrands(req: Request, res: Response): Promise<void> {
-
-        try {
-
-            const products = await this.brandService.getAllCategories()
-            console.log(products)
-            res.status(StatusCodes.OK).send(products)
-        } catch (err) {
-            console.log(err)
-            res.status(StatusCodes.NOT_FOUND).send('no se que poner')
-        }
+        const products = await this.brandService.getAllCategories()
+        res.status(StatusCodes.OK).send(products)
     }
 
     async createBrand(req: Request, res: Response): Promise<Response> {
@@ -93,17 +85,12 @@ export class BrandController extends AbstractController {
         if (!name) {
             throw Error("Query param 'name' is missing")
         }
-        try {
-            const response = await this.brandService.findBrandByName(name)
-            res.status(StatusCodes.OK).send(response)
-        } catch (err) {
-            console.log('hubo un error')
-        }
+        const response = await this.brandService.findBrandByName(name)
+        res.status(StatusCodes.OK).send(response)
     }
 
     async findBrandById(req: Request, res: Response): Promise<void> {
         const { id } = req.params
-        console.log("id:", id)
         if (!id) {
             throw Error("Query param 'name' is missing")
         }
@@ -137,11 +124,9 @@ export class BrandController extends AbstractController {
                     errors: errorArray
                 })
             }
-
-            if (req.file && brand && brand.logo) {
+            if (req.file && brand?.logo) {
                 await this.uploadService.deleteBrand(brand.logo)
             }
-
             return res.status(StatusCodes.BAD_REQUEST).send({ message: err.message })
         }
     }
@@ -149,7 +134,11 @@ export class BrandController extends AbstractController {
     async deleteBrand(req: Request, res: Response): Promise<void> {
         const { id } = req.params
         try {
+            const brand = await this.brandService.findBrandById(Number(id)) as Brand
             await this.brandService.deleteBrand(Number(id))
+            if (brand.logo) {
+                await this.uploadService.deleteBrand(brand.logo)
+            }
             res.status(StatusCodes.OK)
                 .send({ message: "Product successfully deleted" })
         } catch (err) {
