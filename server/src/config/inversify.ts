@@ -5,20 +5,11 @@ import multer, { memoryStorage, Multer } from 'multer'
 import { ProductController, ProductRepository, ProductService, ProductModel } from '../module/product/module'
 import { CategoryController, CategoryRepository, CategoryService, CategoryModel } from '../module/category/module'
 import { BrandController, BrandModel, BrandRepository, BrandService } from '../module/brand/module'
-// import path from 'path'
-
+import { S3 } from 'aws-sdk'
+import { ImageUploadService } from "../module/imageUploader/service/imageUploaderService"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
-    // multer.diskStorage({
-    //     destination: function (req, file, cb) {
-    //         cb(null, <string>process.env.PRODUCT_IMAGE_FOLDER)
-    //     },
-    //     filename: function (req, file, cb) {
-    //         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
-    //     }
-    // })
-
     return multer({ storage })
 }
 
@@ -29,6 +20,14 @@ function configureDatabase() {
         password: process.env.DATABASE_PASSWORD,
 
     })
+}
+
+function configureImageDatabase() {
+    const s3 = new S3({
+        accessKeyId: process.env.AWS_ID,
+        secretAccessKey: process.env.AWS_SECRET
+    })
+    return s3
 }
 
 export function configProductModel(container: Container): typeof ProductModel {
@@ -58,6 +57,7 @@ function configureProductContainer(container: Container): void {
 function configureCommonContainer(container: Container): void {
     container.bind<Sequelize>(TYPES.Common.Database).toConstantValue(configureDatabase());
     container.bind<Multer>(TYPES.Common.UploadMiddleware).toConstantValue(configureUploadMiddleware());
+    container.bind<S3>(TYPES.Common.ImageStorage).toConstantValue(configureImageDatabase())
 }
 
 function configureCategoryContainer(container: Container): void {
@@ -74,9 +74,14 @@ function configureBrandContainer(container: Container): void {
     container.bind<BrandController>(TYPES.Brand.Controller).to(BrandController)
 }
 
+function configureImageUploaderContainer(container: Container): void {
+    container.bind<ImageUploadService>(TYPES.ImageUploader.Service).to(ImageUploadService)
+}
+
 function configureDIC() {
     const dependencyContainer = new Container()
     configureCommonContainer(dependencyContainer)
+    configureImageUploaderContainer(dependencyContainer)
     configureCategoryContainer(dependencyContainer)
     configureBrandContainer(dependencyContainer)
     configureProductContainer(dependencyContainer)

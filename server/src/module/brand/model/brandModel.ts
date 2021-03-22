@@ -23,6 +23,9 @@ export class BrandModel extends Model<IBrand>{
                     min: 3,
                     max: 20
                 }
+            },
+            logo:{
+                type: DataTypes.STRING,
             }
         }, {
             sequelize: database,

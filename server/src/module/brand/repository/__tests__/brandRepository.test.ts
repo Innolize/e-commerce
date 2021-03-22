@@ -28,8 +28,8 @@ beforeEach(async (done) => {
     done();
 });
 
-const brandSample1 = new Brand({ name: "test-brand-1" })
-const brandSample2 = new Brand({ name: "test-brand-2" })
+const brandSample1 = new Brand({ name: "test-brand-1", logo: "test-brand-logo-1" })
+const brandSample2 = new Brand({ name: "test-brand-2", logo: "test-brand-logo-2" })
 
 describe("Get all brands from database", () => {
     it("Returns an array of 2 brands", async () => {
@@ -60,7 +60,7 @@ describe("Find category by id", () => {
 
 describe("Creates a brand", () => {
     it("Creates a new brand", async () => {
-        const response = await repository.createBrand({ name: "new-brand" })
+        const response = await repository.createBrand({ name: "new-brand", logo: "new-brand-logo" })
         expect(response.name).toBe("new-brand")
         expect(response).toBeInstanceOf(Brand)
     })
@@ -87,18 +87,18 @@ describe("Modifiy brand", () => {
         expect(response.name).toBe("updated-brand")
     })
     it("Update brand without id should throw an error", async () => {
-        
+
         await expect(repository.modifyBrand({ id: 15, name: "updated-brand" })).rejects.toThrowError()
     })
 })
 
-describe("Get brand by name", ()=>{
-    it("Should return two brand", async()=>{
+describe("Get brand by name", () => {
+    it("Should return two brand", async () => {
         await brand.create(brandSample1)
         await brand.create(brandSample2)
         await expect(repository.getBrandsByName("test")).resolves.toHaveLength(2)
     })
-    it("Should return zero brands", async()=>{
+    it("Should return zero brands", async () => {
         await brand.create(brandSample1)
         await brand.create(brandSample2)
         await expect(repository.getBrandsByName("123456")).resolves.toHaveLength(0)

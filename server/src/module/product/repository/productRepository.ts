@@ -31,7 +31,7 @@ export class ProductRepository extends AbstractRepository {
 
         const response = await this.productModel.findByPk(id, { include: ["category", "brand"] })
         if (!response) {
-            throw new Error("product not found")
+            throw new Error("Product not found")
         }
         return fromDbToFullProduct(response)
 

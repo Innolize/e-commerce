@@ -11,14 +11,15 @@ import { BrandModel } from '../../module/brand/module';
 
 
 const database = container.get<Sequelize>(TYPES.Common.Database);
-CategoryModel.drop({ cascade: true })
-ProductModel.drop({ cascade: true })
-BrandModel.drop({ cascade: true })
-ProductModel.setup(database);
-CategoryModel.setup(database);
-BrandModel.setup(database)
-ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.Category.Model));
-ProductModel.setupBrandAssociation(container.get<typeof BrandModel>(TYPES.Brand.Model));
+(async () => {
+    await database.drop();
+    ProductModel.setup(database);
+    CategoryModel.setup(database);
+    BrandModel.setup(database);
+    ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.Category.Model));
+    ProductModel.setupBrandAssociation(container.get<typeof BrandModel>(TYPES.Brand.Model));
+})();
+
 
 
 (async function configureDatabase() {
@@ -26,7 +27,7 @@ ProductModel.setupBrandAssociation(container.get<typeof BrandModel>(TYPES.Brand.
 
     try {
         await CategoryModel.create({ name: "testname" })
-        await BrandModel.create({ name: "brandTest" })
+        await BrandModel.create({ name: "brandTest", logo: "test-logo" })
         await ProductModel.create({ name: "nombreDeProducto123", id_brand: 1, image: "image-test", description: "description-test", price: 12345, stock: true, id_category: 1 })
         await ProductModel.create({ name: "nombreDeProducto123-b", id_brand: 1, image: "image-test-b", description: "description-test-b", price: 123456, stock: true, id_category: 1 })
         const esto = await ProductModel.findAll({ where: { id_category: 1 }, include: ["category", "brand"] })

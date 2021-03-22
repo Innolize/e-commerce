@@ -12,6 +12,7 @@ import { bodyValidator, mapperMessageError } from '../../common/helpers/bodyVali
 import { validateCreateBrandDto } from '../helper/create_dto_validator'
 import { IEditableBrand } from '../interfaces/IEditableBrand'
 import { validateEditBrandDto } from '../helper/edit_dto_validator'
+import { ImageUploadService } from '../../imageUploader/module'
 
 
 @injectable()
@@ -19,21 +20,25 @@ export class BrandController extends AbstractController {
     public ROUTE_BASE: string
     public brandService: BrandService
     public uploadMiddleware: Multer
+    private uploadService: ImageUploadService
     constructor(
         @inject(TYPES.Brand.Service) brandService: BrandService,
-        @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer
+        @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer,
+        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService
     ) {
         super()
         this.ROUTE_BASE = "/brand"
         this.brandService = brandService
         this.uploadMiddleware = uploadMiddleware
+        this.uploadService = uploadService
+
     }
 
     configureRoutes(app: App): void {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAllBrands.bind(this))
-        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("bulbasaur"), this.createBrand.bind(this))
-        app.put(`/api${ROUTE}`, this.modifyBrand.bind(this))
+        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("brand-logo"), this.createBrand.bind(this))
+        app.put(`/api${ROUTE}`, this.uploadMiddleware.single("brand-logo"), this.modifyBrand.bind(this))
         app.delete(`/api${ROUTE}/:id`, this.deleteBrand.bind(this))
         app.get(`/api${ROUTE}/findByName/:name`, this.findBrandByName.bind(this))
         app.get(`/api${ROUTE}/findById/:id`, this.findBrandById.bind(this))
@@ -53,24 +58,33 @@ export class BrandController extends AbstractController {
     }
 
     async createBrand(req: Request, res: Response): Promise<Response> {
+        let brand: IBrand | undefined
         try {
-
             const dto: IBrand = req.body
             const validatedDto = await bodyValidator(validateCreateBrandDto, dto)
-            const product = new Brand(validatedDto)
+            if (req.file) {
+                const uploadedImage = await this.uploadService.uploadBrand(req.file.buffer, req.file.originalname)
+                validatedDto.logo = uploadedImage.Location
+            } else {
+                validatedDto.logo = null
+            }
+            brand = new Brand(validatedDto)
 
-            const response = await this.brandService.createBrand(product)
+            const response = await this.brandService.createBrand(brand)
 
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            console.log(err)
             if (err.isJoi === true) {
                 const errorArray = mapperMessageError(err)
                 return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
                     errors: errorArray
                 })
             }
-            return res.send(err)
+            if (req.file && brand && brand.logo) {
+                await this.uploadService.deleteBrand(brand.logo)
+            }
+
+            return res.status(StatusCodes.BAD_GATEWAY).send(err.message)
         }
     }
 
@@ -103,9 +117,17 @@ export class BrandController extends AbstractController {
     }
 
     async modifyBrand(req: Request, res: Response): Promise<Response> {
+        let brand: IEditableBrand | undefined
+
         try {
             const dto: IEditableBrand = req.body
-            await bodyValidator(validateEditBrandDto, dto)
+            brand = await bodyValidator(validateEditBrandDto, dto)
+            if (req.file) {
+                const uploadedImage = await this.uploadService.uploadProduct(req.file.buffer, req.file.originalname)
+                brand.logo = uploadedImage.Location
+            } else {
+                brand.logo = null
+            }
             const response = await this.brandService.modifyBrand(dto)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
@@ -115,7 +137,13 @@ export class BrandController extends AbstractController {
                     errors: errorArray
                 })
             }
-            return res.status(StatusCodes.BAD_REQUEST).send({message:err.message})        }
+
+            if (req.file && brand && brand.logo) {
+                await this.uploadService.deleteBrand(brand.logo)
+            }
+
+            return res.status(StatusCodes.BAD_REQUEST).send({ message: err.message })
+        }
     }
 
     async deleteBrand(req: Request, res: Response): Promise<void> {
