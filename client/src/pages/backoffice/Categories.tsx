@@ -1,12 +1,9 @@
-import * as React from 'react';
-
-function Categories() {
+const Categories = () => {
   return (
     <div>
-      <p>(&gt;_&lt;)</p>
-      <p>Something went wrong. This page doesn't exist.</p>
+      <p>Categories</p>
     </div>
   );
-}
+};
 
 export default Categories;

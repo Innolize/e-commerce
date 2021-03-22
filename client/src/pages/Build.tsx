@@ -1,12 +1,9 @@
-import * as React from 'react';
-
-function Build() {
+const Build = () => {
   return (
     <div>
-      <p>(&gt;_&lt;)</p>
-      <p>Something went wrong. This page doesn't exist.</p>
+      <p>Build</p>
     </div>
   );
-}
+};
 
 export default Build;

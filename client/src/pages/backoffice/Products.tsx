@@ -1,12 +1,11 @@
-import * as React from 'react';
+interface ProductsProps {}
 
-function Products() {
+const Products = ({}: ProductsProps) => {
   return (
     <div>
-      <p>(&gt;_&lt;)</p>
-      <p>Something went wrong. This page doesn't exist.</p>
+      <p>Products</p>
     </div>
   );
-}
+};
 
 export default Products;

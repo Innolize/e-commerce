@@ -1,12 +1,9 @@
-import * as React from 'react';
-
-function Dashboard() {
+const Dashboard = () => {
   return (
     <div>
-      <p>(&gt;_&lt;)</p>
-      <p>Something went wrong. This page doesn't exist.</p>
+      <p>Dashboard</p>
     </div>
   );
-}
+};
 
 export default Dashboard;

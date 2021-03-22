@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 const registerSchema = yup.object({
   username: yup.string().required('Username is required.'),
   password: yup.string().required('Password is required.').min(8, 'Password must have at least 8 characters'),
-  confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match'),
+  'confirm-password': yup.string().oneOf([yup.ref('password'), null], 'Passwords must match'),
 });
 
 const Register = () => {
