@@ -1,6 +1,4 @@
-interface CartProps {}
-
-const Cart = ({}: CartProps) => {
+const Cart = () => {
   return (
     <div>
       <div>Cart</div>

@@ -1,6 +1,4 @@
-interface BrandsProps {}
-
-const Brands = ({}: BrandsProps) => {
+const Brands = () => {
   return (
     <div>
       <p>Brands</p>

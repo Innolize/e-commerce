@@ -1,6 +1,4 @@
-interface ProductsProps {}
-
-const Products = ({}: ProductsProps) => {
+const Products = () => {
   return (
     <div>
       <p>Products</p>

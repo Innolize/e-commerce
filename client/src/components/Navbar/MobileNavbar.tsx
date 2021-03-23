@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function DesktopNavbar() {
+const DesktopNavbar = React.memo(() => {
   const classes = useStyles();
   const [state, setState] = useState(false);
 
@@ -56,6 +56,6 @@ function DesktopNavbar() {
       <Sidebar state={state} setState={setState} />
     </>
   );
-}
+});
 
 export default DesktopNavbar;

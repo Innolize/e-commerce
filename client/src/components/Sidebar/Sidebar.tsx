@@ -82,7 +82,7 @@ function Sidebar({ state, setState }: Props) {
       <div role="presentation">
         <Typography component="div" className={classes.sidebarHeader}>
           <Box fontSize="h5.fontSize" textAlign="center">
-            Compra Gamer
+            Master Tech
           </Box>
         </Typography>
 

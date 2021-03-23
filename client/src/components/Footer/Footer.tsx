@@ -1,9 +1,10 @@
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import { Link } from 'react-router-dom';
-import { Box, Divider } from '@material-ui/core';
+import Link from '@material-ui/core/Link';
+import { Box, Divider, IconButton } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
+import { Link as RouterLink } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -21,13 +22,19 @@ const useStyles = makeStyles((theme) => ({
     height: '1px',
     margin: '10px 0',
   },
+  flex: {
+    display: 'flex',
+  },
 }));
 
 const Copyright = () => {
   return (
     <Typography variant="body2" color="textSecondary">
       {'Copyright © '}
-      <Link to="/">Compra Gamer</Link> {new Date().getFullYear()}
+      <Link color="textPrimary" component={RouterLink} to="/">
+        Master Tech
+      </Link>{' '}
+      {new Date().getFullYear()}
       {'.'}
     </Typography>
   );
@@ -38,19 +45,41 @@ const Footer = () => {
   return (
     <footer className={classes.footer}>
       <Container maxWidth="lg">
-        <Typography variant="body1" component={Box}>
-          <Box textAlign="center">Home</Box>
-        </Typography>
-        <Typography variant="body1" component={Box}>
-          <Box textAlign="center">Products</Box>
-        </Typography>
-        <Typography variant="body1" component={Box}>
-          <Box textAlign="center">Build your pc</Box>
-        </Typography>
+        <Typography className={classes.flex} variant="body1" component={Box}>
+          <Box ml={2}>
+            <Link color="textPrimary" component={RouterLink} to="/">
+              Home
+            </Link>
+          </Box>
 
+          <Box ml={2}>
+            <Link color="textPrimary" component={RouterLink} to="/products">
+              Products
+            </Link>
+          </Box>
+
+          <Box ml={2}>
+            <Link color="textPrimary" to="/build" component={RouterLink}>
+              Build your pc
+            </Link>
+          </Box>
+        </Typography>
         <Divider className={classes.divider} />
-        <GitHubIcon />
-        <Copyright />
+        <Box textAlign="center">
+          <Link
+            color="textPrimary"
+            href="https://github.com/Innolize/e-commerce"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <IconButton color="inherit">
+              <GitHubIcon />
+            </IconButton>
+          </Link>
+        </Box>
+        <Box textAlign="center">
+          <Copyright />
+        </Box>
       </Container>
     </footer>
   );
