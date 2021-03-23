@@ -6,13 +6,13 @@ import Typography from '@material-ui/core/Typography';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import Tabs from '@material-ui/core/Tabs/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Badge from '@material-ui/core/Badge';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import SearchBar from './SearchBar';
 import ChangeThemeButton from '../ChangeThemeButton';
+import { Tabs } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -57,11 +57,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const DesktopNavbar = React.memo(() => {
   const classes = useStyles();
-  const [value, setValue] = React.useState(0);
-
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setValue(newValue);
-  };
 
   return (
     <AppBar color="default" position="static">
@@ -90,7 +85,7 @@ const DesktopNavbar = React.memo(() => {
 
       <Toolbar className={classes.bottomBar}>
         <Container className={classes.container} maxWidth="lg">
-          <Tabs className={classes.tabs} value={value} onChange={handleChange}>
+          <Tabs value={false}>
             <Tab label="Home" to="/" component={RouterLink} />
             <Tab label="Products" to="/products" component={RouterLink} />
             <Tab label="Build your pc" to="/build" component={RouterLink} />

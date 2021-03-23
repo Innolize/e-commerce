@@ -1,10 +1,9 @@
 import AppBar from '@material-ui/core/AppBar';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs/Tabs';
-import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import ChangeThemeButton from './ChangeThemeButton';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -24,15 +23,10 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const AdminNavbar = () => {
   const classes = useStyles();
-  const [value, setValue] = useState(0);
-
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setValue(newValue);
-  };
 
   return (
     <AppBar className={classes.navbar} position="static">
-      <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="on">
+      <Tabs scrollButtons="on" value={false} variant="scrollable">
         <Tab label="Dashboard" to="/admin" component={RouterLink} />
         <Tab label="Products" to="/admin/products" component={RouterLink} />
         <Tab label="Categories" to="/admin/categories" component={RouterLink} />
