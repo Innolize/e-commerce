@@ -16,10 +16,10 @@ const InputField = ({
       name={props.name}
       placeholder={placeholder}
       label={label}
+      defaultValue={props.defaultValue}
       helperText={errorText}
       error={!!errorText}
       fullWidth
-      variant="outlined"
       margin="normal"
       color="secondary"
       required
