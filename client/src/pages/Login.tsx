@@ -30,7 +30,6 @@ const Login = () => {
         initialValues={{ username: '', password: '' }}
         onSubmit={async (data) => {
           await loginUser();
-          console.log(data);
         }}
         validationSchema={loginSchema}
       >
