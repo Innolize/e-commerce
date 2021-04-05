@@ -1,7 +1,7 @@
 export interface IEditableProduct {
     id?: number,
     name?: string,
-    brand?: string,
+    id_brand?: number,
     image?: string | null,
     description?: string | null,
     price?: number,

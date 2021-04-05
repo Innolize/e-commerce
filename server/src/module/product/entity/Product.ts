@@ -1,6 +1,5 @@
 import { ICreateProduct } from "../interfaces/ICreateProduct";
 
-
 export class Product {
     id?: number;
     name: string;
@@ -14,6 +13,7 @@ export class Product {
         if (id) {
             this.id = id
         }
+        this.id = id
         this.name = name,
             this.image = image,
             this.description = description,

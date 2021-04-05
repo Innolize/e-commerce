@@ -8,8 +8,8 @@ export interface IFullProduct {
     description: string | null;
     price: number;
     stock: boolean;
-    category: Category;
-    brand: Brand
+    category?: Category;
+    brand?: Brand
 }
 
 export class FullProduct {
@@ -19,16 +19,22 @@ export class FullProduct {
     description: string | null;
     price: number;
     stock: boolean;
-    category: Category
-    brand: Brand;
+    category?: Category
+    brand?: Brand;
     constructor({ id, name, brand, image, description, price, stock, category }: IFullProduct) {
         this.id = id,
-        this.name = name,
+            this.name = name,
             this.image = image,
             this.description = description,
             this.price = price,
-            this.stock = stock,
-            this.category = category,
-            this.brand = brand
+            this.stock = stock
+        if (category) {
+            this.category = new Category(category)
+        }
+        if (brand) {
+            this.brand = new Brand(brand)
+        }
+
+
     }
 }

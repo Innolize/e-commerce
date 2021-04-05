@@ -7,6 +7,7 @@ import container from './config/inversify'
 import { init as initProductModule } from "./module/product/module"
 import { init as initCategoryModule } from "./module/category/module"
 import { init as initBrandModule } from "./module/brand/module"
+import { init as initPCBuilderModule } from "./module/PCBuilder/module"
 import { MulterError } from "multer";
 import { ReasonPhrases } from "http-status-codes";
 
@@ -19,6 +20,8 @@ app.use(express.urlencoded({ extended: false }))
 initProductModule(app, container)
 initCategoryModule(app, container)
 initBrandModule(app, container)
+initPCBuilderModule(app, container)
+
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -36,7 +39,7 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
   res.status(404).send({
     "method": method,
     "route": route,
-    'error': "not found"
+    'error': "Route not found"
   });
 });
 

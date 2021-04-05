@@ -7,43 +7,46 @@ import { CategoryModel } from '../../module/category/model/categoryModel'
 import container from '../inversify'
 import { TYPES } from '../inversify.types';
 import { BrandModel } from '../../module/brand/module';
+import { MotherboardModel } from '../../module/PCBuilder/motherboard/module';
+import { fromDbToFullProduct } from '../../module/product/mapper/productMapper';
 
 
 
 const database = container.get<Sequelize>(TYPES.Common.Database);
 (async () => {
-    await database.drop();
-    ProductModel.setup(database);
-    CategoryModel.setup(database);
-    BrandModel.setup(database);
-    ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.Category.Model));
-    ProductModel.setupBrandAssociation(container.get<typeof BrandModel>(TYPES.Brand.Model));
+    try {
+        await database.drop({});
+        MotherboardModel.setup(database);
+        ProductModel.setup(database);
+        CategoryModel.setup(database);
+        BrandModel.setup(database);
+        MotherboardModel.setup(database);
+        ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.Category.Model));
+        ProductModel.setupBrandAssociation(container.get<typeof BrandModel>(TYPES.Brand.Model));
+        MotherboardModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
+    } catch (err) {
+        console.log(err.message)
+    }
+
 })();
 
 
 
 (async function configureDatabase() {
-    await database.sync({ force: true })
+
 
     try {
+        await database.sync({ force: true })
         await CategoryModel.create({ name: "testname" })
         await BrandModel.create({ name: "brandTest", logo: "test-logo" })
         await ProductModel.create({ name: "nombreDeProducto123", id_brand: 1, image: "image-test", description: "description-test", price: 12345, stock: true, id_category: 1 })
         await ProductModel.create({ name: "nombreDeProducto123-b", id_brand: 1, image: "image-test-b", description: "description-test-b", price: 123456, stock: true, id_category: 1 })
-        const esto = await ProductModel.findAll({ where: { id_category: 1 }, include: ["category", "brand"] })
-        console.log(esto)
-
-
-        // console.log(a)
-        // console.log(b)
-        // console.log(c)
+        const products = await ProductModel.findAll({ include: ["category", "brand"] })
+        const final = products.map(fromDbToFullProduct)
         console.log('exito!')
+        console.log(final)
     } catch (err) {
         console.log(err)
     }
-
-
-
-
 })()
 

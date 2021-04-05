@@ -14,6 +14,8 @@ import { IEditableProduct } from '../interfaces/IEditableProduct'
 import { ICreateProduct } from '../interfaces/ICreateProduct'
 import { ImageUploadService } from '../../imageUploader/module'
 import { FullProduct } from '../entity/FullProduct'
+import { BrandService } from '../../brand/module'
+import { CategoryService } from '../../category/module'
 
 @injectable()
 export class ProductController extends AbstractController {
@@ -21,17 +23,23 @@ export class ProductController extends AbstractController {
     private productService: ProductService
     private uploadMiddleware: Multer
     private uploadService: ImageUploadService
+    private brandService: BrandService
+    private categoryService: CategoryService
 
     constructor(
         @inject(TYPES.Product.Service) productService: ProductService,
         @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer,
-        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService
+        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService,
+        @inject(TYPES.Brand.Service) brandService: BrandService,
+        @inject(TYPES.Category.Service) categoryService: CategoryService
     ) {
         super()
         this.ROUTE_BASE = "/product"
         this.productService = productService
         this.uploadMiddleware = uploadMiddleware
         this.uploadService = uploadService
+        this.brandService = brandService
+        this.categoryService = categoryService
     }
 
     configureRoutes(app: App): void {
@@ -60,8 +68,7 @@ export class ProductController extends AbstractController {
             } else {
                 validatedDto.image = null
             }
-            product = new Product(validatedDto)
-            const response = await this.productService.createProduct(product)
+            const response = await this.productService.createProduct(validatedDto)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
             if (err.isJoi === true) {
@@ -105,7 +112,7 @@ export class ProductController extends AbstractController {
     }
 
     async modifyProduct(req: Request, res: Response): Promise<Response> {
-        let product: IEditableProduct | undefined
+        let product: Product | undefined
         try {
             const dto: IEditableProduct = req.body
             const validatedDto = await bodyValidator(validateEditProductDto, dto)
@@ -115,7 +122,7 @@ export class ProductController extends AbstractController {
             } else {
                 validatedDto.image = null
             }
-            product = await this.productService.modifyProduct(validatedDto)
+            product = await this.productService.modifyProduct(validatedDto) as Product
             return res.status(StatusCodes.OK).send(product)
         } catch (err) {
             if (err.isJoi === true) {

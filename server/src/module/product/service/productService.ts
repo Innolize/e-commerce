@@ -3,6 +3,7 @@ import { TYPES } from "../../../config/inversify.types";
 import { AbstractService } from "../../abstractClasses/abstractService";
 import { FullProduct } from "../entity/FullProduct";
 import { Product } from "../entity/Product";
+import { ICreateProduct } from "../interfaces/ICreateProduct";
 import { IEditableProduct } from "../interfaces/IEditableProduct";
 import { ProductRepository } from "../repository/productRepository";
 
@@ -27,7 +28,7 @@ export class ProductService extends AbstractService {
         return await this.productRepository.modifyProduct(product)
     }
 
-    async createProduct(product: Product): Promise<Product | Error> {
+    async createProduct(product: ICreateProduct): Promise<Product | Error> {
         return await this.productRepository.createProduct(product)
     }
     async findProductById(id: number): Promise<Error | FullProduct> {

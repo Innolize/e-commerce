@@ -110,7 +110,7 @@ export class BrandController extends AbstractController {
             const dto: IEditableBrand = req.body
             brand = await bodyValidator(validateEditBrandDto, dto)
             if (req.file) {
-                const uploadedImage = await this.uploadService.uploadProduct(req.file.buffer, req.file.originalname)
+                const uploadedImage = await this.uploadService.uploadBrand(req.file.buffer, req.file.originalname)
                 brand.logo = uploadedImage.Location
             } else {
                 brand.logo = null
