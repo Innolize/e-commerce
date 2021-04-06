@@ -31,6 +31,12 @@ export const TYPES = {
             Repository: Symbol("MotherboardRepository"),
             Service: Symbol("MotherboardService"),
             Controller: Symbol("MotherboardController"),
+        },
+        Ram: {
+            Model: Symbol("RamModel"),
+            Repository: Symbol("RamRepository"),
+            Service: Symbol("RamService"),
+            Controller: Symbol("RamController")
         }
     }
 }
