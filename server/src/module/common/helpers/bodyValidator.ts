@@ -2,9 +2,14 @@ import { Schema, ValidationError } from 'joi'
 
 
 export const bodyValidator = async <T>(schema: Schema, validateObject: T): Promise<T> => {
-    return await schema.validateAsync(validateObject, { stripUnknown: true, abortEarly: false })
+    return schema.validateAsync(validateObject, { stripUnknown: true, abortEarly: false })
 }
 
-export const mapperMessageError = (err: ValidationError): string[] => {
-    return err.details.map((x) => x.message);
+type customErrorObject = {
+    [key: string]: string
+}
+
+export const mapperMessageError = (err: ValidationError): customErrorObject[] => {
+    const result = err.details.map(error => { return { [error.path[0]]: error.message } });
+    return result
 }

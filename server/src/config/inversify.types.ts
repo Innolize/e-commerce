@@ -22,7 +22,15 @@ export const TYPES = {
         Service: Symbol("BrandService"),
         Controller: Symbol("BrandController"),
     },
-    ImageUploader:{
+    ImageUploader: {
         Service: Symbol("ImageUploaderService")
+    },
+    PCBuilder: {
+        Motherboard: {
+            Model: Symbol("MotherboardModel"),
+            Repository: Symbol("MotherboardRepository"),
+            Service: Symbol("MotherboardService"),
+            Controller: Symbol("MotherboardController"),
+        }
     }
 }

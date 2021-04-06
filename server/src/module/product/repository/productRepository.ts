@@ -4,6 +4,7 @@ import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { FullProduct } from "../entity/FullProduct";
 import { Product } from "../entity/Product";
+import { ICreateProduct } from "../interfaces/ICreateProduct";
 import { IEditableProduct } from "../interfaces/IEditableProduct";
 import { fromDbToFullProduct, fromDbToProduct } from "../mapper/productMapper";
 import { ProductModel } from "../model/productModel";
@@ -37,9 +38,9 @@ export class ProductRepository extends AbstractRepository {
 
     }
 
-    public async createProduct(product: Product): Promise<Error | Product> {
+    public async createProduct(product: ICreateProduct): Promise<Error | Product> {
         try {
-            const response = await this.productModel.create(product, { include: ["category", "brand"] })
+            const response = await this.productModel.create(product, { include: ["category", "brand"], isNewRecord: true })
             return fromDbToProduct(response)
         } catch (e) {
             throw new Error(e)
@@ -64,11 +65,11 @@ export class ProductRepository extends AbstractRepository {
             // update returns an array, first argument is the number of elements updated in the
             // database. Second argument are the array of elements. Im updating by id so there is only 
             // one element in the array.
-            if(!productEdited){
+            if (!productEdited) {
                 throw new Error("Product not found")
             }
             const newProduct = fromDbToProduct(productArray[0])
-            
+
             return newProduct
 
         } catch (err) {

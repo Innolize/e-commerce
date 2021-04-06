@@ -7,6 +7,7 @@ import { CategoryController, CategoryRepository, CategoryService, CategoryModel 
 import { BrandController, BrandModel, BrandRepository, BrandService } from '../module/brand/module'
 import { S3 } from 'aws-sdk'
 import { ImageUploadService } from "../module/imageUploader/service/imageUploaderService"
+import { MotherboardController, MotherboardModel, MotherboardRepository, MotherboardService } from "../module/PCBuilder/motherboard/module"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -43,8 +44,13 @@ export function configCategoryModel(container: Container): typeof CategoryModel 
 }
 
 export function configBrandModel(container: Container): typeof BrandModel {
-    BrandModel.setup(container.get(TYPES.Common.Database))
-    return BrandModel
+    return BrandModel.setup(container.get(TYPES.Common.Database))
+}
+
+export function configMotherboardModel(container: Container): typeof MotherboardModel {
+    MotherboardModel.setup(container.get(TYPES.Common.Database))
+    MotherboardModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    return MotherboardModel
 }
 
 function configureProductContainer(container: Container): void {
@@ -74,6 +80,13 @@ function configureBrandContainer(container: Container): void {
     container.bind<BrandController>(TYPES.Brand.Controller).to(BrandController)
 }
 
+function configurePCBuilder(container: Container): void {
+    container.bind<typeof MotherboardModel>(TYPES.PCBuilder.Motherboard.Model).toConstantValue(configMotherboardModel(container))
+    container.bind<MotherboardRepository>(TYPES.PCBuilder.Motherboard.Repository).to(MotherboardRepository)
+    container.bind<MotherboardService>(TYPES.PCBuilder.Motherboard.Service).to(MotherboardService)
+    container.bind<MotherboardController>(TYPES.PCBuilder.Motherboard.Controller).to(MotherboardController)
+}
+
 function configureImageUploaderContainer(container: Container): void {
     container.bind<ImageUploadService>(TYPES.ImageUploader.Service).to(ImageUploadService)
 }
@@ -85,6 +98,7 @@ function configureDIC() {
     configureCategoryContainer(dependencyContainer)
     configureBrandContainer(dependencyContainer)
     configureProductContainer(dependencyContainer)
+    configurePCBuilder(dependencyContainer)
     return dependencyContainer
 }
 

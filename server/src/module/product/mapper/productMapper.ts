@@ -7,6 +7,5 @@ export const fromDbToProduct = (model: ProductModel): Product => {
 }
 
 export const fromDbToFullProduct = (model: ProductModel): FullProduct => {
-    console.log(model)
     return new FullProduct(model.toJSON() as FullProduct)
 }

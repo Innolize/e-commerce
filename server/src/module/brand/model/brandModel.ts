@@ -3,8 +3,6 @@ import { DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
 import { IBrand } from "../interfaces/IBrand";
 
-// decorate(injectable(), (Model))
-
 @injectable()
 export class BrandModel extends Model<IBrand>{
 

@@ -1,11 +1,10 @@
-export interface IProductModel {
+export interface IProduct {
     id?: number;
     name: string;
     image: string | null;
     description: string | null;
     price: number;
     stock: boolean;
-    id_category?: number;
-    id_brand?: number;
-    // category?: Category
+    category?: number;
+    brand?: number;
 }

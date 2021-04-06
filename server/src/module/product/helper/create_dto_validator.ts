@@ -1,6 +1,6 @@
 import Joi from "joi"
 
-export const validateCreateProductDto = Joi.object({
+export const validateCreateProductSchema = {
     name: Joi.string()
         .min(3)
         .max(20)
@@ -17,4 +17,6 @@ export const validateCreateProductDto = Joi.object({
         .required(),
     id_category: Joi.number()
         .required()
-})
+}
+
+export const validateCreateProductDto = Joi.object(validateCreateProductSchema)
