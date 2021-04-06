@@ -33,7 +33,7 @@ export const validateEditMotherboardDto = Joi.object({
         .required()
 })
 
-export const validateCreateMotherboardSchema = {
+export const validateMotherboardCreateSchema = {
     cpu_socket: Joi.string().
         required(),
     cpu_brand: Joi.any()
@@ -56,5 +56,18 @@ export const validateCreateMotherboardSchema = {
         .required()
 }
 
-export const validateMotherboardAndProductDto = Joi.object({ ...validateCreateMotherboardSchema, ...validateCreateProductSchema })
-export const validateMotherboardDto = Joi.object(validateCreateMotherboardSchema)
+export const validateMotherboardEditSchema = {
+    ...validateMotherboardCreateSchema,
+    id: Joi.number().
+        required(),
+    product_id: Joi.number().
+        required(),
+}
+
+export const validateQueryCpuBrand = (cpu_brand: string): string => {
+    return Joi.attempt(cpu_brand, Joi.string().valid(...CPU_BRANDS_ENUM), 'cpu_brand')
+}
+
+export const validateMotherboardAndProductDto = Joi.object({ ...validateMotherboardCreateSchema, ...validateCreateProductSchema })
+export const validateMotherboardCreateDto = Joi.object(validateMotherboardCreateSchema)
+export const validateMotherboardEditDto = Joi.object(validateMotherboardEditSchema)

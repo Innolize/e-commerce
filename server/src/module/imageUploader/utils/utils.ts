@@ -1,4 +1,5 @@
 export const obtainExtension = (filename: string): string | Error => {
+    console.log(filename)
     const extension = filename.split(".").pop()
     if (!extension) {
         throw Error("Filename has no extension")

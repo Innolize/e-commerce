@@ -17,11 +17,18 @@ export class MotherboardService extends AbstractService {
         this.motherboardRepository = motherboardRepository
     }
 
-    getMotherboards(): Promise<IMotherboard[]> {
-        return this.motherboardRepository.getAll()
+    getMotherboards(cpu_brand?: string): Promise<IMotherboard[]> {
+        return this.motherboardRepository.getAll(cpu_brand)
     }
 
     async createMotherboard(product: Product, motherboard: Motherboard): Promise<FullMotherboard | Error> {
         return await this.motherboardRepository.createMotherboard(product, motherboard)
+    }
+
+    async modifyMotherboard(motherboard: Motherboard): Promise<Motherboard | Error> {
+        return await this.motherboardRepository.modifyMotherboard(motherboard)
+    }
+    async deleteMotherboard(id: number): Promise<true | Error> {
+        return await this.motherboardRepository.deleteMotherboard(id)
     }
 }

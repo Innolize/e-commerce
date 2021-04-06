@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractRepository } from "../../../abstractClasses/abstractRepository";
 import { MotherboardModel } from "../model/motherboardModel";
-import { fromDbToFullMotherboard } from '../mapper/motherboardMapper'
+import { fromDbToFullMotherboard, fromDbToMotherboard } from '../mapper/motherboardMapper'
 import { Sequelize } from "sequelize";
 import { ProductModel } from "../../../product/module";
 import { Motherboard } from "../entity/Motherboard";
@@ -27,22 +27,21 @@ export class MotherboardRepository extends AbstractRepository {
 
     }
 
-    async getAll(): Promise<FullMotherboard[]> {
-        const response = await this.motherboardModel.findAll({ include: "product" })
+    async getAll(cpu_brand?: string): Promise<FullMotherboard[]> {
+        const findParams = cpu_brand ? { where: { cpu_brand }, include: "product" } : { include: "product" }
+        const response = await this.motherboardModel.findAll(findParams);
         return response.map(fromDbToFullMotherboard)
     }
 
     async createMotherboard(product: Product, motherboard: Motherboard): Promise<FullMotherboard | Error> {
         const transaction = await this.ORM.transaction()
         try {
-            const newProduct = await this.productModel.create(product, { transaction, isNewRecord: !!product.id });
+            const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
             const id_product = newProduct.getDataValue("id")
             const myMotherboard = new Motherboard({ ...motherboard, id_product })
-            const createdMotherboard = await this.motherboardModel.create(myMotherboard, { transaction, isNewRecord: !!product.id, include: "product" })
-            console.log("linea 42 ", createdMotherboard)
+            const createdMotherboard = await this.motherboardModel.create(myMotherboard, { transaction, isNewRecord: true, include: "product" })
             transaction.commit()
             const response = fromDbToFullMotherboard(createdMotherboard)
-            console.log("linea 45: ", response)
             return response
         } catch (err) {
             console.log(err)
@@ -50,13 +49,33 @@ export class MotherboardRepository extends AbstractRepository {
         }
     }
 
-    async editMotherboard(): Promise<string> {
-
-        return "12345"
+    async modifyMotherboard(motherboard: Motherboard): Promise<Motherboard | Error> {
+        try {
+            const [motherboardEdited, motherboardArray] = await this.motherboardModel.update(motherboard, { where: { id: motherboard.id }, returning: true })
+            // update returns an array, first argument is the number of elements updated in the
+            // database. Second argument are the array of elements. Im updating by id so there is only 
+            // one element in the array.
+            if (!motherboardEdited) {
+                throw new Error('Motherboard not found')
+            }
+            console.log(motherboardArray)
+            const modifiedProduct = motherboardArray[0]
+            return fromDbToMotherboard(modifiedProduct)
+        } catch (err) {
+            throw new Error(err.message)
+        }
     }
 
-    async deleteMotherboard(): Promise<string> {
+    async deleteMotherboard(id: number): Promise<true | Error> {
 
-        return "12345"
+        try {
+            const response = await this.motherboardModel.destroy({ where: { id } })
+            if (!response) {
+                throw new Error('motherboard not found')
+            }
+            return true
+        } catch (err) {
+            throw new Error(err.message)
+        }
     }
 }
