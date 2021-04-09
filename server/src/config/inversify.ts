@@ -8,6 +8,10 @@ import { BrandController, BrandModel, BrandRepository, BrandService } from '../m
 import { S3 } from 'aws-sdk'
 import { ImageUploadService } from "../module/imageUploader/service/imageUploaderService"
 import { MotherboardController, MotherboardModel, MotherboardRepository, MotherboardService } from "../module/PCBuilder/motherboard/module"
+import { RamModel } from "../module/PCBuilder/ram/model/ramModel"
+import { RamService } from "../module/PCBuilder/ram/service/ramService"
+import { RamRepository } from "../module/PCBuilder/ram/repository/RamRepository"
+import { RamController } from "../module/PCBuilder/ram/controller/ramController"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -53,6 +57,12 @@ export function configMotherboardModel(container: Container): typeof Motherboard
     return MotherboardModel
 }
 
+export function configRamModel(container: Container): typeof RamModel {
+    RamModel.setup(container.get(TYPES.Common.Database))
+    RamModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    return RamModel
+}
+
 function configureProductContainer(container: Container): void {
     container.bind<typeof ProductModel>(TYPES.Product.Model).toConstantValue(configProductModel(container));
     container.bind<ProductRepository>(TYPES.Product.Repository).to(ProductRepository)
@@ -85,6 +95,10 @@ function configurePCBuilder(container: Container): void {
     container.bind<MotherboardRepository>(TYPES.PCBuilder.Motherboard.Repository).to(MotherboardRepository)
     container.bind<MotherboardService>(TYPES.PCBuilder.Motherboard.Service).to(MotherboardService)
     container.bind<MotherboardController>(TYPES.PCBuilder.Motherboard.Controller).to(MotherboardController)
+    container.bind<typeof RamModel>(TYPES.PCBuilder.Ram.Model).toConstantValue(configRamModel(container))
+    container.bind<RamRepository>(TYPES.PCBuilder.Ram.Repository).to(RamRepository)
+    container.bind<RamService>(TYPES.PCBuilder.Ram.Service).to(RamService)
+    container.bind<RamController>(TYPES.PCBuilder.Ram.Controller).to(RamController)
 }
 
 function configureImageUploaderContainer(container: Container): void {

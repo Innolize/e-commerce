@@ -2,7 +2,7 @@ import { Schema, ValidationError } from 'joi'
 
 
 export const bodyValidator = async <T>(schema: Schema, validateObject: T): Promise<T> => {
-    return schema.validateAsync(validateObject, { stripUnknown: true, abortEarly: false })
+    return await schema.validateAsync(validateObject, { stripUnknown: true, abortEarly: false })
 }
 
 type customErrorObject = {

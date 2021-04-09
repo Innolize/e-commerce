@@ -1,10 +1,6 @@
 import Joi from "joi";
+import { CPU_BRANDS, RAM_VERSION, SIZE } from "../../../../config/constants/pcbuilder";
 import { validateCreateProductSchema } from "../../../product/helper/create_dto_validator";
-
-const CPU_BRANDS_ENUM = ["INTEL", "AMD"]
-const RAM_VERSION_ENUM = ["DDR1", "DDR2", "DDR3", "DDR4"]
-const SIZE = ["ATX", "Micro-ATX", "Mini-ATX"]
-
 
 export const validateEditMotherboardDto = Joi.object({
     id: Joi.number()
@@ -12,10 +8,10 @@ export const validateEditMotherboardDto = Joi.object({
     cpu_socket: Joi.string().
         required(),
     cpu_brand: Joi.any()
-        .valid(...CPU_BRANDS_ENUM)
+        .valid(...CPU_BRANDS)
         .required(),
     ram_version: Joi.any()
-        .valid(...RAM_VERSION_ENUM)
+        .valid(...RAM_VERSION)
         .required(),
     min_frec: Joi.number()
         .required(),
@@ -37,10 +33,10 @@ export const validateMotherboardCreateSchema = {
     cpu_socket: Joi.string().
         required(),
     cpu_brand: Joi.any()
-        .valid(...CPU_BRANDS_ENUM)
+        .valid(...CPU_BRANDS)
         .required(),
     ram_version: Joi.any()
-        .valid(...RAM_VERSION_ENUM)
+        .valid(...RAM_VERSION)
         .required(),
     min_frec: Joi.number()
         .required(),
@@ -65,7 +61,7 @@ export const validateMotherboardEditSchema = {
 }
 
 export const validateQueryCpuBrand = (cpu_brand: string): string => {
-    return Joi.attempt(cpu_brand, Joi.string().valid(...CPU_BRANDS_ENUM), 'cpu_brand')
+    return Joi.attempt(cpu_brand, Joi.string().valid(...CPU_BRANDS), 'cpu_brand')
 }
 
 export const validateMotherboardAndProductDto = Joi.object({ ...validateMotherboardCreateSchema, ...validateCreateProductSchema })

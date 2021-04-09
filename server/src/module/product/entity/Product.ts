@@ -1,4 +1,4 @@
-import { ICreateProduct } from "../interfaces/ICreateProduct";
+import { IProductCreate } from "../interfaces/IProductCreate";
 
 export class Product {
     id?: number;
@@ -9,7 +9,7 @@ export class Product {
     stock: boolean;
     id_category: number
     id_brand: number
-    constructor({ id, name, image, description, price, stock, id_category, id_brand }: ICreateProduct) {
+    constructor({ id, name, image, description, price, stock, id_category, id_brand }: IProductCreate) {
         if (id) {
             this.id = id
         }
