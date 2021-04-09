@@ -4,12 +4,12 @@ import { Model } from "sequelize";
 import { CategoryModel } from "../../category/module";
 import { IProduct } from "../interfaces/IProduct";
 import { BrandModel } from "../../brand/module";
-import { ICreateProduct } from "../interfaces/ICreateProduct";
+import { IProductCreate } from "../interfaces/IProductCreate";
 
 decorate(injectable(), (Model))
 
 @injectable()
-export class ProductModel extends Model<IProduct, ICreateProduct>{
+export class ProductModel extends Model<IProduct, IProductCreate>{
 
     static setup(database: Sequelize): typeof ProductModel {
         ProductModel.init({

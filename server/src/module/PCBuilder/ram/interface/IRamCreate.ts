@@ -1,4 +1,6 @@
+import { IProductCreate } from "../../../product/interfaces/IProductCreate";
 
+export interface IRam_Product extends IRamCreate, IProductCreate { }
 
 export interface IRamCreate {
     id?: number,
@@ -7,5 +9,5 @@ export interface IRamCreate {
     min_frec: number,
     max_frec: number,
     watts: number,
-    id_product: number
+    id_product?: number
 }

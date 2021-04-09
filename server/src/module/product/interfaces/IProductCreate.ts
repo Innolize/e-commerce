@@ -1,4 +1,4 @@
-export interface ICreateProduct {
+export interface IProductCreate {
     id?: number;
     name: string;
     image: string | null;

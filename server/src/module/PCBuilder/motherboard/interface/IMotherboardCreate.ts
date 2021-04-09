@@ -1,6 +1,6 @@
-import { ICreateProduct } from '../../../product/interfaces/ICreateProduct'
+import { IProductCreate } from '../../../product/interfaces/IProductCreate'
 
-export interface IMotherboard_Product extends IMotherboardCreate, ICreateProduct { }
+export interface IMotherboard_Product extends IMotherboardCreate, IProductCreate { }
 
 export interface IMotherboardCreate {
     id?: number

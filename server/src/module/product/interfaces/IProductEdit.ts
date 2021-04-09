@@ -1,4 +1,4 @@
-export interface IEditableProduct {
+export interface IProductEdit {
     id?: number,
     name?: string,
     id_brand?: number,

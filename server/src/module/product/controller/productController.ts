@@ -10,8 +10,8 @@ import { validateCreateProductDto } from '../helper/create_dto_validator'
 import { bodyValidator, mapperMessageError } from '../../common/helpers/bodyValidator'
 import { validateEditProductDto } from '../helper/edit_dto_validator'
 import { Product } from '../entity/Product'
-import { IEditableProduct } from '../interfaces/IEditableProduct'
-import { ICreateProduct } from '../interfaces/ICreateProduct'
+import { IProductEdit } from '../interfaces/IProductEdit'
+import { IProductCreate } from '../interfaces/IProductCreate'
 import { ImageUploadService } from '../../imageUploader/module'
 import { FullProduct } from '../entity/FullProduct'
 import { BrandService } from '../../brand/module'
@@ -60,7 +60,7 @@ export class ProductController extends AbstractController {
     async createProduct(req: Request, res: Response): Promise<Response> {
         let product: Product | undefined
         try {
-            const dto: ICreateProduct = req.body
+            const dto: IProductCreate = req.body
             const validatedDto = await bodyValidator(validateCreateProductDto, dto)
             if (req.file) {
                 const uploadedImage = await this.uploadService.uploadProduct(req.file.buffer, req.file.originalname)
@@ -114,7 +114,7 @@ export class ProductController extends AbstractController {
     async modifyProduct(req: Request, res: Response): Promise<Response> {
         let product: Product | undefined
         try {
-            const dto: IEditableProduct = req.body
+            const dto: IProductEdit = req.body
             const validatedDto = await bodyValidator(validateEditProductDto, dto)
             if (req.file) {
                 const uploadedImage = await this.uploadService.uploadProduct(req.file.buffer, req.file.originalname)

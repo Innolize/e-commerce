@@ -4,8 +4,8 @@ import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { FullProduct } from "../entity/FullProduct";
 import { Product } from "../entity/Product";
-import { ICreateProduct } from "../interfaces/ICreateProduct";
-import { IEditableProduct } from "../interfaces/IEditableProduct";
+import { IProductCreate } from "../interfaces/IProductCreate";
+import { IProductEdit } from "../interfaces/IProductEdit";
 import { fromDbToFullProduct, fromDbToProduct } from "../mapper/productMapper";
 import { ProductModel } from "../model/productModel";
 
@@ -38,7 +38,7 @@ export class ProductRepository extends AbstractRepository {
 
     }
 
-    public async createProduct(product: ICreateProduct): Promise<Error | Product> {
+    public async createProduct(product: IProductCreate): Promise<Error | Product> {
         try {
             const response = await this.productModel.create(product, { include: ["category", "brand"], isNewRecord: true })
             return fromDbToProduct(response)
@@ -58,7 +58,7 @@ export class ProductRepository extends AbstractRepository {
         return true
     }
 
-    public async modifyProduct(product: IEditableProduct): Promise<Error | Product> {
+    public async modifyProduct(product: IProductEdit): Promise<Error | Product> {
 
         try {
             const [productEdited, productArray] = await this.productModel.update(product, { where: { id: product.id }, returning: true })
