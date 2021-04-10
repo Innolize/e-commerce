@@ -37,6 +37,12 @@ export const TYPES = {
             Repository: Symbol("RamRepository"),
             Service: Symbol("RamService"),
             Controller: Symbol("RamController")
+        },
+        Processor:{
+            Model: Symbol('ProcessorModel'),
+            Repository: Symbol('ProcessorRepository'),
+            Service: Symbol('ProcessorService'),
+            Controller: Symbol('ProcessorController'),
         }
     }
 }

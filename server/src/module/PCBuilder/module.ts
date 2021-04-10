@@ -5,7 +5,9 @@ import { MotherboardController } from './motherboard/module'
 
 export function init(app: Application, container: Container): void {
     const motherboardController = container.get<MotherboardController>(TYPES.PCBuilder.Motherboard.Controller)
-    motherboardController.configureRoutes(app)
     const ramController = container.get<MotherboardController>(TYPES.PCBuilder.Ram.Controller)
+    const processorController = container.get<MotherboardController>(TYPES.PCBuilder.Processor.Controller)
+    motherboardController.configureRoutes(app)
     ramController.configureRoutes(app)
+    processorController.configureRoutes(app)
 }

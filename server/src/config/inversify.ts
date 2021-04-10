@@ -12,6 +12,7 @@ import { RamModel } from "../module/PCBuilder/ram/model/ramModel"
 import { RamService } from "../module/PCBuilder/ram/service/ramService"
 import { RamRepository } from "../module/PCBuilder/ram/repository/RamRepository"
 import { RamController } from "../module/PCBuilder/ram/controller/ramController"
+import { ProcessorModel, ProcessorRepository, ProcessorService, ProcessorController } from "../module/PCBuilder/processor/module"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -63,6 +64,12 @@ export function configRamModel(container: Container): typeof RamModel {
     return RamModel
 }
 
+export function configProcessorModel(container: Container): typeof ProcessorModel {
+    ProcessorModel.setup(container.get(TYPES.Common.Database))
+    ProcessorModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    return ProcessorModel
+}
+
 function configureProductContainer(container: Container): void {
     container.bind<typeof ProductModel>(TYPES.Product.Model).toConstantValue(configProductModel(container));
     container.bind<ProductRepository>(TYPES.Product.Repository).to(ProductRepository)
@@ -99,6 +106,10 @@ function configurePCBuilder(container: Container): void {
     container.bind<RamRepository>(TYPES.PCBuilder.Ram.Repository).to(RamRepository)
     container.bind<RamService>(TYPES.PCBuilder.Ram.Service).to(RamService)
     container.bind<RamController>(TYPES.PCBuilder.Ram.Controller).to(RamController)
+    container.bind<typeof ProcessorModel>(TYPES.PCBuilder.Processor.Model).toConstantValue(configProcessorModel(container))
+    container.bind<ProcessorRepository>(TYPES.PCBuilder.Processor.Repository).to(ProcessorRepository)
+    container.bind<ProcessorService>(TYPES.PCBuilder.Processor.Service).to(ProcessorService)
+    container.bind<ProcessorController>(TYPES.PCBuilder.Processor.Controller).to(ProcessorController)
 }
 
 function configureImageUploaderContainer(container: Container): void {
