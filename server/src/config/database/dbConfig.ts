@@ -11,8 +11,7 @@ import { MotherboardModel } from '../../module/PCBuilder/motherboard/module';
 import { fromDbToFullProduct } from '../../module/product/mapper/productMapper';
 import { RamModel } from '../../module/PCBuilder/ram/model/ramModel';
 import { ProcessorModel } from '../../module/PCBuilder/processor/module';
-
-
+import { VideoCardModel } from '../../module/PCBuilder/video-card/module';
 
 const database = container.get<Sequelize>(TYPES.Common.Database);
 (async () => {
@@ -25,11 +24,13 @@ const database = container.get<Sequelize>(TYPES.Common.Database);
         MotherboardModel.setup(database);
         RamModel.setup(database);
         ProcessorModel.setup(database);
+        VideoCardModel.setup(database);
         ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.Category.Model));
         ProductModel.setupBrandAssociation(container.get<typeof BrandModel>(TYPES.Brand.Model));
         MotherboardModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
         RamModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
         ProcessorModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
+        VideoCardModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
     } catch (err) {
         console.log(err.message)
     }
