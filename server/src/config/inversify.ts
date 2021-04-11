@@ -13,6 +13,7 @@ import { RamService } from "../module/PCBuilder/ram/service/ramService"
 import { RamRepository } from "../module/PCBuilder/ram/repository/RamRepository"
 import { RamController } from "../module/PCBuilder/ram/controller/ramController"
 import { ProcessorModel, ProcessorRepository, ProcessorService, ProcessorController } from "../module/PCBuilder/processor/module"
+import { VideoCardModel, VideoCardRepository, VideoCardController, VideoCardService } from "../module/PCBuilder/video-card/module"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -70,6 +71,12 @@ export function configProcessorModel(container: Container): typeof ProcessorMode
     return ProcessorModel
 }
 
+export function configVideoCardModel(container: Container): typeof VideoCardModel {
+    VideoCardModel.setup(container.get(TYPES.Common.Database))
+    VideoCardModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    return VideoCardModel
+}
+
 function configureProductContainer(container: Container): void {
     container.bind<typeof ProductModel>(TYPES.Product.Model).toConstantValue(configProductModel(container));
     container.bind<ProductRepository>(TYPES.Product.Repository).to(ProductRepository)
@@ -110,6 +117,10 @@ function configurePCBuilder(container: Container): void {
     container.bind<ProcessorRepository>(TYPES.PCBuilder.Processor.Repository).to(ProcessorRepository)
     container.bind<ProcessorService>(TYPES.PCBuilder.Processor.Service).to(ProcessorService)
     container.bind<ProcessorController>(TYPES.PCBuilder.Processor.Controller).to(ProcessorController)
+    container.bind<typeof VideoCardModel>(TYPES.PCBuilder.VideoCard.Model).toConstantValue(configVideoCardModel(container))
+    container.bind<VideoCardRepository>(TYPES.PCBuilder.VideoCard.Repository).to(VideoCardRepository)
+    container.bind<VideoCardService>(TYPES.PCBuilder.VideoCard.Service).to(VideoCardService)
+    container.bind<VideoCardController>(TYPES.PCBuilder.VideoCard.Controller).to(VideoCardController)
 }
 
 function configureImageUploaderContainer(container: Container): void {

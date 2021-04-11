@@ -38,11 +38,17 @@ export const TYPES = {
             Service: Symbol("RamService"),
             Controller: Symbol("RamController")
         },
-        Processor:{
+        Processor: {
             Model: Symbol('ProcessorModel'),
             Repository: Symbol('ProcessorRepository'),
             Service: Symbol('ProcessorService'),
             Controller: Symbol('ProcessorController'),
+        },
+        VideoCard: {
+            Model: Symbol('VideoCardModel'),
+            Repository: Symbol('VideoCardRepository'),
+            Service: Symbol('VideoCardService'),
+            Controller: Symbol('VideoCardController'),
         }
     }
 }
