@@ -14,6 +14,7 @@ import { RamRepository } from "../module/PCBuilder/ram/repository/RamRepository"
 import { RamController } from "../module/PCBuilder/ram/controller/ramController"
 import { ProcessorModel, ProcessorRepository, ProcessorService, ProcessorController } from "../module/PCBuilder/processor/module"
 import { VideoCardModel, VideoCardRepository, VideoCardController, VideoCardService } from "../module/PCBuilder/video-card/module"
+import { CabinetModel, CabinetRepository, CabinetController, CabinetService } from "../module/PCBuilder/cabinet/module"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -77,6 +78,12 @@ export function configVideoCardModel(container: Container): typeof VideoCardMode
     return VideoCardModel
 }
 
+export function configCabinetModel(container: Container): typeof CabinetModel {
+    CabinetModel.setup(container.get(TYPES.Common.Database))
+    CabinetModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    return CabinetModel
+}
+
 function configureProductContainer(container: Container): void {
     container.bind<typeof ProductModel>(TYPES.Product.Model).toConstantValue(configProductModel(container));
     container.bind<ProductRepository>(TYPES.Product.Repository).to(ProductRepository)
@@ -121,6 +128,10 @@ function configurePCBuilder(container: Container): void {
     container.bind<VideoCardRepository>(TYPES.PCBuilder.VideoCard.Repository).to(VideoCardRepository)
     container.bind<VideoCardService>(TYPES.PCBuilder.VideoCard.Service).to(VideoCardService)
     container.bind<VideoCardController>(TYPES.PCBuilder.VideoCard.Controller).to(VideoCardController)
+    container.bind<typeof CabinetModel>(TYPES.PCBuilder.Cabinet.Model).toConstantValue(configCabinetModel(container))
+    container.bind<CabinetRepository>(TYPES.PCBuilder.Cabinet.Repository).to(CabinetRepository)
+    container.bind<CabinetService>(TYPES.PCBuilder.Cabinet.Service).to(CabinetService)
+    container.bind<CabinetController>(TYPES.PCBuilder.Cabinet.Controller).to(CabinetController)
 }
 
 function configureImageUploaderContainer(container: Container): void {
