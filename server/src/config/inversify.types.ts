@@ -49,6 +49,12 @@ export const TYPES = {
             Repository: Symbol('VideoCardRepository'),
             Service: Symbol('VideoCardService'),
             Controller: Symbol('VideoCardController'),
+        },
+        Cabinet:{
+            Model: Symbol('CabinetModel'),
+            Repository: Symbol('CabinetRepository'),
+            Service: Symbol('CabinetService'),
+            Controller: Symbol('CabinetController'),
         }
     }
 }
