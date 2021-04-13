@@ -55,6 +55,12 @@ export const TYPES = {
             Repository: Symbol('CabinetRepository'),
             Service: Symbol('CabinetService'),
             Controller: Symbol('CabinetController'),
+        },
+        PowerSupply:{
+            Model: Symbol('PowerSupplyModel'),
+            Repository: Symbol('PowerSupplyRepository'),
+            Service: Symbol('PowerSupplyService'),
+            Controller: Symbol('PowerSupplyController'),
         }
     }
 }

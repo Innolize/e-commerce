@@ -15,6 +15,7 @@ import { RamController } from "../module/PCBuilder/ram/controller/ramController"
 import { ProcessorModel, ProcessorRepository, ProcessorService, ProcessorController } from "../module/PCBuilder/processor/module"
 import { VideoCardModel, VideoCardRepository, VideoCardController, VideoCardService } from "../module/PCBuilder/video-card/module"
 import { CabinetModel, CabinetRepository, CabinetController, CabinetService } from "../module/PCBuilder/cabinet/module"
+import { PowerSupplyController, PowerSupplyModel, PowerSupplyRepository, PowerSupplyService } from "../module/PCBuilder/power-supply/module"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -84,6 +85,12 @@ export function configCabinetModel(container: Container): typeof CabinetModel {
     return CabinetModel
 }
 
+export function configPowerSupplyModel(container: Container): typeof PowerSupplyModel {
+    PowerSupplyModel.setup(container.get(TYPES.Common.Database))
+    PowerSupplyModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    return PowerSupplyModel
+}
+
 function configureProductContainer(container: Container): void {
     container.bind<typeof ProductModel>(TYPES.Product.Model).toConstantValue(configProductModel(container));
     container.bind<ProductRepository>(TYPES.Product.Repository).to(ProductRepository)
@@ -132,6 +139,10 @@ function configurePCBuilder(container: Container): void {
     container.bind<CabinetRepository>(TYPES.PCBuilder.Cabinet.Repository).to(CabinetRepository)
     container.bind<CabinetService>(TYPES.PCBuilder.Cabinet.Service).to(CabinetService)
     container.bind<CabinetController>(TYPES.PCBuilder.Cabinet.Controller).to(CabinetController)
+    container.bind<typeof PowerSupplyModel>(TYPES.PCBuilder.PowerSupply.Model).toConstantValue(configPowerSupplyModel(container))
+    container.bind<PowerSupplyRepository>(TYPES.PCBuilder.PowerSupply.Repository).to(PowerSupplyRepository)
+    container.bind<PowerSupplyService>(TYPES.PCBuilder.PowerSupply.Service).to(PowerSupplyService)
+    container.bind<PowerSupplyController>(TYPES.PCBuilder.PowerSupply.Controller).to(PowerSupplyController)
 }
 
 function configureImageUploaderContainer(container: Container): void {
