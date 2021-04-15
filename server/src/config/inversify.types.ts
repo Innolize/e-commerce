@@ -61,6 +61,12 @@ export const TYPES = {
             Repository: Symbol('PowerSupplyRepository'),
             Service: Symbol('PowerSupplyService'),
             Controller: Symbol('PowerSupplyController'),
+        },
+        DiskStorage:{
+            Model: Symbol('DiskStorageModel'),
+            Repository: Symbol('DiskStorageRepository'),
+            Service: Symbol('DiskStorageService'),
+            Controller: Symbol('DiskStorageController'),
         }
     }
 }

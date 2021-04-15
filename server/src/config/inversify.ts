@@ -16,6 +16,7 @@ import { ProcessorModel, ProcessorRepository, ProcessorService, ProcessorControl
 import { VideoCardModel, VideoCardRepository, VideoCardController, VideoCardService } from "../module/PCBuilder/video-card/module"
 import { CabinetModel, CabinetRepository, CabinetController, CabinetService } from "../module/PCBuilder/cabinet/module"
 import { PowerSupplyController, PowerSupplyModel, PowerSupplyRepository, PowerSupplyService } from "../module/PCBuilder/power-supply/module"
+import { DiskStorageController, DiskStorageModel, DiskStorageRepository, DiskStorageService } from "../module/PCBuilder/disk-storage/module"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -91,6 +92,12 @@ export function configPowerSupplyModel(container: Container): typeof PowerSupply
     return PowerSupplyModel
 }
 
+export function configDiskStorageModel(container: Container): typeof DiskStorageModel {
+    DiskStorageModel.setup(container.get(TYPES.Common.Database))
+    DiskStorageModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    return DiskStorageModel
+}
+
 function configureProductContainer(container: Container): void {
     container.bind<typeof ProductModel>(TYPES.Product.Model).toConstantValue(configProductModel(container));
     container.bind<ProductRepository>(TYPES.Product.Repository).to(ProductRepository)
@@ -143,6 +150,10 @@ function configurePCBuilder(container: Container): void {
     container.bind<PowerSupplyRepository>(TYPES.PCBuilder.PowerSupply.Repository).to(PowerSupplyRepository)
     container.bind<PowerSupplyService>(TYPES.PCBuilder.PowerSupply.Service).to(PowerSupplyService)
     container.bind<PowerSupplyController>(TYPES.PCBuilder.PowerSupply.Controller).to(PowerSupplyController)
+    container.bind<typeof DiskStorageModel>(TYPES.PCBuilder.DiskStorage.Model).toConstantValue(configDiskStorageModel(container))
+    container.bind<DiskStorageRepository>(TYPES.PCBuilder.DiskStorage.Repository).to(DiskStorageRepository)
+    container.bind<DiskStorageService>(TYPES.PCBuilder.DiskStorage.Service).to(DiskStorageService)
+    container.bind<DiskStorageController>(TYPES.PCBuilder.DiskStorage.Controller).to(DiskStorageController)
 }
 
 function configureImageUploaderContainer(container: Container): void {
