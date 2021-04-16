@@ -1,18 +1,18 @@
-import React from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import { Link as RouterLink } from 'react-router-dom';
-import Link from '@material-ui/core/Link';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import Tab from '@material-ui/core/Tab';
-import Badge from '@material-ui/core/Badge';
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
-import SearchBar from './SearchBar';
-import ChangeThemeButton from '../ChangeThemeButton';
-import { Tabs } from '@material-ui/core';
+import React from "react";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import { Link as RouterLink } from "react-router-dom";
+import Link from "@material-ui/core/Link";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import Tab from "@material-ui/core/Tab";
+import Badge from "@material-ui/core/Badge";
+import Box from "@material-ui/core/Box";
+import Container from "@material-ui/core/Container";
+import SearchBar from "./SearchBar";
+import ChangeThemeButton from "../ChangeThemeButton";
+import { Tabs } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -21,36 +21,36 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     link: {
       color: theme.palette.text.primary,
-      margin: '0 10px',
-      fontSize: '0.9rem',
+      margin: "0 10px",
+      fontSize: "0.9rem",
     },
     linkIcon: {
       color: theme.palette.text.primary,
-      margin: '0 10px',
-      fontSize: '10px',
-      '&:hover': {
+      margin: "0 10px",
+      fontSize: "10px",
+      "&:hover": {
         color: theme.palette.primary.main,
       },
     },
     bottomBar: {
-      height: '50px',
-      minHeight: '50px',
+      height: "50px",
+      minHeight: "50px",
       backgroundColor: theme.palette.primary.main,
     },
     autoMarginLeft: {
-      marginLeft: 'auto',
+      marginLeft: "auto",
     },
     tabs: {
-      overflow: 'inherit',
+      overflow: "inherit",
     },
     container: {
-      margin: '0 auto',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      margin: "0 auto",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
     },
     nowrap: {
-      whiteSpace: 'nowrap',
+      whiteSpace: "nowrap",
     },
   })
 );
@@ -70,11 +70,19 @@ const DesktopNavbar = React.memo(() => {
             <Link className={classes.link} component={RouterLink} to="/login">
               Login
             </Link>
-            <Link className={classes.link} component={RouterLink} to="/register">
+            <Link
+              className={classes.link}
+              component={RouterLink}
+              to="/register"
+            >
               Register
             </Link>
 
-            <Link className={classes.linkIcon} component={RouterLink} to="/cart">
+            <Link
+              className={classes.linkIcon}
+              component={RouterLink}
+              to="/cart"
+            >
               <Badge badgeContent={2} color="secondary">
                 <ShoppingCartIcon />
               </Badge>

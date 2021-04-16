@@ -1,6 +1,6 @@
-import { PaletteType } from '@material-ui/core';
-import dark from '../themes/darkTheme';
-import light from '../themes/lightTheme';
+import { PaletteType } from "@material-ui/core";
+import dark from "../themes/darkTheme";
+import light from "../themes/lightTheme";
 
 const themes = {
   dark,

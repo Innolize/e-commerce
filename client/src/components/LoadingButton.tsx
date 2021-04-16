@@ -1,23 +1,23 @@
-import { Button, CircularProgress, makeStyles } from '@material-ui/core';
+import { Button, CircularProgress, makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   submitBtn: {
     margin: theme.spacing(3, 0, 2),
-    width: '100%',
+    width: "100%",
   },
   buttonProgress: {
     color: theme.palette.primary.main,
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginTop: '-7px',
-    marginLeft: '-12px',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginTop: "-7px",
+    marginLeft: "-12px",
   },
   btnWrapper: {
     margin: theme.spacing(1),
-    display: 'flex',
-    justifyContent: 'center',
-    position: 'relative',
+    display: "flex",
+    justifyContent: "center",
+    position: "relative",
   },
 }));
 
@@ -40,7 +40,9 @@ const LoadingButton = ({ isSubmitting, name }: LoadingButtonProps) => {
       >
         {name}
       </Button>
-      {isSubmitting && <CircularProgress size={24} className={classes.buttonProgress} />}
+      {isSubmitting && (
+        <CircularProgress size={24} className={classes.buttonProgress} />
+      )}
     </div>
   );
 };

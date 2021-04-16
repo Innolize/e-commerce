@@ -1,6 +1,6 @@
-import React from 'react';
-import AdminNavbar from '../components/AdminNavbar';
-import { Route } from 'react-router-dom';
+import React from "react";
+import AdminNavbar from "../components/AdminNavbar";
+import { Route } from "react-router-dom";
 
 interface AdminLayoutProps {
   children: React.ReactNode;

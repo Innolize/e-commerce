@@ -1,7 +1,7 @@
-import useScreenSize from 'use-screen-size';
-import MobileNavbar from './MobileNavbar';
-import DesktopNavbar from './DesktopNavbar';
-import React from 'react';
+import useScreenSize from "use-screen-size";
+import MobileNavbar from "./MobileNavbar";
+import DesktopNavbar from "./DesktopNavbar";
+import React from "react";
 
 const Navbar = React.memo(() => {
   const screenSize = useScreenSize();

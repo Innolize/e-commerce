@@ -1,23 +1,23 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createMuiTheme } from "@material-ui/core/styles";
 
 const theme = createMuiTheme({
   palette: {
-    type: 'light',
+    type: "light",
     primary: {
-      main: '#2196F3',
-      contrastText: '#000',
+      main: "#2196F3",
+      contrastText: "#000",
     },
     secondary: {
-      main: '#FFAA33',
+      main: "#FFAA33",
     },
   },
   overrides: {
     MuiCssBaseline: {
-      '@global': {
-        '#root': {
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
+      "@global": {
+        "#root": {
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
         },
       },
     },

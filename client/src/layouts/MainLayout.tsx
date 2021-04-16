@@ -1,7 +1,7 @@
-import React from 'react';
-import { Route } from 'react-router-dom';
-import Footer from '../components/Footer/Footer';
-import Navbar from '../components/Navbar/Navbar';
+import React from "react";
+import { Route } from "react-router-dom";
+import Footer from "../components/Footer/Footer";
+import Navbar from "../components/Navbar/Navbar";
 
 interface MainLayoutProps {
   children: React.ReactNode;

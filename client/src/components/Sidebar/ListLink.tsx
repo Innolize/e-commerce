@@ -1,14 +1,14 @@
-import React from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { Link } from 'react-router-dom';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+import React from "react";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     link: {
-      textDecoration: 'none',
+      textDecoration: "none",
       color: theme.palette.text.primary,
     },
   })

@@ -1,14 +1,14 @@
-import { Box, Button, Typography } from '@material-ui/core';
-import { Container } from '@material-ui/core';
-import { DataGrid, GridColDef, GridCellParams } from '@material-ui/data-grid';
-import { makeStyles } from '@material-ui/core/styles';
-import useProducts from '../../hooks/useProducts';
-import CustomToolbar from '../../components/customToolbar';
+import { Box, Button, Typography } from "@material-ui/core";
+import { Container } from "@material-ui/core";
+import { DataGrid, GridColDef, GridCellParams } from "@material-ui/data-grid";
+import { makeStyles } from "@material-ui/core/styles";
+import useProducts from "../../hooks/useProducts";
+import CustomToolbar from "../../components/CustomToolbar";
 
 const useStyles = makeStyles((theme) => ({
   gridContainer: {
-    height: '500px',
-    marginBottom: '50px',
+    height: "500px",
+    marginBottom: "50px",
   },
 }));
 
@@ -29,16 +29,16 @@ const Products = () => {
           <DataGrid
             columns={
               [
-                { field: 'id', type: 'number', width: 70 },
-                { field: 'name', flex: 1 },
-                { field: 'description', flex: 1 },
-                { field: 'image' },
-                { field: 'price' },
-                { field: 'stock' },
-                { field: 'category' },
-                { field: 'brand' },
+                { field: "id", type: "number", width: 70 },
+                { field: "name", flex: 1 },
+                { field: "description", flex: 1 },
+                { field: "image" },
+                { field: "price" },
+                { field: "stock" },
+                { field: "category" },
+                { field: "brand" },
                 {
-                  field: 'actions',
+                  field: "actions",
                   sortable: false,
                   filterable: false,
                   width: 150,
@@ -60,9 +60,9 @@ const Products = () => {
                     description: product.description,
                     image: product.image,
                     price: product.price,
-                    stock: product.stock ? 'Yes' : 'No',
-                    category: product.category?.name || 'Not found',
-                    brand: product.brand?.name || 'Not found',
+                    stock: product.stock ? "Yes" : "No",
+                    category: product.category?.name || "Not found",
+                    brand: product.brand?.name || "Not found",
                   }))
             }
             loading={query.isLoading}
