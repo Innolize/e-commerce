@@ -1,47 +1,55 @@
-import { Box, Button, CircularProgress, Container, Input, Paper, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { ErrorMessage, Form, Formik } from 'formik';
-import Image from 'material-ui-image';
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import InputField from 'src/components/InputField';
-import useEditBrand from '../../hooks/brandHooks/useEditBrand';
-import useGetBrandById from '../../hooks/brandHooks/useGetBrandById';
-import { IBrand } from '../../types';
-import Alert from '@material-ui/lab/Alert';
-import { editBrandSchema } from '../../utils/yup.validations';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Input,
+  Paper,
+  Typography,
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { ErrorMessage, Form, Formik } from "formik";
+import Image from "material-ui-image";
+import React from "react";
+import { useParams } from "react-router-dom";
+import InputField from "src/components/InputField";
+import useEditBrand from "../../hooks/brandHooks/useEditBrand";
+import useGetBrandById from "../../hooks/brandHooks/useGetBrandById";
+import { IBrand } from "../../types";
+import Alert from "@material-ui/lab/Alert";
+import { editBrandSchema } from "../../utils/yup.validations";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
   },
   form: {
-    maxWidth: '320px',
+    maxWidth: "320px",
   },
   image: {
-    width: '300px',
-    height: '150px',
+    width: "300px",
+    height: "150px",
   },
   noImage: {
-    width: '300px',
-    height: '150px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    color: 'black',
+    width: "300px",
+    height: "150px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+    color: "black",
   },
   errorMsg: {
-    color: '#f44336',
-    fontSize: '0.75rem',
-    textAlign: 'start',
+    color: "#f44336",
+    fontSize: "0.75rem",
+    textAlign: "start",
   },
   hidden: {
-    display: 'none',
+    display: "none",
   },
 }));
 
@@ -75,7 +83,7 @@ const CreateBrand = () => {
         <Box className={classes.formContainer} my={10}>
           <Typography variant="h4">Edit the brand</Typography>
           <Formik
-            initialValues={{ name: queryBrand.data.name, logo: '', id }}
+            initialValues={{ name: queryBrand.data.name, logo: "", id }}
             onSubmit={async (data: IBrand) => {
               const formData = new FormData();
 
@@ -84,6 +92,10 @@ const CreateBrand = () => {
               if (data.name === queryBrand.data.name && !data.logo) {
                 return;
               }
+
+              formData.append("id", id);
+              formData.append("name", data.name);
+              formData.append("logo", data.logo);
 
               editBrand.mutate(formData);
             }}
@@ -98,8 +110,12 @@ const CreateBrand = () => {
                   <Paper className={classes.image}>
                     {queryBrand.data.logo ? (
                       <Image
-                        imageStyle={{ borderRadius: '4px', height: '150px' }}
-                        style={{ borderRadius: '4px', paddingTop: '0', height: '150px' }}
+                        imageStyle={{ borderRadius: "4px", height: "150px" }}
+                        style={{
+                          borderRadius: "4px",
+                          paddingTop: "0",
+                          height: "150px",
+                        }}
                         src={queryBrand.data.logo}
                       />
                     ) : (
@@ -116,10 +132,14 @@ const CreateBrand = () => {
                     name="logo"
                     color="secondary"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setFieldValue('logo', e.target.files![0])
+                      setFieldValue("logo", e.target.files![0])
                     }
                   />
-                  <ErrorMessage component={Typography} className={classes.errorMsg} name="logo" />
+                  <ErrorMessage
+                    component={Typography}
+                    className={classes.errorMsg}
+                    name="logo"
+                  />
                 </Box>
                 {editBrand.isError && (
                   <Box my={2}>

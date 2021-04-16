@@ -1,8 +1,11 @@
-import { AxiosError } from 'axios';
-import { useQueryClient, useMutation } from 'react-query';
-import api from '../../services/api';
+import { AxiosError } from "axios";
+import { useQueryClient, useMutation } from "react-query";
+import api from "../../services/api";
 
-export default function useDeleteBrand(sucessCallback?: Function, errorCallback?: Function) {
+export default function useDeleteBrand(
+  sucessCallback?: Function,
+  errorCallback?: Function
+) {
   const queryClient = useQueryClient();
   return useMutation(
     (id: string) =>
@@ -21,7 +24,7 @@ export default function useDeleteBrand(sucessCallback?: Function, errorCallback?
     {
       retry: false,
       onSuccess: () => {
-        queryClient.invalidateQueries('brands');
+        queryClient.invalidateQueries("brands");
         sucessCallback && sucessCallback();
       },
       onError: (e: AxiosError) => {

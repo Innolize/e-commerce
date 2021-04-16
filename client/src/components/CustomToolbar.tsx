@@ -3,7 +3,7 @@ import {
   GridDensitySelector,
   GridFilterToolbarButton,
   GridToolbarContainer,
-} from '@material-ui/data-grid';
+} from "@material-ui/data-grid";
 
 export default function CustomToolbar() {
   return (

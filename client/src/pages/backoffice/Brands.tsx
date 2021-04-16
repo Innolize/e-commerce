@@ -1,27 +1,28 @@
-import { Box, Button, Typography } from '@material-ui/core';
-import useBrands from '../../hooks/brandHooks/useBrands';
-import { Container } from '@material-ui/core';
-import { DataGrid, GridColDef, GridCellParams } from '@material-ui/data-grid';
-import { makeStyles } from '@material-ui/core/styles';
-import CustomToolbar from '../../components/customToolbar';
-import { Link as RouterLink } from 'react-router-dom';
-import { useState } from 'react';
-import DeleteBrandDialog from '../../components/DeleteDialogs/DeleteBrandDialog';
-import { IBrand } from '../../types';
-import useDeleteBrand from '../../hooks/brandHooks/useDeleteBrand';
-import Alert from '@material-ui/lab/Alert';
+import { Box, Button, Typography } from "@material-ui/core";
+import useBrands from "../../hooks/brandHooks/useBrands";
+import { Container } from "@material-ui/core";
+import { DataGrid, GridColDef, GridCellParams } from "@material-ui/data-grid";
+import { makeStyles } from "@material-ui/core/styles";
+import CustomToolbar from "../../components/CustomToolbar";
+import { Link as RouterLink } from "react-router-dom";
+import { useState } from "react";
+import DeleteBrandDialog from "../../components/DeleteDialogs/DeleteBrandDialog";
+import { IBrand } from "../../types";
+import useDeleteBrand from "../../hooks/brandHooks/useDeleteBrand";
+import Alert from "@material-ui/lab/Alert";
+import CustomNoRowsOverlay from "src/components/CustomNoRowsOverlay";
 
 const useStyles = makeStyles((theme) => ({
   gridContainer: {
-    height: '500px',
-    marginBottom: '50px',
+    height: "500px",
+    marginBottom: "50px",
   },
 }));
 
 const Brands = () => {
   const classes = useStyles();
   const query = useBrands();
-  const [deleteId, setDeleteId] = useState<string>('');
+  const [deleteId, setDeleteId] = useState<string>("");
   const [open, setOpen] = useState(false);
   const deleteBrand = useDeleteBrand();
 
@@ -57,7 +58,11 @@ const Brands = () => {
         </Box>
       )}
 
-      <DeleteBrandDialog open={open} closeDialog={closeDialog} handleDelete={handleDelete} />
+      <DeleteBrandDialog
+        open={open}
+        closeDialog={closeDialog}
+        handleDelete={handleDelete}
+      />
 
       <Button to="brands/create" component={RouterLink}>
         Add new
@@ -70,30 +75,45 @@ const Brands = () => {
           <DataGrid
             columns={
               [
-                { field: 'id', type: 'number', width: 80 },
-                { field: 'name', flex: 1 },
+                { field: "id", type: "number", width: 80 },
+                { field: "name", flex: 1 },
                 {
-                  field: 'actions',
+                  field: "actions",
                   sortable: false,
                   filterable: false,
                   flex: 1,
                   renderCell: (params: GridCellParams) => (
                     <div>
-                      <Button to={'brands/edit/' + params.row.id} component={RouterLink}>
+                      <Button
+                        to={"brands/edit/" + params.row.id}
+                        component={RouterLink}
+                      >
                         Edit
                       </Button>
-                      <Button onClick={() => handleClickDeleteBtn(params.row.id as string)}>Delete</Button>
+                      <Button
+                        onClick={() =>
+                          handleClickDeleteBtn(params.row.id as string)
+                        }
+                      >
+                        Delete
+                      </Button>
                     </div>
                   ),
                 },
               ] as GridColDef[]
             }
             rows={
-              query.isLoading ? [] : query.data!.map((brand: IBrand) => ({ id: brand.id, name: brand.name }))
+              query.isLoading
+                ? []
+                : query.data!.map((brand: IBrand) => ({
+                    id: brand.id,
+                    name: brand.name,
+                  }))
             }
             loading={query.isLoading}
             components={{
               Toolbar: CustomToolbar,
+              NoRowsOverlay: CustomNoRowsOverlay,
             }}
           />
         )}
