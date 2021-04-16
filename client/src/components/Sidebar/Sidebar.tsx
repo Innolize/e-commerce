@@ -1,22 +1,27 @@
-import React, { useContext } from 'react';
-import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import { Box, Typography } from '@material-ui/core';
-import HomeIcon from '@material-ui/icons/Home';
-import ListAltIcon from '@material-ui/icons/ListAlt';
-import DesktopMacIcon from '@material-ui/icons/DesktopMac';
-import PersonIcon from '@material-ui/icons/Person';
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import WbSunnyIcon from '@material-ui/icons/WbSunny';
-import NightsStayIcon from '@material-ui/icons/NightsStay';
-import ListLink from './ListLink';
-import { CustomThemeContext } from '../../contexts/customThemeContext';
-import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
+import React, { useContext } from "react";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  useTheme,
+} from "@material-ui/core/styles";
+import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
+import List from "@material-ui/core/List";
+import Divider from "@material-ui/core/Divider";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import { Box, Typography } from "@material-ui/core";
+import HomeIcon from "@material-ui/icons/Home";
+import ListAltIcon from "@material-ui/icons/ListAlt";
+import DesktopMacIcon from "@material-ui/icons/DesktopMac";
+import PersonIcon from "@material-ui/icons/Person";
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import WbSunnyIcon from "@material-ui/icons/WbSunny";
+import NightsStayIcon from "@material-ui/icons/NightsStay";
+import ListLink from "./ListLink";
+import { CustomThemeContext } from "../../contexts/customThemeContext";
+import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,13 +32,13 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.primary.main,
     },
     sidebarHeader: {
-      height: '64px',
-      alignItems: 'center',
-      display: 'flex',
-      justifyContent: 'center',
+      height: "64px",
+      alignItems: "center",
+      display: "flex",
+      justifyContent: "center",
     },
     link: {
-      textDecoration: 'none',
+      textDecoration: "none",
       color: theme.palette.text.primary,
     },
   })
@@ -50,14 +55,17 @@ function Sidebar({ state, setState }: Props) {
   const { currentTheme, setTheme } = useContext(CustomThemeContext);
 
   const handleThemeChange = () => {
-    currentTheme === 'light' ? setTheme!('dark') : setTheme!('light');
+    currentTheme === "light" ? setTheme!("dark") : setTheme!("light");
   };
 
-  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+  const toggleDrawer = (open: boolean) => (
+    event: React.KeyboardEvent | React.MouseEvent
+  ) => {
     if (
       event &&
-      event.type === 'keydown' &&
-      ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
+      event.type === "keydown" &&
+      ((event as React.KeyboardEvent).key === "Tab" ||
+        (event as React.KeyboardEvent).key === "Shift")
     ) {
       return;
     }
@@ -65,7 +73,8 @@ function Sidebar({ state, setState }: Props) {
     setState(open);
   };
 
-  const iOS = (process as any).browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const iOS =
+    (process as any).browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   return (
     <SwipeableDrawer
@@ -88,10 +97,18 @@ function Sidebar({ state, setState }: Props) {
 
         <Divider />
 
-        <List onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)} className={classes.list}>
+        <List
+          onClick={toggleDrawer(false)}
+          onKeyDown={toggleDrawer(false)}
+          className={classes.list}
+        >
           <ListLink label="Home" to="/" icon={<HomeIcon />} />
           <ListLink label="Products" to="/products" icon={<ListAltIcon />} />
-          <ListLink label="Build your pc" to="/build" icon={<DesktopMacIcon />} />
+          <ListLink
+            label="Build your pc"
+            to="/build"
+            icon={<DesktopMacIcon />}
+          />
 
           <Divider />
 
@@ -102,16 +119,26 @@ function Sidebar({ state, setState }: Props) {
 
           <ListItem onClick={handleThemeChange} button>
             <ListItemIcon>
-              {theme.palette.type === 'light' ? <WbSunnyIcon /> : <NightsStayIcon />}
+              {theme.palette.type === "light" ? (
+                <WbSunnyIcon />
+              ) : (
+                <NightsStayIcon />
+              )}
             </ListItemIcon>
             <ListItemText>
-              {theme.palette.type === 'light' ? 'Change to dark' : 'Change to light'}
+              {theme.palette.type === "light"
+                ? "Change to dark"
+                : "Change to light"}
             </ListItemText>
           </ListItem>
 
           <Divider />
 
-          <ListLink label="Go to admin panel" to="/admin" icon={<SupervisorAccountIcon />} />
+          <ListLink
+            label="Go to admin panel"
+            to="/admin"
+            icon={<SupervisorAccountIcon />}
+          />
         </List>
       </div>
     </SwipeableDrawer>

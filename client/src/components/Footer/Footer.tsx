@@ -1,10 +1,10 @@
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import Link from '@material-ui/core/Link';
-import { Box, Divider, IconButton } from '@material-ui/core';
-import GitHubIcon from '@material-ui/icons/GitHub';
-import { Link as RouterLink } from 'react-router-dom';
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
+import Link from "@material-ui/core/Link";
+import { Box, Divider, IconButton } from "@material-ui/core";
+import GitHubIcon from "@material-ui/icons/GitHub";
+import { Link as RouterLink } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -13,29 +13,29 @@ const useStyles = makeStyles((theme) => ({
   },
   footer: {
     padding: theme.spacing(3, 2),
-    marginTop: 'auto',
+    marginTop: "auto",
     backgroundColor: theme.palette.primary.main,
   },
   divider: {
-    backgroundColor: 'rgba(0, 0, 0, 0.12)',
-    width: '100%',
-    height: '1px',
-    margin: '10px 0',
+    backgroundColor: "rgba(0, 0, 0, 0.12)",
+    width: "100%",
+    height: "1px",
+    margin: "10px 0",
   },
   flex: {
-    display: 'flex',
+    display: "flex",
   },
 }));
 
 const Copyright = () => {
   return (
     <Typography variant="body2" color="textSecondary">
-      {'Copyright © '}
+      {"Copyright © "}
       <Link color="textPrimary" component={RouterLink} to="/">
         Master Tech
-      </Link>{' '}
+      </Link>{" "}
       {new Date().getFullYear()}
-      {'.'}
+      {"."}
     </Typography>
   );
 };
