@@ -1,10 +1,12 @@
+import { injectable } from "inversify"
 import { DataTypes, Model, Sequelize } from "sequelize"
 import { Roles } from "../../../config/constants/roles"
 import { User } from "../entities/User"
 import { IUserCreate } from "../interfaces/IUserCreate"
 
+@injectable()
 export class UserModel extends Model<User, IUserCreate>{
-    static setup(database: Sequelize): UserModel {
+    static setup(database: Sequelize): typeof UserModel {
         UserModel.init({
             mail: {
                 type: DataTypes.STRING,
@@ -15,7 +17,7 @@ export class UserModel extends Model<User, IUserCreate>{
                 allowNull: false
             },
             role: {
-                type: DataTypes.ENUM(Roles),
+                type: DataTypes.ENUM(...Object.keys(Roles)),
                 allowNull: false
             }
         },
@@ -26,5 +28,6 @@ export class UserModel extends Model<User, IUserCreate>{
                 updatedAt: "modificadoEn"
             }
         )
+        return UserModel
     }
 }

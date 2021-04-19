@@ -50,23 +50,29 @@ export const TYPES = {
             Service: Symbol('VideoCardService'),
             Controller: Symbol('VideoCardController'),
         },
-        Cabinet:{
+        Cabinet: {
             Model: Symbol('CabinetModel'),
             Repository: Symbol('CabinetRepository'),
             Service: Symbol('CabinetService'),
             Controller: Symbol('CabinetController'),
         },
-        PowerSupply:{
+        PowerSupply: {
             Model: Symbol('PowerSupplyModel'),
             Repository: Symbol('PowerSupplyRepository'),
             Service: Symbol('PowerSupplyService'),
             Controller: Symbol('PowerSupplyController'),
         },
-        DiskStorage:{
+        DiskStorage: {
             Model: Symbol('DiskStorageModel'),
             Repository: Symbol('DiskStorageRepository'),
             Service: Symbol('DiskStorageService'),
             Controller: Symbol('DiskStorageController'),
         }
+    },
+    User: {
+        Model: Symbol('UserModel'),
+        Repository: Symbol('UserRepository'),
+        Service: Symbol('UserService'),
+        Controller: Symbol('UserController'),
     }
 }
