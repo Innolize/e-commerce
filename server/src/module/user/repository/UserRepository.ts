@@ -20,7 +20,7 @@ export class UserRepository extends AbstractRepository {
         return users.map(fromDbToUser)
     }
 
-    async getSingleUser(id: string): Promise<User | Error> {
+    async getSingleUser(id: number): Promise<User | Error> {
         try {
             const user = await this.userModel.findByPk(id)
             if (!user) {
@@ -38,6 +38,24 @@ export class UserRepository extends AbstractRepository {
             return fromDbToUser(newUser)
         } catch (err) {
             throw Error(err.message)
+        }
+    }
+
+    async modifyUser(user: User): Promise<User | Error> {
+        try {
+            const [userEdited, userArray] = await this.userModel.update(user, { where: { id: user.id }, returning: true })
+            // update returns an array, first argument is the number of elements updated in the
+            // database. Second argument are the array of elements. Im updating by id so there is only 
+            // one element in the array.
+            if (!userEdited) {
+                throw new Error("User not found")
+            }
+            const editedUser = fromDbToUser(userArray[0])
+
+            return editedUser
+
+        } catch (err) {
+            throw new Error(err.message)
         }
     }
 
