@@ -4,7 +4,7 @@ import { inject } from "inversify";
 import { Multer } from "multer";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
-import { bodyValidator } from "../../common/helpers/bodyValidator";
+import { bodyValidator, mapperMessageError } from "../../common/helpers/bodyValidator";
 import { idNumberOrError } from "../../common/helpers/idNumberOrError";
 import { User } from "../entities/User";
 import { validateCreateUserDto } from "../helper/create_dto_validator";
@@ -60,6 +60,12 @@ export class UserController extends AbstractController {
             const createdUser = await this.userService.createUser(user)
             return res.status(StatusCodes.CREATED).send(createdUser)
         } catch (err) {
+            if (err.isJoi) {
+                const errorArray = mapperMessageError(err)
+                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
+                    errors: errorArray
+                })
+            }
             return res.status(StatusCodes.CONFLICT).send(err)
         }
     }
@@ -82,7 +88,13 @@ export class UserController extends AbstractController {
             const editedUser = await this.userService.modifyUser(validDto)
             return res.status(200).send(editedUser)
         } catch (err) {
-            return res.status(400).send("12345")
+            if (err.isJoi) {
+                const errorArray = mapperMessageError(err)
+                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
+                    errors: errorArray
+                })
+            }
+            return res.status(400).send(err.message)
         }
 
     }
