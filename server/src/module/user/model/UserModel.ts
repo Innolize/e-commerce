@@ -9,6 +9,7 @@ export class UserModel extends Model<User, IUserCreate>{
     static setup(database: Sequelize): typeof UserModel {
         UserModel.init({
             mail: {
+                unique: true,
                 type: DataTypes.STRING,
                 allowNull: false
             },

@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify";
+import { UniqueConstraintError } from "sequelize";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { User } from "../entities/User";
@@ -38,7 +39,10 @@ export class UserRepository extends AbstractRepository {
             const newUser = await this.userModel.create(user)
             return fromDbToUser(newUser)
         } catch (err) {
-            throw Error(err.message)
+            if (err instanceof UniqueConstraintError) {
+                throw Error('Mail already in use!')
+            }
+            throw Error(err)
         }
     }
 

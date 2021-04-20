@@ -66,7 +66,7 @@ export class UserController extends AbstractController {
                     errors: errorArray
                 })
             }
-            return res.status(StatusCodes.CONFLICT).send(err)
+            return res.status(StatusCodes.CONFLICT).send({ error: err.message })
         }
     }
 
