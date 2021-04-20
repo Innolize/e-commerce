@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractService } from "../../abstractClasses/abstractService";
 import { User } from "../entities/User";
+import { IUserEdit } from "../interfaces/IUserEdit";
 import { UserRepository } from "../repository/UserRepository";
 
 @injectable()
@@ -27,7 +28,11 @@ export class UserService extends AbstractService {
         return await this.userRepository.createUser(user)
     }
 
-    async modifyUser(user: User): Promise<User | Error> {
+    async modifyUser(user: IUserEdit): Promise<User | Error> {
         return await this.userRepository.modifyUser(user)
+    }
+
+    async deleteUser(id: number): Promise<true | Error> {
+        return await this.userRepository.deleteUser(id)
     }
 }

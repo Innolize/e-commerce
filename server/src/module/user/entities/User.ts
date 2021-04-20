@@ -2,7 +2,7 @@ import { Roles } from "../../../config/constants/roles"
 import { IUserCreate } from "../interfaces/IUserCreate"
 
 export class User {
-    id?: string
+    id?: number
     mail: string
     password: string
     role: Roles

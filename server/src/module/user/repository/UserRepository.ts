@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { User } from "../entities/User";
+import { IUserEdit } from "../interfaces/IUserEdit";
 import { fromDbToUser } from "../mapper/userMapper";
 import { UserModel } from "../model/UserModel";
 
@@ -41,7 +42,7 @@ export class UserRepository extends AbstractRepository {
         }
     }
 
-    async modifyUser(user: User): Promise<User | Error> {
+    async modifyUser(user: IUserEdit): Promise<User | Error> {
         try {
             const [userEdited, userArray] = await this.userModel.update(user, { where: { id: user.id }, returning: true })
             // update returns an array, first argument is the number of elements updated in the

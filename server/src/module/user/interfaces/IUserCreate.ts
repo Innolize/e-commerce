@@ -1,7 +1,7 @@
 import { Roles } from "../../../config/constants/roles";
 
 export interface IUserCreate {
-    id?: string,
+    id?: number,
     mail: string,
     password: string,
     role?: Roles
