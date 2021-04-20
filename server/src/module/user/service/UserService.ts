@@ -4,15 +4,19 @@ import { AbstractService } from "../../abstractClasses/abstractService";
 import { User } from "../entities/User";
 import { IUserEdit } from "../interfaces/IUserEdit";
 import { UserRepository } from "../repository/UserRepository";
+import bcrypt from "bcrypt"
 
 @injectable()
 export class UserService extends AbstractService {
     private userRepository: UserRepository
+    private encryption: typeof bcrypt
     constructor(
-        @inject(TYPES.User.Repository) userRepository: UserRepository
+        @inject(TYPES.User.Repository) userRepository: UserRepository,
+        @inject(TYPES.Common.Encryption) encryption: typeof bcrypt
     ) {
         super()
         this.userRepository = userRepository
+        this.encryption = encryption
     }
 
     async getUsers(): Promise<User[]> {
@@ -26,7 +30,13 @@ export class UserService extends AbstractService {
 
     async createUser(user: User): Promise<User | Error> {
         try {
-            return await this.userRepository.createUser(user)
+            const mailInUse = await this.userRepository.findUserByMail(user.mail)
+            if (mailInUse) {
+                throw Error('Mail already in use!')
+            }
+            const hashedPassword = await this.encryption.hash(user.password, Number(<string>process.env.BCRYPT_SALT_NUMBER))
+            const userHashed = new User({ ...user, password: hashedPassword })
+            return await this.userRepository.createUser(userHashed)
         } catch (err) {
             throw Error(err.message)
         }

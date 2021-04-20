@@ -96,6 +96,5 @@ export class UserController extends AbstractController {
             }
             return res.status(400).send(err.message)
         }
-
     }
 }

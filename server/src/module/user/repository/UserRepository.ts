@@ -46,6 +46,14 @@ export class UserRepository extends AbstractRepository {
         }
     }
 
+    async findUserByMail(mail: string): Promise<User | false> {
+        const user = await this.userModel.findOne({ where: { mail } })
+        if (!user) {
+            return false
+        }
+        return fromDbToUser(user)
+    }
+
     async modifyUser(user: IUserEdit): Promise<User | Error> {
         try {
             const [userEdited, userArray] = await this.userModel.update(user, { where: { id: user.id }, returning: true })

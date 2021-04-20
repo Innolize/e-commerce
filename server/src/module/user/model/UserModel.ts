@@ -15,7 +15,7 @@ export class UserModel extends Model<User, IUserCreate>{
             },
             password: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
             },
             role: {
                 type: DataTypes.ENUM(...Object.keys(Roles)),
