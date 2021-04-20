@@ -20,7 +20,7 @@ export class UserController extends AbstractController {
     private uploadMiddleware: Multer
     constructor(
         @inject(TYPES.User.Service) userService: UserService,
-        @inject(TYPES.ImageUploader.Service) uploadMiddleware: Multer
+        @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer
     ) {
         super()
         this.ROUTE_BASE = "/user"

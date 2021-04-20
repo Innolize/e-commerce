@@ -14,6 +14,7 @@ import { VideoCardModel } from '../../module/PCBuilder/video-card/module';
 import { CabinetModel } from '../../module/PCBuilder/cabinet/module';
 import { PowerSupplyModel } from '../../module/PCBuilder/power-supply/module';
 import { DiskStorageModel } from '../../module/PCBuilder/disk-storage/module';
+import { UserModel } from '../../module/user/module';
 
 
 const database = container.get<Sequelize>(TYPES.Common.Database);
@@ -31,6 +32,7 @@ const database = container.get<Sequelize>(TYPES.Common.Database);
         CabinetModel.setup(database);
         PowerSupplyModel.setup(database);
         DiskStorageModel.setup(database);
+        UserModel.setup(database);
         ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.Category.Model));
         ProductModel.setupBrandAssociation(container.get<typeof BrandModel>(TYPES.Brand.Model));
         MotherboardModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
