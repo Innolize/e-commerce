@@ -18,6 +18,7 @@ import { CabinetModel, CabinetRepository, CabinetController, CabinetService } fr
 import { PowerSupplyController, PowerSupplyModel, PowerSupplyRepository, PowerSupplyService } from "../module/PCBuilder/power-supply/module"
 import { DiskStorageController, DiskStorageModel, DiskStorageRepository, DiskStorageService } from "../module/PCBuilder/disk-storage/module"
 import { UserController, UserModel, UserRepository, UserService } from '../module/user/module'
+import bcrypt from 'bcrypt'
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -112,7 +113,8 @@ function configureProductContainer(container: Container): void {
 function configureCommonContainer(container: Container): void {
     container.bind<Sequelize>(TYPES.Common.Database).toConstantValue(configureDatabase());
     container.bind<Multer>(TYPES.Common.UploadMiddleware).toConstantValue(configureUploadMiddleware());
-    container.bind<S3>(TYPES.Common.ImageStorage).toConstantValue(configureImageDatabase())
+    container.bind<S3>(TYPES.Common.ImageStorage).toConstantValue(configureImageDatabase());
+    container.bind<typeof bcrypt>(TYPES.Common.Encryption).toConstantValue(bcrypt)
 }
 
 function configureCategoryContainer(container: Container): void {

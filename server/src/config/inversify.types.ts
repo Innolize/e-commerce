@@ -2,7 +2,8 @@ export const TYPES = {
     Common: {
         Database: Symbol("Database"),
         UploadMiddleware: Symbol("UploadMiddleware"),
-        ImageStorage: Symbol("ImageStorage")
+        ImageStorage: Symbol("ImageStorage"),
+        Encryption: Symbol("Encription")
     },
     Product: {
         Model: Symbol("ProductModel"),

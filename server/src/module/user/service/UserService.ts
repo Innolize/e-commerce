@@ -25,7 +25,12 @@ export class UserService extends AbstractService {
     }
 
     async createUser(user: User): Promise<User | Error> {
-        return await this.userRepository.createUser(user)
+        try {
+            return await this.userRepository.createUser(user)
+        } catch (err) {
+            throw Error(err.message)
+        }
+
     }
 
     async modifyUser(user: IUserEdit): Promise<User | Error> {
