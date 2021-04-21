@@ -1,6 +1,7 @@
 import { Application, Request, Response } from "express";
 import passport from "passport";
 import { AbstractController } from "../../abstractClasses/abstractController";
+import { localAuthentication } from "../util/passportMiddlewares";
 
 export class AuthController extends AbstractController {
     private ROUTE: string
@@ -12,13 +13,10 @@ export class AuthController extends AbstractController {
 
     configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE
-        app.post(`/api${ROUTE}`, passport.authenticate('local', { session: false }), this.login.bind(this))
-
-
+        app.post(`/api${ROUTE}`, localAuthentication, this.login.bind(this))
     }
 
     login(req: Request, res: Response): Response {
-        console.log(req.body)
-        return res.status(200).send("asd")
+        return res.status(200).send(req.user)
     }
 }

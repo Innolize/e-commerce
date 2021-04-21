@@ -75,5 +75,9 @@ export const TYPES = {
         Repository: Symbol('UserRepository'),
         Service: Symbol('UserService'),
         Controller: Symbol('UserController'),
-    }
+    },
+    Auth: {
+        // Service: Symbol('AuthService'),
+        Controller: Symbol('AuthController'),
+    },
 }

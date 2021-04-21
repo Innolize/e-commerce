@@ -19,6 +19,7 @@ import { PowerSupplyController, PowerSupplyModel, PowerSupplyRepository, PowerSu
 import { DiskStorageController, DiskStorageModel, DiskStorageRepository, DiskStorageService } from "../module/PCBuilder/disk-storage/module"
 import { UserController, UserModel, UserRepository, UserService } from '../module/user/module'
 import bcrypt from 'bcrypt'
+import { AuthController } from "../module/auth/module"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -138,6 +139,10 @@ function configureUserContainer(container: Container): void {
     container.bind<UserController>(TYPES.User.Controller).to(UserController)
 }
 
+function configureAuthContainer(container: Container): void {
+    container.bind<AuthController>(TYPES.Auth.Controller).to(AuthController)
+}
+
 function configurePCBuilder(container: Container): void {
     container.bind<typeof MotherboardModel>(TYPES.PCBuilder.Motherboard.Model).toConstantValue(configMotherboardModel(container))
     container.bind<MotherboardRepository>(TYPES.PCBuilder.Motherboard.Repository).to(MotherboardRepository)
@@ -182,6 +187,7 @@ function configureDIC() {
     configureProductContainer(dependencyContainer)
     configureUserContainer(dependencyContainer)
     configurePCBuilder(dependencyContainer)
+    configureAuthContainer(dependencyContainer)
     return dependencyContainer
 }
 

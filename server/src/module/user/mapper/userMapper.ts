@@ -3,5 +3,7 @@ import { IUserCreate } from "../interfaces/IUserCreate"
 import { UserModel } from "../model/UserModel"
 
 export const fromDbToUser = (model: UserModel): User => {
-    return new User(model.toJSON() as IUserCreate)
+    const user = new User(model.toJSON() as IUserCreate)
+    console.log(user)
+    return user
 }

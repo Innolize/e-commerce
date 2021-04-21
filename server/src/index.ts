@@ -7,7 +7,7 @@ import container from './config/inversify'
 import { init as initProductModule } from "./module/product/module"
 import { init as initCategoryModule } from "./module/category/module"
 import { init as initBrandModule } from "./module/brand/module"
-import { init as initUserModule, UserRepository } from "./module/user/module"
+import { init as initUserModule } from "./module/user/module"
 import { init as initPCBuilderModule } from "./module/PCBuilder/module"
 import { init as initAuth } from './module/auth/module'
 import { MulterError } from "multer";
@@ -21,10 +21,9 @@ const port = process.env.PORT
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-
 app.use(passport.initialize())
 
-
+//
 initProductModule(app, container)
 initCategoryModule(app, container)
 initBrandModule(app, container)
