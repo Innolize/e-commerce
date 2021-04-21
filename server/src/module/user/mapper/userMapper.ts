@@ -4,6 +4,5 @@ import { UserModel } from "../model/UserModel"
 
 export const fromDbToUser = (model: UserModel): User => {
     const user = new User(model.toJSON() as IUserCreate)
-    console.log(user)
     return user
 }

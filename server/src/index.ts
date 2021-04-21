@@ -29,7 +29,7 @@ initCategoryModule(app, container)
 initBrandModule(app, container)
 initUserModule(app, container)
 initPCBuilderModule(app, container)
-initAuth(app)
+initAuth(app, container)
 
 configureLocalStrategy(container.get(TYPES.User.Repository), passport)
 
