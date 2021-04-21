@@ -10,16 +10,17 @@ interface Props {
   closeDialog: () => void;
   handleDelete: () => void;
   open: boolean;
+  toDelete: "brand" | "category" | "product";
 }
 
-const DeleteBrandDialog = ({ open, closeDialog, handleDelete }: Props) => {
+const DeleteDialog = ({ open, closeDialog, handleDelete, toDelete }: Props) => {
   return (
     <Dialog open={open} onClose={closeDialog}>
-      <DialogTitle>Delete the brand?</DialogTitle>
+      <DialogTitle>Delete the {toDelete} ?</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          When you delete it, the brand will be lost. You still want to delete
-          it?
+          When you delete it, the {toDelete} will be lost. You still want to
+          delete it?
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -39,4 +40,4 @@ const DeleteBrandDialog = ({ open, closeDialog, handleDelete }: Props) => {
   );
 };
 
-export default DeleteBrandDialog;
+export default DeleteDialog;

@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CustomToolbar from "../../components/CustomToolbar";
 import { Link as RouterLink } from "react-router-dom";
 import { useState } from "react";
-import DeleteBrandDialog from "../../components/DeleteDialogs/DeleteBrandDialog";
+import DeleteDialog from "../../components/DeleteDialogs/DeleteDialog";
 import { IBrand } from "../../types";
 import useDeleteBrand from "../../hooks/brandHooks/useDeleteBrand";
 import Alert from "@material-ui/lab/Alert";
@@ -58,7 +58,8 @@ const Brands = () => {
         </Box>
       )}
 
-      <DeleteBrandDialog
+      <DeleteDialog
+        toDelete="brand"
         open={open}
         closeDialog={closeDialog}
         handleDelete={handleDelete}
