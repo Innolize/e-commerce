@@ -13,6 +13,8 @@ import CreateBrand from "../pages/backoffice/CreateBrand";
 import EditBrand from "../pages/backoffice/EditBrand";
 import MainLayoutRoute from "../layouts/MainLayout";
 import AdminLayoutRoute from "../layouts/AdminLayout";
+import EditCategory from "src/pages/backoffice/EditCategory";
+import CreateCategory from "src/pages/backoffice/CreateCategory";
 
 const Routes = () => {
   return (
@@ -49,12 +51,12 @@ const Routes = () => {
         <AdminLayoutRoute
           path="/admin/categories/create"
           exact
-          component={Categories}
+          component={CreateCategory}
         />
         <AdminLayoutRoute
           path="/admin/categories/edit/:id"
           exact
-          component={Categories}
+          component={EditCategory}
         />
         <AdminLayoutRoute path="/admin/brands" exact component={Brands} />
         <AdminLayoutRoute

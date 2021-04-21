@@ -1,11 +1,11 @@
-import { Formik, Form, ErrorMessage } from "formik";
+import { Formik, Form } from "formik";
 import { makeStyles } from "@material-ui/core/styles";
 import InputField from "src/components/InputField";
-import { Box, Button, Container, Input, Typography } from "@material-ui/core";
-import React, { useState } from "react";
-import useCreateBrand from "../../hooks/brandHooks/useCreateBrand";
+import { Box, Button, Container, Typography } from "@material-ui/core";
+import { useState } from "react";
+import useCreateCategory from "../../hooks/categoryHooks/useCreateCategory";
 import { Redirect } from "react-router-dom";
-import { createBrandSchema } from "../../utils/yup.validations";
+import { createCategorySchema } from "../../utils/yup.validations";
 import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
@@ -26,65 +26,50 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CreateBrand = () => {
-  const createBrand = useCreateBrand();
+const CreateCategory = () => {
+  const createCategory = useCreateCategory();
   const classes = useStyles();
   const [redirect, setRedirect] = useState(false);
 
-  createBrand.isSuccess &&
+  createCategory.isSuccess &&
     setTimeout(() => {
       setRedirect(true);
     }, 2500);
 
   return (
     <Container>
-      {createBrand.isSuccess && (
+      {createCategory.isSuccess && (
         <Box my={2}>
           <Alert severity="success">
-            Brand created successfully. You will be redirected soon...
+            Category created successfully. You will be redirected soon...
           </Alert>
         </Box>
       )}
       <Box className={classes.formContainer}>
         <Formik
-          initialValues={{ name: "", logo: "" }}
+          initialValues={{ name: "" }}
           onSubmit={async (data) => {
             const formData = new FormData();
             formData.append("name", data.name);
-            formData.append("logo", data.logo);
-            createBrand.mutate(formData);
+            createCategory.mutate(formData);
           }}
-          validationSchema={createBrandSchema}
+          validationSchema={createCategorySchema}
         >
           {({ setFieldValue }) => (
             <Form className={classes.form} encType="multipart/form-data">
-              <Typography variant="h4">Create a new brand</Typography>
+              <Typography variant="h4">Create a new category</Typography>
               <Box mb={3}>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
-              <Box my={3}>
-                <Input
-                  type="file"
-                  placeholder="Logo"
-                  name="logo"
-                  fullWidth
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFieldValue("logo", e.target.files![0])
-                  }
-                />
-                <ErrorMessage
-                  component={Typography}
-                  className={classes.errorMsg}
-                  name="logo"
-                />
-              </Box>
-              {createBrand.isError && (
+              {createCategory.isError && (
                 <Box my={2}>
-                  <Alert severity="error">{createBrand.error?.message}</Alert>
+                  <Alert severity="error">
+                    {createCategory.error?.message}
+                  </Alert>
                 </Box>
               )}
 
-              {redirect && <Redirect to="/admin/brands" />}
+              {redirect && <Redirect to="/admin/categories" />}
               <Box my={3}>
                 <Button
                   type="submit"
@@ -103,4 +88,4 @@ const CreateBrand = () => {
   );
 };
 
-export default CreateBrand;
+export default CreateCategory;

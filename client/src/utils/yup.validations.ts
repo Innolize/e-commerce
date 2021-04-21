@@ -41,3 +41,17 @@ export const editBrandSchema = yup.object({
       (value) => !value || SUPPORTED_FORMATS.includes(value.type)
     ),
 });
+
+export const createCategorySchema = yup.object({
+  name: yup
+    .string()
+    .required("Name is required.")
+    .max(20, "Name length cannot be more than 20 characters"),
+});
+
+export const editCategorySchema = yup.object({
+  name: yup
+    .string()
+    .required("Name is required.")
+    .max(20, "Name length cannot be more than 20 characters"),
+});
