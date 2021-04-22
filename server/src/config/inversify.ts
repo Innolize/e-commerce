@@ -17,6 +17,9 @@ import { VideoCardModel, VideoCardRepository, VideoCardController, VideoCardServ
 import { CabinetModel, CabinetRepository, CabinetController, CabinetService } from "../module/PCBuilder/cabinet/module"
 import { PowerSupplyController, PowerSupplyModel, PowerSupplyRepository, PowerSupplyService } from "../module/PCBuilder/power-supply/module"
 import { DiskStorageController, DiskStorageModel, DiskStorageRepository, DiskStorageService } from "../module/PCBuilder/disk-storage/module"
+import { UserController, UserModel, UserRepository, UserService } from '../module/user/module'
+import bcrypt from 'bcrypt'
+import { AuthController, AuthService } from "../module/auth/module"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -97,6 +100,9 @@ export function configDiskStorageModel(container: Container): typeof DiskStorage
     DiskStorageModel.setupProductAssociation(container.get(TYPES.Product.Model))
     return DiskStorageModel
 }
+export function configUserModel(container: Container): typeof UserModel {
+    return UserModel.setup(container.get(TYPES.Common.Database))
+}
 
 function configureProductContainer(container: Container): void {
     container.bind<typeof ProductModel>(TYPES.Product.Model).toConstantValue(configProductModel(container));
@@ -108,7 +114,8 @@ function configureProductContainer(container: Container): void {
 function configureCommonContainer(container: Container): void {
     container.bind<Sequelize>(TYPES.Common.Database).toConstantValue(configureDatabase());
     container.bind<Multer>(TYPES.Common.UploadMiddleware).toConstantValue(configureUploadMiddleware());
-    container.bind<S3>(TYPES.Common.ImageStorage).toConstantValue(configureImageDatabase())
+    container.bind<S3>(TYPES.Common.ImageStorage).toConstantValue(configureImageDatabase());
+    container.bind<typeof bcrypt>(TYPES.Common.Encryption).toConstantValue(bcrypt)
 }
 
 function configureCategoryContainer(container: Container): void {
@@ -123,6 +130,18 @@ function configureBrandContainer(container: Container): void {
     container.bind<BrandRepository>(TYPES.Brand.Repository).to(BrandRepository)
     container.bind<BrandService>(TYPES.Brand.Service).to(BrandService)
     container.bind<BrandController>(TYPES.Brand.Controller).to(BrandController)
+}
+
+function configureUserContainer(container: Container): void {
+    container.bind<typeof UserModel>(TYPES.User.Model).toConstantValue(configUserModel(container))
+    container.bind<UserRepository>(TYPES.User.Repository).to(UserRepository)
+    container.bind<UserService>(TYPES.User.Service).to(UserService)
+    container.bind<UserController>(TYPES.User.Controller).to(UserController)
+}
+
+function configureAuthContainer(container: Container): void {
+    container.bind<AuthService>(TYPES.Auth.Service).to(AuthService)
+    container.bind<AuthController>(TYPES.Auth.Controller).to(AuthController)
 }
 
 function configurePCBuilder(container: Container): void {
@@ -167,7 +186,9 @@ function configureDIC() {
     configureCategoryContainer(dependencyContainer)
     configureBrandContainer(dependencyContainer)
     configureProductContainer(dependencyContainer)
+    configureUserContainer(dependencyContainer)
     configurePCBuilder(dependencyContainer)
+    configureAuthContainer(dependencyContainer)
     return dependencyContainer
 }
 
