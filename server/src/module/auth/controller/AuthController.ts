@@ -3,8 +3,9 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
 import { User } from "../../user/entities/User";
+import { ILoginResponse } from "../interfaces/ILoginResponse";
 import { AuthService } from "../service/AuthService";
-import { jwtAuthentication, localAuthentication } from "../util/passportMiddlewares";
+import { localAuthentication } from "../util/passportMiddlewares";
 
 @injectable()
 export class AuthController extends AbstractController {
@@ -26,15 +27,23 @@ export class AuthController extends AbstractController {
 
     login(req: Request, res: Response): Response {
         const user = req.user as User
-        const userAndTokens = this.authService.login(user)
-        const { refresh_token, ...clientResponse} = userAndTokens
+        const { refresh_token, ...clientResponse } = this.authService.login(user)
         res.cookie("refresh", refresh_token)
         return res.status(200).send(clientResponse)
     }
 
-    refresh(req: Request, res: Response): Response {
-        console.log(req.cookies())
-        // await this.authService.refreshToken()
-        return res.status(200).send(req.user)
+    async refresh(req: Request, res: Response): Promise<Response> {
+        try {
+            const refreshCookie = req.cookies.refresh
+            if (!refreshCookie) {
+                throw Error("Refresh cookie not found!")
+            }
+            const { refresh_token, ...clientResponse } = await this.authService.refreshToken(refreshCookie) as ILoginResponse
+            res.cookie("refresh", refresh_token)
+            return res.status(200).send(clientResponse)
+        } catch (err) {
+            return res.status(500).send({ error: err.message })
+        }
+
     }
 }

@@ -1,7 +1,7 @@
 import { PassportStatic } from 'passport'
 import { Strategy as JwtStrategy, StrategyOptions, ExtractJwt } from 'passport-jwt'
 import { User } from '../../user/entities/User';
-import { UserRepository } from '../../user/module';
+import { UserService } from '../../user/module';
 
 const options: StrategyOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -9,16 +9,13 @@ const options: StrategyOptions = {
     ignoreExpiration: false,
 }
 
-export function configureJwtStrategy(userRepository: UserRepository, passport: PassportStatic): void {
+export function configureJwtStrategy(userService: UserService, passport: PassportStatic): void {
 
     passport.use(new JwtStrategy(options,
         async (payload, done) => {
             try {
                 const { sub: id } = payload
-
-                const user = await userRepository.getSingleUser(Number(id)) as User
-                
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const user = await userService.getSingleUser(Number(id)) as User
                 const { password, ...userPasswordless } = user
                 return done(null, userPasswordless)
             } catch (err) {

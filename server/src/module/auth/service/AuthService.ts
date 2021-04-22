@@ -2,25 +2,25 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractService } from "../../abstractClasses/abstractService";
 import { User } from "../../user/entities/User";
-import { UserRepository } from "../../user/module";
+import { UserService } from "../../user/module";
 import { sign, verify } from 'jsonwebtoken'
 import { ILoginResponse } from "../interfaces/ILoginResponse";
-import { createCipher } from "node:crypto";
+import { IJwtToken } from "../interfaces/IJwtToken";
 
 @injectable()
 export class AuthService extends AbstractService {
-    private userRepository: UserRepository
+    private userService: UserService
     constructor(
-        @inject(TYPES.User.Service) userRepository: UserRepository
+        @inject(TYPES.User.Service) userService: UserService
     ) {
         super()
-        this.userRepository = userRepository
+        this.userService = userService
     }
     login(user: User): ILoginResponse {
         const { id, password, ...rest } = user
         const payload = { sub: id }
         const access_token = this.signAccessToken(payload)
-        const refresh_token = this.createRefreshToken(payload)
+        const refresh_token = this.signRefreshToken(payload)
         return {
             user: { id, ...rest },
             access_token,
@@ -28,17 +28,24 @@ export class AuthService extends AbstractService {
         }
     }
 
-    createRefreshToken(id: { sub: number | undefined }): string {
+    signRefreshToken(id: { sub: number | undefined }): string {
         return sign(id, <string>process.env.JWT_SECRET_REFRESH, { expiresIn: "3d" })
     }
 
-    async refreshToken(refreshToken: string) {
+    async refreshToken(refreshToken: string): Promise<ILoginResponse | Error> {
         try {
-            const token = verify(refreshToken, <string>process.env.JWT_SECRET_REFRESH)
-            console.log(token)
-            // const { sub } = token
-            // const user = await this.userService.getUser(Number(token.sub))
-            // const access_token = sign(token, <string>process.env.JWT_SECRET, { expiresIn: "6h" })
+            const token = verify(refreshToken, <string>process.env.JWT_SECRET_REFRESH) as IJwtToken
+            const { sub } = token
+            const payload = { sub }
+            const user = await this.userService.getSingleUser(sub) as User
+            const { password, ...rest } = user
+            const access_token = sign(rest, <string>process.env.JWT_SECRET, { expiresIn: "6h" })
+            const refresh_token = this.signRefreshToken(payload)
+            return {
+                user: rest,
+                access_token,
+                refresh_token
+            }
         } catch (err) {
             throw Error(err.message)
         }

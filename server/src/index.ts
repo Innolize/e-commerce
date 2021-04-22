@@ -13,17 +13,17 @@ import { init as initAuth } from './module/auth/module'
 import { MulterError } from "multer";
 import { ReasonPhrases } from "http-status-codes";
 import passport from "passport";
-import { configureLocalStrategy } from "./module/auth/strategies/LocalStrategy";
-import { TYPES } from "./config/inversify.types";
-import { configureJwtStrategy } from "./module/auth/strategies/JwtStrategy";
+import { configurePassportStrategies } from "./module/auth/strategies";
+import cookieParser from 'cookie-parser'
 
 const app = express()
 const port = process.env.PORT
+app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
 app.use(passport.initialize())
-
+configurePassportStrategies(container, passport)
 //
 initProductModule(app, container)
 initCategoryModule(app, container)
@@ -32,8 +32,8 @@ initUserModule(app, container)
 initPCBuilderModule(app, container)
 initAuth(app, container)
 
-configureLocalStrategy(container.get(TYPES.User.Repository), passport)
-configureJwtStrategy(container.get(TYPES.User.Repository), passport)
+
+
 
 
 

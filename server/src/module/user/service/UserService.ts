@@ -40,7 +40,10 @@ export class UserService extends AbstractService {
         } catch (err) {
             throw Error(err.message)
         }
+    }
 
+    async findUserByMail(mail: string): Promise<User | false> {
+        return await this.userRepository.findUserByMail(mail)
     }
 
     async modifyUser(user: IUserEdit): Promise<User | Error> {
