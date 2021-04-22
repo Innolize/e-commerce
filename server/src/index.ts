@@ -15,6 +15,7 @@ import { ReasonPhrases } from "http-status-codes";
 import passport from "passport";
 import { configureLocalStrategy } from "./module/auth/strategies/LocalStrategy";
 import { TYPES } from "./config/inversify.types";
+import { configureJwtStrategy } from "./module/auth/strategies/JwtStrategy";
 
 const app = express()
 const port = process.env.PORT
@@ -32,6 +33,8 @@ initPCBuilderModule(app, container)
 initAuth(app, container)
 
 configureLocalStrategy(container.get(TYPES.User.Repository), passport)
+configureJwtStrategy(container.get(TYPES.User.Repository), passport)
+
 
 
 

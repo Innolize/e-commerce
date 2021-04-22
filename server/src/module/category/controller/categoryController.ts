@@ -33,7 +33,7 @@ export class CategoryController extends AbstractController {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAllCategories.bind(this))
         app.post(`/api${ROUTE}`, this.uploadMiddleware.single("bulbasaur"), this.createCategory.bind(this))
-        app.put(`/api${ROUTE}`, this.modifyCategory.bind(this))
+        app.put(`/api${ROUTE}`, this.uploadMiddleware.none(), this.modifyCategory.bind(this))
         app.delete(`/api${ROUTE}/:id`, this.deleteCategory.bind(this))
         app.get(`/api${ROUTE}/findByName/:name`, this.findCategoryByName.bind(this))
         app.get(`/api${ROUTE}/findById/:id`, this.findCategoryById.bind(this))
@@ -69,19 +69,19 @@ export class CategoryController extends AbstractController {
         }
     }
 
-        async findCategoryByName(req: Request, res: Response): Promise<void> {
-            const { name } = req.params
-            if (!name) {
-                throw Error("Query param 'name' is missing")
-            }
-            try {
-                const response = await this.categoryService.findProductByName(name)
-                res.status(StatusCodes.OK).send(response)
-            } catch (err) {
-                console.log('hubo un error')
-            }
-
+    async findCategoryByName(req: Request, res: Response): Promise<void> {
+        const { name } = req.params
+        if (!name) {
+            throw Error("Query param 'name' is missing")
         }
+        try {
+            const response = await this.categoryService.findProductByName(name)
+            res.status(StatusCodes.OK).send(response)
+        } catch (err) {
+            console.log('hubo un error')
+        }
+
+    }
 
     async findCategoryById(req: Request, res: Response): Promise<Response> {
         const { id } = req.params
@@ -99,8 +99,10 @@ export class CategoryController extends AbstractController {
     }
 
     async modifyCategory(req: Request, res: Response): Promise<Response> {
+        console.log(req.body)
         try {
             const dto: IEditableCategory = req.body
+            console.log(req.body)
             await bodyValidator(validateEditCategoryDto, dto)
             const response = await this.categoryService.modifyCategory(dto)
             return res.status(StatusCodes.OK).send(response)
@@ -112,7 +114,7 @@ export class CategoryController extends AbstractController {
                 })
             }
             console.log(err)
-            return res.status(StatusCodes.NOT_FOUND).send({message: err.message})
+            return res.status(StatusCodes.NOT_FOUND).send({ message: err.message })
         }
     }
 
