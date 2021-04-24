@@ -1,12 +1,15 @@
 import { DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
-import { IRoleCreate } from "../interfaces/IRoleCreate";
 import { IPermissionModelAttributes } from "../interfaces/IPermissionModelAttributes";
 import { ACTIONS, SUBJECTS } from "../../../config/constants/roles";
+import { RoleModel } from "./RoleModel";
+import { injectable } from "inversify";
+import { IPermissionCreate } from "../interfaces/IPermissionCreate";
 
-export class RoleModel extends Model<IPermissionModelAttributes, IRoleCreate>{
-    setup(database: Sequelize): typeof RoleModel {
-        RoleModel.init({
+@injectable()
+export class PermissionModel extends Model<IPermissionModelAttributes, IPermissionCreate>{
+    static setup(database: Sequelize): typeof PermissionModel {
+        PermissionModel.init({
             id: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
@@ -15,19 +18,31 @@ export class RoleModel extends Model<IPermissionModelAttributes, IRoleCreate>{
             action: {
                 type: DataTypes.ENUM(...ACTIONS)
             },
-            subject:{
+            subject: {
                 type: DataTypes.ENUM(...SUBJECTS)
+            },
+            role_id:{
+                type: DataTypes.INTEGER,
+                allowNull: false,
             }
         }, {
             sequelize: database,
-            modelName: "User",
+            modelName: "Permission",
             createdAt: "creadoEn",
             updatedAt: "modificadoEn"
         })
-        return RoleModel
+        return PermissionModel
     }
-    // static setupRolePermission(){
-
+    // static setupRoleAssociation(model: typeof RoleModel): typeof PermissionModel {
+    //     PermissionModel.belongsTo(model, {
+    //         foreignKey: {
+    //             allowNull: false,
+    //             name: 'role_id'
+    //         },
+    //         as: 'Permissions',
+    //         onDelete: "cascade"
+    //     })
+    //     return PermissionModel
     // }
 
 }

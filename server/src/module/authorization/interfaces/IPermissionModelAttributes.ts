@@ -6,4 +6,5 @@ export interface IPermissionModelAttributes {
     id: number
     action: Actions
     subject: Subject
+    role_id: number
 }
