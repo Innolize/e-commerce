@@ -15,6 +15,9 @@ import { CabinetModel } from '../../module/PCBuilder/cabinet/module';
 import { PowerSupplyModel } from '../../module/PCBuilder/power-supply/module';
 import { DiskStorageModel } from '../../module/PCBuilder/disk-storage/module';
 import { PermissionModel, RoleModel } from '../../module/authorization/module';
+import { UserModel } from '../../module/user/module';
+import { User } from '../../module/user/entities/User';
+import { FullUser, IFullUserCreate } from '../../module/user/entities/FullUser';
 
 async function configureDatabase() {
 
@@ -35,6 +38,7 @@ async function configureDatabase() {
             DiskStorageModel.setup(database);
             PermissionModel.setup(database);
             RoleModel.setup(database);
+            UserModel.setup(database)
             ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.Category.Model));
             ProductModel.setupBrandAssociation(container.get<typeof BrandModel>(TYPES.Brand.Model));
             MotherboardModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
@@ -45,6 +49,8 @@ async function configureDatabase() {
             PowerSupplyModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
             DiskStorageModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
             RoleModel.setupPermissionAssociation(container.get<typeof PermissionModel>(TYPES.Authorization.Permission.Model));
+            UserModel.setupRoleAssociation(container.get<typeof RoleModel>(TYPES.Authorization.Role.Model))
+            // RoleModel.setupUserAssociation(container.get<typeof UserModel>(TYPES.User.Model))
             // PermissionModel.setupRoleAssociation(container.get<typeof RoleModel>(TYPES.Authorization.Role.Model));
         } catch (err) {
             console.log('config')
@@ -63,6 +69,8 @@ async function configureDatabase() {
             await database.sync({ force: true })
 
             await CategoryModel.create({ name: "testname" })
+
+
             await BrandModel.create({ name: "brandTest", logo: "test-logo" })
             await ProductModel.create({ name: "nombreDeProducto123", id_brand: 1, image: "image-test", description: "description-test", price: 12345, stock: true, id_category: 1 })
             await ProductModel.create({ name: "nombreDeProducto123-b", id_brand: 1, image: "image-test-b", description: "description-test-b", price: 123456, stock: true, id_category: 1 })
@@ -70,18 +78,16 @@ async function configureDatabase() {
             await PermissionModel.create({ action: "create", subject: "Brand", role_id: 1 })
             await PermissionModel.create({ action: "read", subject: "Brand", role_id: 1 })
             await PermissionModel.create({ action: "delete", subject: "Brand", role_id: 1 })
-
-
-            const response = await RoleModel.findByPk(1, { include: "Permissions" })
-
-            console.log(response?.toJSON());
+            await UserModel.create({ mail: '123@gmail.com', password: '12345', role_id: 1 })
+            const userCreated = await UserModel.findByPk(1, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }] })
+            const test = new FullUser(userCreated?.toJSON() as IFullUserCreate)
+            console.log(test)
             await RamModel.create({ watts: 20, id_product: 2, max_frec: 1200, memory: 12, min_frec: 1300, ram_version: 'DDR4' })
-            // const products = await ProductModel.findAll({ include: ["category", "brand"] })
             // const final = products.map(fromDbToFullProduct)
             console.log('exito!')
         } catch (err) {
 
-            console.log(err.message)
+            console.log(err)
         }
     }
     await configure()

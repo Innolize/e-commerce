@@ -1,6 +1,7 @@
 import { injectable } from "inversify";
-import { DataTypes, Sequelize } from "sequelize";
+import { Association, DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
+import { UserModel } from "../../user/module";
 import { IRoleCreate } from "../interfaces/IRoleCreate";
 import { IRoleModelAttributes } from "../interfaces/IRoleModelAttributes";
 import { PermissionModel } from "./PermissionModel";
@@ -29,10 +30,18 @@ export class RoleModel extends Model<IRoleModelAttributes, IRoleCreate>{
         RoleModel.hasMany(model, {
             sourceKey: 'id',
             foreignKey: 'role_id',
-            as: 'Permissions',
+            as: 'permissions',
             onDelete: "cascade"
-        })
+        });
         return RoleModel
+    }
+
+    // static setupUserAssociation(model: typeof UserModel): typeof RoleModel {
+    //     RoleModel.belongsTo(model);
+    //     return RoleModel
+    // }
+    static associations: {
+        permissions: Association<PermissionModel, RoleModel>
     }
 
 }

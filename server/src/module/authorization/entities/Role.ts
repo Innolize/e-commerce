@@ -1,4 +1,5 @@
 import { IRoleCreate } from "../interfaces/IRoleCreate"
+import { IPermissionCreate } from '../interfaces/IPermissionCreate'
 import { Permission } from "./Permission"
 // import { Permission } from "./Permission"
 
@@ -12,7 +13,7 @@ export class Role {
         }
         this.name = name
         if (permissions) {
-            this.permissions = permissions
+            this.permissions = permissions.map(x => new Permission(x as IPermissionCreate))
         }
     }
 }

@@ -102,7 +102,9 @@ export function configDiskStorageModel(container: Container): typeof DiskStorage
     return DiskStorageModel
 }
 export function configUserModel(container: Container): typeof UserModel {
-    return UserModel.setup(container.get(TYPES.Common.Database))
+    UserModel.setup(container.get(TYPES.Common.Database))
+    UserModel.setupRoleAssociation(container.get(TYPES.Authorization.Role.Model))
+    return UserModel
 }
 
 export function configRoleModel(container: Container): typeof RoleModel {
@@ -200,10 +202,10 @@ function configureDIC() {
     configureCategoryContainer(dependencyContainer)
     configureBrandContainer(dependencyContainer)
     configureProductContainer(dependencyContainer)
-    configureUserContainer(dependencyContainer)
     configurePCBuilder(dependencyContainer)
     configureAuthContainer(dependencyContainer)
     configPermissionContainer(dependencyContainer)
+    configureUserContainer(dependencyContainer)
     return dependencyContainer
 }
 

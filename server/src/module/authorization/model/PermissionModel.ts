@@ -2,7 +2,6 @@ import { DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
 import { IPermissionModelAttributes } from "../interfaces/IPermissionModelAttributes";
 import { ACTIONS, SUBJECTS } from "../../../config/constants/roles";
-import { RoleModel } from "./RoleModel";
 import { injectable } from "inversify";
 import { IPermissionCreate } from "../interfaces/IPermissionCreate";
 
@@ -21,7 +20,7 @@ export class PermissionModel extends Model<IPermissionModelAttributes, IPermissi
             subject: {
                 type: DataTypes.ENUM(...SUBJECTS)
             },
-            role_id:{
+            role_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             }
@@ -33,16 +32,4 @@ export class PermissionModel extends Model<IPermissionModelAttributes, IPermissi
         })
         return PermissionModel
     }
-    // static setupRoleAssociation(model: typeof RoleModel): typeof PermissionModel {
-    //     PermissionModel.belongsTo(model, {
-    //         foreignKey: {
-    //             allowNull: false,
-    //             name: 'role_id'
-    //         },
-    //         as: 'Permissions',
-    //         onDelete: "cascade"
-    //     })
-    //     return PermissionModel
-    // }
-
 }
