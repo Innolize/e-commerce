@@ -15,6 +15,8 @@ import MainLayoutRoute from "../layouts/MainLayout";
 import AdminLayoutRoute from "../layouts/AdminLayout";
 import EditCategory from "src/pages/backoffice/EditCategory";
 import CreateCategory from "src/pages/backoffice/CreateCategory";
+import CreateProduct from "src/pages/backoffice/CreateProduct";
+import EditProduct from "src/pages/backoffice/EditProduct";
 
 const Routes = () => {
   return (
@@ -36,12 +38,12 @@ const Routes = () => {
         <AdminLayoutRoute
           path="/admin/products/create"
           exact
-          component={AdminProducts}
+          component={CreateProduct}
         />
         <AdminLayoutRoute
           path="/admin/products/edit/:id"
           exact
-          component={AdminProducts}
+          component={EditProduct}
         />
         <AdminLayoutRoute
           path="/admin/categories"
