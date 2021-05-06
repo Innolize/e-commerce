@@ -51,7 +51,7 @@ const CreateBrand = () => {
           onSubmit={async (data) => {
             const formData = new FormData();
             formData.append("name", data.name);
-            formData.append("logo", data.logo);
+            formData.append("brand_logo", data.logo);
             createBrand.mutate(formData);
           }}
           validationSchema={createBrandSchema}

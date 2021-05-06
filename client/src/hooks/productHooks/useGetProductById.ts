@@ -1,16 +1,16 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery, useQueryClient } from "react-query";
 import api from "../../services/api";
-import { ICategory } from "../../types";
+import { IProduct } from "../../types";
 
-export default function useGetCategoryById(categoryId: string) {
+export default function useGetProductId(productId: string) {
   const queryClient = useQueryClient();
   return useQuery(
-    ["categories", categoryId],
+    ["products", productId],
     () =>
       api
-        .get(`/api/category/findById/${categoryId}`)
-        .then((res: AxiosResponse<ICategory>) => res.data)
+        .get(`/api/product/${productId}`)
+        .then((res: AxiosResponse<IProduct>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
             // The request was made and the server responded with a status code
@@ -23,8 +23,8 @@ export default function useGetCategoryById(categoryId: string) {
     {
       initialData: () => {
         return queryClient
-          .getQueryData<any>("categories")
-          ?.find((b: any) => b.id === parseInt(categoryId));
+          .getQueryData<any>("products")
+          ?.find((b: any) => b.id === parseInt(productId));
       },
       onError: (e: AxiosError) => {
         console.log(e.message);

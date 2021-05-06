@@ -1,23 +1,21 @@
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 import { useQueryClient, useMutation } from "react-query";
 import api from "../../services/api";
-import { IBrand } from "../../types";
 
-export default function useCreateBrand(
-  successCallBack?: Function,
+export default function useDeleteProduct(
+  sucessCallback?: Function,
   errorCallback?: Function
 ) {
   const queryClient = useQueryClient();
   return useMutation(
-    (values: FormData) =>
+    (id: string) =>
       api
-        .post("/api/brand", values)
-        .then((res: AxiosResponse<IBrand>) => res.data)
+        .delete(`/api/product/${id}`)
+        .then((res) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            console.log(error.response);
             // The request was made and the server responded with a status code
-            throw new Error(error.response.data.errors[0]);
+            throw new Error(error.response.data.message);
           } else {
             // Something happened in setting up the request that triggered an Error
             throw new Error(error.message);
@@ -26,8 +24,8 @@ export default function useCreateBrand(
     {
       retry: false,
       onSuccess: () => {
-        queryClient.invalidateQueries("brands");
-        successCallBack && successCallBack();
+        queryClient.invalidateQueries("products");
+        sucessCallback && sucessCallback();
       },
       onError: (e: AxiosError) => {
         console.error(e);

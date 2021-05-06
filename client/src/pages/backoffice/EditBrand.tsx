@@ -95,7 +95,7 @@ const CreateBrand = () => {
 
               formData.append("id", id);
               formData.append("name", data.name);
-              formData.append("logo", data.logo);
+              formData.append("brand_logo", data.logo);
 
               editBrand.mutate(formData);
             }}
@@ -110,6 +110,7 @@ const CreateBrand = () => {
                   <Paper className={classes.image}>
                     {queryBrand.data.logo ? (
                       <Image
+                        disableTransition
                         imageStyle={{ borderRadius: "4px", height: "150px" }}
                         style={{
                           borderRadius: "4px",

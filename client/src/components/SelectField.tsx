@@ -1,7 +1,7 @@
-import TextField, { TextFieldProps } from "@material-ui/core/TextField";
+import { TextField, TextFieldProps } from "@material-ui/core";
 import { FieldAttributes, useField } from "formik";
 
-const InputField = (props: FieldAttributes<TextFieldProps>) => {
+const SelectField = (props: FieldAttributes<TextFieldProps>) => {
   const [field, meta] = useField<{}>(props);
   const errorText = meta.error && meta.touched ? meta.error : "";
 
@@ -11,13 +11,16 @@ const InputField = (props: FieldAttributes<TextFieldProps>) => {
       {...props}
       helperText={errorText}
       error={!!errorText}
-      variant="outlined"
-      fullWidth
+      type="text"
       margin="normal"
-      color="secondary"
+      variant="outlined"
+      select
+      fullWidth
       required
-    />
+    >
+      {props.children}
+    </TextField>
   );
 };
 
-export default InputField;
+export default SelectField;
