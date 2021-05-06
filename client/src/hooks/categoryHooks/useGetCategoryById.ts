@@ -9,7 +9,7 @@ export default function useGetCategoryById(categoryId: string) {
     ["categories", categoryId],
     () =>
       api
-        .get(`/api/category/find-by-id/${categoryId}`)
+        .get(`/api/category/findById/${categoryId}`)
         .then((res: AxiosResponse<ICategory>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {

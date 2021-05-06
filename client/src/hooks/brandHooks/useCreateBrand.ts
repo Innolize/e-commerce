@@ -15,12 +15,9 @@ export default function useCreateBrand(
         .then((res: AxiosResponse<IBrand>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
+            console.log(error.response);
             // The request was made and the server responded with a status code
-            if (error.response.status === 422) {
-              throw new Error(error.response.data.errors[0]);
-            } else {
-              throw new Error(error.response.data);
-            }
+            throw new Error(error.response.data.errors[0]);
           } else {
             // Something happened in setting up the request that triggered an Error
             throw new Error(error.message);
