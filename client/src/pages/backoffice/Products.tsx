@@ -1,9 +1,14 @@
 import { Box, Button, Typography } from "@material-ui/core";
+import DeleteDialog from "../../components/DeleteDialogs/DeleteDialog";
 import { Container } from "@material-ui/core";
 import { DataGrid, GridColDef, GridCellParams } from "@material-ui/data-grid";
 import { makeStyles } from "@material-ui/core/styles";
-import useProducts from "../../hooks/useProducts";
+import useProducts from "../../hooks/productHooks/useProducts";
 import CustomToolbar from "../../components/CustomToolbar";
+import useDeleteProduct from "src/hooks/productHooks/useDeleteProduct";
+import { useState } from "react";
+import Alert from "@material-ui/lab/Alert";
+import { Link as RouterLink } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   gridContainer: {
@@ -15,13 +20,53 @@ const useStyles = makeStyles((theme) => ({
 const Products = () => {
   const classes = useStyles();
   const query = useProducts();
+  const [deleteId, setDeleteId] = useState<string>("");
+  const [open, setOpen] = useState(false);
+  const deleteProduct = useDeleteProduct();
+
+  const handleClickDeleteBtn = (id: string) => {
+    setOpen(true);
+    setDeleteId(id);
+  };
+
+  const handleDelete = () => {
+    deleteProduct.mutate(deleteId);
+    closeDialog();
+  };
+
+  const closeDialog = () => {
+    setOpen(false);
+  };
 
   return (
     <Container>
       <Box my={4} textAlign="center">
         <Typography variant="h3">Products</Typography>
       </Box>
-      <Button>Add new</Button>
+
+      {deleteProduct.isSuccess && (
+        <Box my={2}>
+          <Alert severity="success">Product deleted successfully</Alert>
+        </Box>
+      )}
+
+      {deleteProduct.isError && (
+        <Box my={2}>
+          <Alert severity="error">{deleteProduct.error?.message}</Alert>
+        </Box>
+      )}
+
+      <DeleteDialog
+        toDelete="product"
+        open={open}
+        closeDialog={closeDialog}
+        handleDelete={handleDelete}
+      />
+
+      <Button to="products/create" component={RouterLink}>
+        Add new
+      </Button>
+
       <Box className={classes.gridContainer}>
         {query.isError ? (
           <DataGrid error rows={[]} columns={[]} />
@@ -44,8 +89,19 @@ const Products = () => {
                   width: 150,
                   renderCell: (params: GridCellParams) => (
                     <div>
-                      <Button>Edit</Button>
-                      <Button>Delete</Button>
+                      <Button
+                        to={"products/edit/" + params.row.id}
+                        component={RouterLink}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          handleClickDeleteBtn(params.row.id as string)
+                        }
+                      >
+                        Delete
+                      </Button>
                     </div>
                   ),
                 },
