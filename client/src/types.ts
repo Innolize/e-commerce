@@ -12,4 +12,9 @@ export interface ICategory {
 export interface IProduct {
   id: string | number;
   name: string;
+  description: string;
+  image: string;
+  price: number;
+  category: ICategory;
+  brand: IBrand;
 }
