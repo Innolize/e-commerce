@@ -18,6 +18,7 @@ import { PermissionModel, RoleModel } from '../../module/authorization/module';
 import { UserModel } from '../../module/user/module';
 import { User } from '../../module/user/entities/User';
 import { FullUser, IFullUserCreate } from '../../module/user/entities/FullUser';
+import { Permission } from '../../module/authorization/entities/Permission';
 
 async function configureDatabase() {
 
@@ -78,10 +79,11 @@ async function configureDatabase() {
             await PermissionModel.create({ action: "create", subject: "Brand", role_id: 1 })
             await PermissionModel.create({ action: "read", subject: "Brand", role_id: 1 })
             await PermissionModel.create({ action: "delete", subject: "Brand", role_id: 1 })
+            await PermissionModel.create({action: "create", subject: 'Product', role_id: 1, conditions:JSON.stringify({test: '123'})})
             await UserModel.create({ mail: '123@gmail.com', password: '12345', role_id: 1 })
             const userCreated = await UserModel.findByPk(1, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }] })
             const test = new FullUser(userCreated?.toJSON() as IFullUserCreate)
-            console.log(test)
+            console.log(test.role?.permissions)
             await RamModel.create({ watts: 20, id_product: 2, max_frec: 1200, memory: 12, min_frec: 1300, ram_version: 'DDR4' })
             // const final = products.map(fromDbToFullProduct)
             console.log('exito!')

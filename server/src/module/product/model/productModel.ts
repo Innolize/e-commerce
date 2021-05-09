@@ -8,8 +8,10 @@ import { IProductCreate } from "../interfaces/IProductCreate";
 
 decorate(injectable(), (Model))
 
+type ProductAttributes = Omit<IProduct, 'kind'>
+
 @injectable()
-export class ProductModel extends Model<IProduct, IProductCreate>{
+export class ProductModel extends Model<ProductAttributes, IProductCreate>{
 
     static setup(database: Sequelize): typeof ProductModel {
         ProductModel.init({

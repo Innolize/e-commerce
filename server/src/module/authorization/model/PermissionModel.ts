@@ -15,14 +15,15 @@ export class PermissionModel extends Model<IPermissionModelAttributes, IPermissi
                 primaryKey: true
             },
             action: {
-                type: DataTypes.ENUM(...ACTIONS)
+                type: DataTypes.ENUM(...ACTIONS),
+                allowNull: false
             },
             subject: {
-                type: DataTypes.ENUM(...SUBJECTS)
+                type: DataTypes.ENUM(...SUBJECTS),
+                allowNull: false
             },
-            role_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
+            conditions: {
+                type: DataTypes.TEXT,
             }
         }, {
             sequelize: database,

@@ -5,6 +5,6 @@ import { Actions } from "../entities/Permission";
 export interface IPermissionModelAttributes {
     id: number
     action: Actions
-    subject: Subject
-    role_id: number
+    subject: Subject,
+    conditions?: string
 }
