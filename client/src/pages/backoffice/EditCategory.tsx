@@ -1,18 +1,19 @@
 import {
   Box,
-  Button,
   CircularProgress,
   Container,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Alert from "@material-ui/lab/Alert";
 import { Form, Formik } from "formik";
-import { useParams } from "react-router-dom";
+import { useState } from "react";
+import { Redirect, useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
+import LoadingButton from "src/components/LoadingButton";
 import useEditCategory from "../../hooks/categoryHooks/useEditCategory";
 import useGetCategoryById from "../../hooks/categoryHooks/useGetCategoryById";
 import { ICategory } from "../../types";
-import Alert from "@material-ui/lab/Alert";
 import { editCategorySchema } from "../../utils/yup.validations";
 
 const useStyles = makeStyles((theme) => ({
@@ -54,6 +55,12 @@ const CreateCategory = () => {
   const queryCategory = useGetCategoryById(id);
   const editCategory = useEditCategory();
   const classes = useStyles();
+  const [redirect, setRedirect] = useState(false);
+
+  editCategory.isSuccess &&
+    setTimeout(() => {
+      setRedirect(true);
+    }, 2500);
 
   return (
     <Container>
@@ -71,9 +78,13 @@ const CreateCategory = () => {
       )}
       {editCategory.isSuccess && (
         <Box my={2}>
-          <Alert severity="success">Sucessfully edited!</Alert>
+          <Alert severity="success">
+            Sucessfully edited! You will be redirected soon..
+          </Alert>
         </Box>
       )}
+
+      {redirect && <Redirect to="/admin/brands" />}
 
       {queryCategory.isSuccess && (
         <Box className={classes.formContainer} my={10}>
@@ -105,10 +116,14 @@ const CreateCategory = () => {
                     </Alert>
                   </Box>
                 )}
-                <Box my={3}>
-                  <Button type="submit" variant="contained" color="primary">
-                    Submit changes
-                  </Button>
+                <Box>
+                  {editCategory.isLoading ? (
+                    <LoadingButton isSubmitting name="Editing..." />
+                  ) : editCategory.isSuccess ? (
+                    <LoadingButton isSuccess name="Submited" />
+                  ) : (
+                    <LoadingButton name="Submit changes" />
+                  )}
                 </Box>
               </Form>
             )}

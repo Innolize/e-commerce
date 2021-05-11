@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   CircularProgress,
   Container,
   Input,
@@ -8,15 +7,16 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Alert from "@material-ui/lab/Alert";
 import { ErrorMessage, Form, Formik } from "formik";
 import Image from "material-ui-image";
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { Redirect, useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
+import LoadingButton from "src/components/LoadingButton";
 import useEditBrand from "../../hooks/brandHooks/useEditBrand";
 import useGetBrandById from "../../hooks/brandHooks/useGetBrandById";
 import { IBrand } from "../../types";
-import Alert from "@material-ui/lab/Alert";
 import { editBrandSchema } from "../../utils/yup.validations";
 
 const useStyles = makeStyles((theme) => ({
@@ -58,6 +58,12 @@ const CreateBrand = () => {
   const queryBrand = useGetBrandById(id);
   const editBrand = useEditBrand();
   const classes = useStyles();
+  const [redirect, setRedirect] = useState(false);
+
+  editBrand.isSuccess &&
+    setTimeout(() => {
+      setRedirect(true);
+    }, 2500);
 
   return (
     <Container>
@@ -75,9 +81,12 @@ const CreateBrand = () => {
       )}
       {editBrand.isSuccess && (
         <Box my={2}>
-          <Alert severity="success">Sucessfully edited!</Alert>
+          <Alert severity="success">
+            Sucessfully edited! You will be redirected soon...
+          </Alert>
         </Box>
       )}
+      {redirect && <Redirect to="/admin/brands" />}
 
       {queryBrand.isSuccess && (
         <Box className={classes.formContainer} my={10}>
@@ -147,10 +156,14 @@ const CreateBrand = () => {
                     <Alert severity="error">{editBrand.error?.message}</Alert>
                   </Box>
                 )}
-                <Box my={3}>
-                  <Button type="submit" variant="contained" color="primary">
-                    Submit changes
-                  </Button>
+                <Box>
+                  {editBrand.isLoading ? (
+                    <LoadingButton isSubmitting name="Editing..." />
+                  ) : editBrand.isSuccess ? (
+                    <LoadingButton isSuccess name="Submited" />
+                  ) : (
+                    <LoadingButton name="Submit changes" />
+                  )}
                 </Box>
               </Form>
             )}
