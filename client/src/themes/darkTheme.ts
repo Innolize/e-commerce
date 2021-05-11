@@ -11,6 +11,9 @@ const theme = createMuiTheme({
     secondary: {
       main: "#FFAA33",
     },
+    error: {
+      main: "#F70000",
+    },
   },
   overrides: {
     MuiCssBaseline: {
