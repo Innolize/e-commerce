@@ -1,24 +1,15 @@
 import { Box, Button, Container, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { DataGrid, GridCellParams, GridColDef } from "@material-ui/data-grid";
-import { useState } from "react";
-import CustomToolbar from "../../components/CustomToolbar";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { DataGrid } from "@material-ui/data-grid";
 import useCategories from "../../hooks/categoryHooks/useCategories";
 import useDeleteCategory from "../../hooks/categoryHooks/useDeleteCategory";
 import Alert from "@material-ui/lab/Alert";
 import DeleteDialog from "../../components/DeleteDialogs/DeleteDialog";
 import { Link as RouterLink } from "react-router-dom";
-import CustomNoRowsOverlay from "src/components/CustomNoRowsOverlay";
-
-const useStyles = makeStyles(() => ({
-  gridContainer: {
-    height: "500px",
-    marginBottom: "50px",
-  },
-}));
+import { useState } from "react";
+import CategoryTable from "src/components/Tables/CategoryTable";
 
 const Categories = () => {
-  const classes = useStyles();
   const query = useCategories();
   const [deleteId, setDeleteId] = useState<string>("");
   const [open, setOpen] = useState(false);
@@ -46,7 +37,7 @@ const Categories = () => {
 
       {deleteCategory.isSuccess && (
         <Box my={2}>
-          <Alert severity="success">Brand deleted successfully</Alert>
+          <Alert severity="success">Category deleted successfully</Alert>
         </Box>
       )}
 
@@ -67,56 +58,15 @@ const Categories = () => {
         Add new
       </Button>
 
-      <Box className={classes.gridContainer}>
-        {query.isError ? (
-          <DataGrid error rows={[]} columns={[]} />
-        ) : (
-          <DataGrid
-            columns={
-              [
-                { field: "id", type: "number", width: 80 },
-                { field: "name", flex: 1 },
-                {
-                  field: "actions",
-                  sortable: false,
-                  filterable: false,
-                  flex: 1,
-                  renderCell: (params: GridCellParams) => (
-                    <div>
-                      <Button
-                        to={"categories/edit/" + params.row.id}
-                        component={RouterLink}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          handleClickDeleteBtn(params.row.id as string)
-                        }
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  ),
-                },
-              ] as GridColDef[]
-            }
-            rows={
-              query.isLoading
-                ? []
-                : query.data!.map((category: any) => ({
-                    id: category.id,
-                    name: category.name,
-                  }))
-            }
-            loading={query.isLoading}
-            components={{
-              Toolbar: CustomToolbar,
-              NoRowsOverlay: CustomNoRowsOverlay,
-            }}
-          />
-        )}
-      </Box>
+      {query.isError && <DataGrid error rows={[]} columns={[]} />}
+      {query.isLoading && (
+        <Box display="flex" justifyContent="center" mt={3}>
+          <CircularProgress />
+        </Box>
+      )}
+      {query.isSuccess && (
+        <CategoryTable rows={query.data} handleDelete={handleClickDeleteBtn} />
+      )}
     </Container>
   );
 };
