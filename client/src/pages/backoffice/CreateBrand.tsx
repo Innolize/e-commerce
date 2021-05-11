@@ -1,12 +1,13 @@
 import { Formik, Form, ErrorMessage } from "formik";
 import { makeStyles } from "@material-ui/core/styles";
 import InputField from "src/components/InputField";
-import { Box, Button, Container, Input, Typography } from "@material-ui/core";
+import { Box, Container, Input, Typography } from "@material-ui/core";
 import React, { useState } from "react";
 import useCreateBrand from "../../hooks/brandHooks/useCreateBrand";
 import { Redirect } from "react-router-dom";
 import { createBrandSchema } from "../../utils/yup.validations";
 import Alert from "@material-ui/lab/Alert";
+import LoadingButton from "src/components/LoadingButton";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -45,6 +46,7 @@ const CreateBrand = () => {
           </Alert>
         </Box>
       )}
+      {redirect && <Redirect to="/admin/brands" />}
       <Box className={classes.formContainer}>
         <Formik
           initialValues={{ name: "", logo: "" }}
@@ -84,16 +86,14 @@ const CreateBrand = () => {
                 </Box>
               )}
 
-              {redirect && <Redirect to="/admin/brands" />}
-              <Box my={3}>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                >
-                  Submit
-                </Button>
+              <Box>
+                {createBrand.isLoading ? (
+                  <LoadingButton isSubmitting name="Submiting..." />
+                ) : createBrand.isSuccess ? (
+                  <LoadingButton isSuccess name="Submited" />
+                ) : (
+                  <LoadingButton name="Submit" />
+                )}
               </Box>
             </Form>
           )}
