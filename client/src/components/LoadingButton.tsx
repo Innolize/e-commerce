@@ -1,4 +1,5 @@
 import { Button, CircularProgress, makeStyles } from "@material-ui/core";
+import CheckIcon from "@material-ui/icons/Check";
 
 const useStyles = makeStyles((theme) => ({
   submitBtn: {
@@ -13,6 +14,14 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "-7px",
     marginLeft: "-12px",
   },
+  buttonCheck: {
+    color: theme.palette.secondary.main,
+    position: "absolute",
+    top: "50%",
+    left: "75%",
+    marginTop: "-8px",
+    marginLeft: "-12px",
+  },
   btnWrapper: {
     margin: theme.spacing(1),
     display: "flex",
@@ -22,11 +31,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface LoadingButtonProps {
-  isSubmitting: boolean;
+  isSubmitting?: boolean;
+  isSuccess?: boolean;
   name: string;
 }
 
-const LoadingButton = ({ isSubmitting, name }: LoadingButtonProps) => {
+const LoadingButton = ({
+  isSubmitting,
+  isSuccess,
+  name,
+}: LoadingButtonProps) => {
   const classes = useStyles();
 
   return (
@@ -35,14 +49,15 @@ const LoadingButton = ({ isSubmitting, name }: LoadingButtonProps) => {
         className={classes.submitBtn}
         type="submit"
         variant="contained"
-        color="secondary"
-        disabled={isSubmitting}
+        color="primary"
+        disabled={isSubmitting || isSuccess}
       >
         {name}
       </Button>
       {isSubmitting && (
         <CircularProgress size={24} className={classes.buttonProgress} />
       )}
+      {isSuccess && <CheckIcon className={classes.buttonCheck} />}
     </div>
   );
 };
