@@ -28,7 +28,11 @@ export default function useCreateCategory(
         }),
     {
       retry: false,
-      onSuccess: () => {
+      onSuccess: (newCategory) => {
+        queryClient.setQueryData("categories", (previousCategory: any) => [
+          ...previousCategory,
+          newCategory,
+        ]);
         queryClient.invalidateQueries("categories");
         successCallBack && successCallBack();
       },

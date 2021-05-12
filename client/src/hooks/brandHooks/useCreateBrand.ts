@@ -25,7 +25,11 @@ export default function useCreateBrand(
         }),
     {
       retry: false,
-      onSuccess: () => {
+      onSettled: (newBrand) => {
+        queryClient.setQueryData("brands", (previousBrands: any) => [
+          ...previousBrands,
+          newBrand,
+        ]);
         queryClient.invalidateQueries("brands");
         successCallBack && successCallBack();
       },

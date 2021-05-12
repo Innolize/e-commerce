@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import { useQueryClient, useMutation } from "react-query";
+import { ICategory } from "src/types";
 import api from "../../services/api";
 
 export default function useDeleteCategory(
@@ -23,12 +24,31 @@ export default function useDeleteCategory(
         }),
     {
       retry: false,
-      onSuccess: () => {
+      onMutate: async (categoryToDelete) => {
+        // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+        await queryClient.cancelQueries("categories");
+
+        // Snapshot the previous value
+        const previousCategory = queryClient.getQueryData("categories");
+
+        // Optimistically update to the new value
+        queryClient.setQueryData("categories", (oldCategories: any) => {
+          const newCategory = oldCategories.filter(
+            (category: ICategory) => category.id !== categoryToDelete
+          );
+          return newCategory;
+        });
+
+        // Return a context object with the snapshotted value
+        return { previousCategory };
+      },
+      onSettled: () => {
         queryClient.invalidateQueries("categories");
         sucessCallback && sucessCallback();
       },
-      onError: (e: AxiosError) => {
+      onError: (e: AxiosError, _, context: any) => {
         console.error(e);
+        queryClient.setQueryData("categories", context.previousCategory);
         errorCallback && errorCallback();
       },
     }
