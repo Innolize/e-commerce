@@ -84,7 +84,7 @@ const CreateCategory = () => {
         </Box>
       )}
 
-      {redirect && <Redirect to="/admin/brands" />}
+      {redirect && <Redirect to="/admin/categories" />}
 
       {queryCategory.isSuccess && (
         <Box className={classes.formContainer} my={10}>
