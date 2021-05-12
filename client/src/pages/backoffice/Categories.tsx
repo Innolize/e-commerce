@@ -37,13 +37,15 @@ const Categories = () => {
 
       {deleteCategory.isSuccess && (
         <Box my={2}>
-          <Alert severity="success">Category deleted successfully</Alert>
+          <Alert severity="success">Category deleted successfully.</Alert>
         </Box>
       )}
 
       {deleteCategory.isError && (
         <Box my={2}>
-          <Alert severity="error">{deleteCategory.error?.message}</Alert>
+          <Alert severity="error">
+            Something went wrong deleting that category.
+          </Alert>
         </Box>
       )}
 

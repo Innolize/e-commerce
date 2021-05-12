@@ -38,13 +38,15 @@ const Brands = () => {
 
       {deleteBrand.isSuccess && (
         <Box my={2}>
-          <Alert severity="success">Brand deleted successfully</Alert>
+          <Alert severity="success">Brand deleted successfully.</Alert>
         </Box>
       )}
 
       {deleteBrand.isError && (
         <Box my={2}>
-          <Alert severity="error">{deleteBrand.error?.message}</Alert>
+          <Alert severity="error">
+            Something went wrong deleting that brand.
+          </Alert>
         </Box>
       )}
 
