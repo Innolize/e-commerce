@@ -3,10 +3,7 @@ import { useQueryClient, useMutation } from "react-query";
 import api from "../../services/api";
 import { IBrand } from "../../types";
 
-export default function useEditBrand(
-  successCallBack?: Function,
-  errorCallback?: Function
-) {
+export default function useEditBrand() {
   const queryClient = useQueryClient();
   return useMutation(
     (values: FormData) =>
@@ -15,11 +12,7 @@ export default function useEditBrand(
         .then((res: AxiosResponse<IBrand>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            if (error.response.status === 422) {
-              throw new Error(error.response.data.errors[0]);
-            } else {
-              throw new Error(error.response.data);
-            }
+            throw new Error(error.response.data.message);
           } else {
             throw new Error(error.message);
           }
@@ -28,11 +21,10 @@ export default function useEditBrand(
       retry: false,
       onSuccess: (brand: IBrand) => {
         queryClient.invalidateQueries("brands");
-        successCallBack && successCallBack();
       },
       onError: (e: AxiosError) => {
         console.log(e);
-        errorCallback && errorCallback();
+        queryClient.invalidateQueries("brands");
       },
     }
   );

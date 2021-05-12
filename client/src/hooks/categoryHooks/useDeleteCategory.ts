@@ -3,10 +3,7 @@ import { useQueryClient, useMutation } from "react-query";
 import { ICategory } from "src/types";
 import api from "../../services/api";
 
-export default function useDeleteCategory(
-  sucessCallback?: Function,
-  errorCallback?: Function
-) {
+export default function useDeleteCategory() {
   const queryClient = useQueryClient();
   return useMutation(
     (id: string) =>
@@ -15,10 +12,8 @@ export default function useDeleteCategory(
         .then((res) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            // The request was made and the server responded with a status code
             throw new Error(error.response.data.message);
           } else {
-            // Something happened in setting up the request that triggered an Error
             throw new Error(error.message);
           }
         }),
@@ -44,12 +39,10 @@ export default function useDeleteCategory(
       },
       onSettled: () => {
         queryClient.invalidateQueries("categories");
-        sucessCallback && sucessCallback();
       },
       onError: (e: AxiosError, _, context: any) => {
         console.error(e);
         queryClient.setQueryData("categories", context.previousCategory);
-        errorCallback && errorCallback();
       },
     }
   );

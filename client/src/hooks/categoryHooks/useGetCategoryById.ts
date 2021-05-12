@@ -13,14 +13,13 @@ export default function useGetCategoryById(categoryId: string) {
         .then((res: AxiosResponse<ICategory>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            // The request was made and the server responded with a status code
             throw new Error(error.response.data.message);
           } else {
-            // Something happened in setting up the request that triggered an Error
             throw new Error(error.message);
           }
         }),
     {
+      retry: false,
       initialData: () => {
         return queryClient
           .getQueryData<any>("categories")

@@ -3,10 +3,7 @@ import { useQueryClient, useMutation } from "react-query";
 import api from "../../services/api";
 import { IProduct } from "../../types";
 
-export default function useCreateProduct(
-  successCallBack?: Function,
-  errorCallback?: Function
-) {
+export default function useCreateProduct() {
   const queryClient = useQueryClient();
   return useMutation(
     (values: FormData) =>
@@ -15,10 +12,8 @@ export default function useCreateProduct(
         .then((res: AxiosResponse<IProduct>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            // The request was made and the server responded with a status code
-            throw new Error(error.response.data.errors[0]);
+            throw new Error(error.response.data.message);
           } else {
-            // Something happened in setting up the request that triggered an Error
             throw new Error(error.message);
           }
         }),
@@ -26,11 +21,10 @@ export default function useCreateProduct(
       retry: false,
       onSuccess: () => {
         queryClient.invalidateQueries("products");
-        successCallBack && successCallBack();
       },
       onError: (e: AxiosError) => {
         console.error(e);
-        errorCallback && errorCallback();
+        queryClient.invalidateQueries("products");
       },
     }
   );
