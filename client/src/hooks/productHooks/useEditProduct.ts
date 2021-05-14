@@ -15,7 +15,7 @@ export default function useEditProduct(
         .then((res: AxiosResponse<IProduct>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            throw new Error(error.response.data.errors[0]);
+            throw new Error(error.response.data.message);
           } else {
             throw new Error(error.message);
           }

@@ -1,26 +1,16 @@
 import { Box, Button, Typography } from "@material-ui/core";
 import useBrands from "../../hooks/brandHooks/useBrands";
 import { Container } from "@material-ui/core";
-import { DataGrid, GridColDef, GridCellParams } from "@material-ui/data-grid";
-import { makeStyles } from "@material-ui/core/styles";
-import CustomToolbar from "../../components/CustomToolbar";
+import { DataGrid } from "@material-ui/data-grid";
 import { Link as RouterLink } from "react-router-dom";
 import { useState } from "react";
 import DeleteDialog from "../../components/DeleteDialogs/DeleteDialog";
-import { IBrand } from "../../types";
 import useDeleteBrand from "../../hooks/brandHooks/useDeleteBrand";
 import Alert from "@material-ui/lab/Alert";
-import CustomNoRowsOverlay from "src/components/CustomNoRowsOverlay";
-
-const useStyles = makeStyles((theme) => ({
-  gridContainer: {
-    height: "500px",
-    marginBottom: "50px",
-  },
-}));
+import CircularProgress from "@material-ui/core/CircularProgress";
+import BrandTable from "src/components/Tables/BrandTable";
 
 const Brands = () => {
-  const classes = useStyles();
   const query = useBrands();
   const [deleteId, setDeleteId] = useState<string>("");
   const [open, setOpen] = useState(false);
@@ -48,13 +38,15 @@ const Brands = () => {
 
       {deleteBrand.isSuccess && (
         <Box my={2}>
-          <Alert severity="success">Brand deleted successfully</Alert>
+          <Alert severity="success">Brand deleted successfully.</Alert>
         </Box>
       )}
 
       {deleteBrand.isError && (
         <Box my={2}>
-          <Alert severity="error">{deleteBrand.error?.message}</Alert>
+          <Alert severity="error">
+            Something went wrong deleting that brand.
+          </Alert>
         </Box>
       )}
 
@@ -69,56 +61,15 @@ const Brands = () => {
         Add new
       </Button>
 
-      <Box className={classes.gridContainer}>
-        {query.isError ? (
-          <DataGrid error rows={[]} columns={[]} />
-        ) : (
-          <DataGrid
-            columns={
-              [
-                { field: "id", type: "number", width: 80 },
-                { field: "name", flex: 1 },
-                {
-                  field: "actions",
-                  sortable: false,
-                  filterable: false,
-                  flex: 1,
-                  renderCell: (params: GridCellParams) => (
-                    <div>
-                      <Button
-                        to={"brands/edit/" + params.row.id}
-                        component={RouterLink}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          handleClickDeleteBtn(params.row.id as string)
-                        }
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  ),
-                },
-              ] as GridColDef[]
-            }
-            rows={
-              query.isLoading
-                ? []
-                : query.data!.map((brand: IBrand) => ({
-                    id: brand.id,
-                    name: brand.name,
-                  }))
-            }
-            loading={query.isLoading}
-            components={{
-              Toolbar: CustomToolbar,
-              NoRowsOverlay: CustomNoRowsOverlay,
-            }}
-          />
-        )}
-      </Box>
+      {query.isError && <DataGrid error rows={[]} columns={[]} />}
+      {query.isLoading && (
+        <Box display="flex" justifyContent="center" mt={3}>
+          <CircularProgress />
+        </Box>
+      )}
+      {query.isSuccess && (
+        <BrandTable rows={query.data} handleDelete={handleClickDeleteBtn} />
+      )}
     </Container>
   );
 };

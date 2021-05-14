@@ -1,12 +1,13 @@
 import { Formik, Form } from "formik";
 import { makeStyles } from "@material-ui/core/styles";
 import InputField from "src/components/InputField";
-import { Box, Button, Container, Typography } from "@material-ui/core";
+import { Box, Container, Typography } from "@material-ui/core";
 import { useState } from "react";
 import useCreateCategory from "../../hooks/categoryHooks/useCreateCategory";
 import { Redirect } from "react-router-dom";
 import { createCategorySchema } from "../../utils/yup.validations";
 import Alert from "@material-ui/lab/Alert";
+import LoadingButton from "src/components/LoadingButton";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -71,14 +72,13 @@ const CreateCategory = () => {
 
               {redirect && <Redirect to="/admin/categories" />}
               <Box my={3}>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                >
-                  Submit
-                </Button>
+                {createCategory.isLoading ? (
+                  <LoadingButton isSubmitting name="Submiting..." />
+                ) : createCategory.isSuccess ? (
+                  <LoadingButton isSuccess name="Submited" />
+                ) : (
+                  <LoadingButton name="Submit" />
+                )}
               </Box>
             </Form>
           )}

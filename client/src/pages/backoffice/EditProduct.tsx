@@ -22,7 +22,7 @@ import useCategories from "src/hooks/categoryHooks/useCategories";
 import useEditProduct from "src/hooks/productHooks/useEditProduct";
 import useGetProductId from "src/hooks/productHooks/useGetProductById";
 import { IBrand, ICategory } from "src/types";
-import { editBrandSchema } from "../../utils/yup.validations";
+import { editProductSchema } from "../../utils/yup.validations";
 import { v4 as uuidv4 } from "uuid";
 
 const useStyles = makeStyles((theme) => ({
@@ -115,7 +115,7 @@ const CreateBrand = () => {
 
               editProduct.mutate(formData);
             }}
-            validationSchema={editBrandSchema}
+            validationSchema={editProductSchema}
           >
             {({ setFieldValue }) => (
               <Form className={classes.form} encType="multipart/form-data">

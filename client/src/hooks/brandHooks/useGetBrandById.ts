@@ -13,10 +13,8 @@ export default function useGetBrandById(brandId: string) {
         .then((res: AxiosResponse<IBrand>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            // The request was made and the server responded with a status code
             throw new Error(error.response.data.message);
           } else {
-            // Something happened in setting up the request that triggered an Error
             throw new Error(error.message);
           }
         }),

@@ -3,10 +3,7 @@ import { useQueryClient, useMutation } from "react-query";
 import api from "../../services/api";
 import { ICategory } from "../../types";
 
-export default function useEditcategory(
-  successCallBack?: Function,
-  errorCallback?: Function
-) {
+export default function useEditcategory() {
   const queryClient = useQueryClient();
   return useMutation(
     (values: FormData) =>
@@ -15,24 +12,19 @@ export default function useEditcategory(
         .then((res: AxiosResponse<ICategory>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            if (error.response.status === 422) {
-              throw new Error(error.response.data.errors[0]);
-            } else {
-              throw new Error(error.response.data);
-            }
+            throw new Error(error.response.data);
           } else {
             throw new Error(error.message);
           }
         }),
     {
       retry: false,
-      onSuccess: (category: ICategory) => {
+      onSettled: () => {
         queryClient.invalidateQueries("categories");
-        successCallBack && successCallBack();
       },
       onError: (e: AxiosError) => {
         console.log(e);
-        errorCallback && errorCallback();
+        queryClient.invalidateQueries("categories");
       },
     }
   );
