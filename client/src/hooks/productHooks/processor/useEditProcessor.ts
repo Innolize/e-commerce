@@ -1,14 +1,15 @@
-import { AxiosError } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { useQueryClient, useMutation } from "react-query";
-import api from "../../services/api";
+import { IProcessor } from "src/types";
+import api from "../../../services/api";
 
-export default function useDeleteProduct() {
+export default function useEditProcessor() {
   const queryClient = useQueryClient();
   return useMutation(
-    (id: string) =>
+    (values: FormData) =>
       api
-        .delete(`/api/product/${id}`)
-        .then((res) => res.data)
+        .put(`/api/processor/`, values)
+        .then((res: AxiosResponse<IProcessor>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
             throw new Error(error.response.data.message);
@@ -19,10 +20,10 @@ export default function useDeleteProduct() {
     {
       retry: false,
       onSuccess: () => {
-        queryClient.invalidateQueries("products");
+        queryClient.invalidateQueries("processors");
       },
       onError: (e: AxiosError) => {
-        console.error(e);
+        console.log(e);
       },
     }
   );
