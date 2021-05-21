@@ -16,6 +16,8 @@ import { ImageUploadService } from '../../imageUploader/module'
 import { FullProduct } from '../entity/FullProduct'
 import { BrandService } from '../../brand/module'
 import { CategoryService } from '../../category/module'
+import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
+import { authorizationMiddleware } from '../../authorization/util/authorizationMIddleware'
 
 @injectable()
 export class ProductController extends AbstractController {
@@ -45,9 +47,9 @@ export class ProductController extends AbstractController {
     configureRoutes(app: App): void {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAllProducts.bind(this))
-        app.post(`/api${ROUTE}`, this.uploadMiddleware.single('product_image'), this.createProduct.bind(this))
-        app.put(`/api${ROUTE}`, this.uploadMiddleware.single('product_image'), this.modifyProduct.bind(this))
-        app.delete(`/api${ROUTE}/:id`, this.deleteProduct.bind(this))
+        app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Product' })], this.uploadMiddleware.single('product_image'), this.createProduct.bind(this))
+        app.put(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Product' })], this.uploadMiddleware.single('product_image'), this.modifyProduct.bind(this))
+        app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Product' })], this.deleteProduct.bind(this))
         app.get(`/api${ROUTE}/findByName/:name`, this.findProductByName.bind(this))
         app.get(`/api${ROUTE}/:id`, this.findProductById.bind(this))
     }

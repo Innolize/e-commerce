@@ -1,6 +1,7 @@
 import { IProductCreate } from "../interfaces/IProductCreate";
 
 export class Product {
+    static readonly modelName: 'Product'
     id?: number;
     name: string;
     image: string | null;

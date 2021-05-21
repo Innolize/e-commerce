@@ -1,8 +1,7 @@
 import { injectable } from "inversify";
 import { Association, DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
-import { UserModel } from "../../user/module";
-import { IRoleCreate } from "../interfaces/IRoleCreate";
+import { IRoleCreate } from "../interfaces/IRoleCreateModelAttributes";
 import { IRoleModelAttributes } from "../interfaces/IRoleModelAttributes";
 import { PermissionModel } from "./PermissionModel";
 
@@ -41,7 +40,7 @@ export class RoleModel extends Model<IRoleModelAttributes, IRoleCreate>{
     //     return RoleModel
     // }
     static associations: {
-        permissions: Association<PermissionModel, RoleModel>
+        permissions: Association<RoleModel, PermissionModel>
     }
 
 }

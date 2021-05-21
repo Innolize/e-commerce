@@ -6,7 +6,7 @@ import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { Multer } from 'multer'
 import { BrandService } from '../service/brandService'
-import { IBrand } from '../interfaces/IBrand'
+import { IBrandCreate } from '../interfaces/IBrandCreate'
 import { Brand } from '../entity/Brand'
 import { bodyValidator, mapperMessageError } from '../../common/helpers/bodyValidator'
 import { validateCreateBrandDto } from '../helper/create_dto_validator'
@@ -50,9 +50,9 @@ export class BrandController extends AbstractController {
     }
 
     async createBrand(req: Request, res: Response): Promise<Response> {
-        let brand: IBrand | undefined
+        let brand: Brand | undefined
         try {
-            const dto: IBrand = req.body
+            const dto: IBrandCreate = req.body
             const validatedDto = await bodyValidator(validateCreateBrandDto, dto)
             if (req.file) {
                 const uploadedImage = await this.uploadService.uploadBrand(req.file.buffer, req.file.originalname)

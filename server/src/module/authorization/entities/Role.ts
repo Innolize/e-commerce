@@ -1,7 +1,7 @@
 import { IRoleCreate } from "../interfaces/IRoleCreate"
-import { IPermissionCreate } from '../interfaces/IPermissionCreate'
+import { RawRuleOf } from "@casl/ability"
+import {appAbility} from '../util/abilityBuilder'
 import { Permission } from "./Permission"
-// import { Permission } from "./Permission"
 
 export class Role {
     id?: number
@@ -13,7 +13,7 @@ export class Role {
         }
         this.name = name
         if (permissions) {
-            this.permissions = permissions.map(x => new Permission(x as IPermissionCreate))
+            this.permissions = permissions.map(permission => new Permission(permission))
         }
     }
 }

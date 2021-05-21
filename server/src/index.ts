@@ -37,7 +37,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof MulterError) {
     return res.status(404).send({ "errors": ["Unexpected image field"] })
   }
-  console.log(1234)
+  console.log(err.message)
   return res.status(404).send(ReasonPhrases.NOT_FOUND)
 })
 

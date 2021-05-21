@@ -108,7 +108,9 @@ export function configUserModel(container: Container): typeof UserModel {
 }
 
 export function configRoleModel(container: Container): typeof RoleModel {
-    return RoleModel.setup(container.get(TYPES.Common.Database))
+    RoleModel.setup(container.get(TYPES.Common.Database))
+    RoleModel.setupPermissionAssociation(container.get(TYPES.Authorization.Permission.Model))
+    return RoleModel
 }
 
 export function configPermissionModel(container: Container): typeof PermissionModel {

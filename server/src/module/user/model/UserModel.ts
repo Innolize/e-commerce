@@ -36,7 +36,7 @@ export class UserModel extends Model<IUserAttributes, IUserCreate>{
         UserModel.belongsTo(model, {
             foreignKey: {
                 name: "role_id",
-                allowNull: false
+                defaultValue: 1
             },
             as: 'role'
         })

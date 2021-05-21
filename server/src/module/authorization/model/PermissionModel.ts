@@ -3,10 +3,10 @@ import { Model } from "sequelize";
 import { IPermissionModelAttributes } from "../interfaces/IPermissionModelAttributes";
 import { ACTIONS, SUBJECTS } from "../../../config/constants/roles";
 import { injectable } from "inversify";
-import { IPermissionCreate } from "../interfaces/IPermissionCreate";
+import { IPermissionCreateModelAttributes } from "../interfaces/IPermissionCreateModelAttributes";
 
 @injectable()
-export class PermissionModel extends Model<IPermissionModelAttributes, IPermissionCreate>{
+export class PermissionModel extends Model<IPermissionModelAttributes, IPermissionCreateModelAttributes>{
     static setup(database: Sequelize): typeof PermissionModel {
         PermissionModel.init({
             id: {

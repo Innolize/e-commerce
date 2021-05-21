@@ -1,10 +1,15 @@
+import { ForbiddenError } from "@casl/ability";
 import { inject, injectable } from "inversify";
 import { UniqueConstraintError } from "sequelize";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
+import { RoleModel } from "../../authorization/module";
+import { buildAbility } from "../../authorization/util/abilityBuilder";
+import { Product } from "../../product/entity/Product";
+import { FullUser } from "../entities/FullUser";
 import { User } from "../entities/User";
 import { IUserEdit } from "../interfaces/IUserEdit";
-import { fromDbToUser } from "../mapper/userMapper";
+import { fromDbToFullUser, fromDbToUser } from "../mapper/userMapper";
 import { UserModel } from "../model/UserModel";
 
 @injectable()
@@ -22,15 +27,20 @@ export class UserRepository extends AbstractRepository {
         return users.map(fromDbToUser)
     }
 
-    async getSingleUser(id: number): Promise<User | Error> {
+    async getSingleUser(id: number): Promise<FullUser | Error> {
         try {
-            const user = await this.userModel.findByPk(id)
+            const user = await this.userModel.findByPk(id, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }] })
             if (!user) {
                 throw Error("User not found")
             }
-            return fromDbToUser(user)
+            
+            const test = fromDbToFullUser(user)
+            const userAbility = buildAbility(test.role)
+            const product = new Product({id: 3, description: '123123', id_brand: 1, image: 'null', name: 'test', price: 122, stock: true, id_category: 5})
+            ForbiddenError.from(userAbility).throwUnlessCan('create', 'Product')
+            return test
         } catch (err) {
-            throw Error(err.message)
+            throw Error(err)
         }
     }
 
