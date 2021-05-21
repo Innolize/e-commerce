@@ -17,7 +17,7 @@ import { FullProduct } from '../entity/FullProduct'
 import { BrandService } from '../../brand/module'
 import { CategoryService } from '../../category/module'
 import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
-import { authorizationMiddleware } from '../../authorization/util/authorizationMIddleware'
+import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
 
 @injectable()
 export class ProductController extends AbstractController {

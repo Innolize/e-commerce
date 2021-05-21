@@ -1,10 +1,8 @@
-import { Subject } from "@casl/ability";
-import { Actions } from "../entities/Permission";
-
+import { actions, subjects } from "../util/abilityBuilder";
 
 export interface IPermissionModelAttributes {
     id: number
-    action: Actions
-    subject: Subject,
+    action: typeof actions[number]
+    subject: typeof subjects[number],
     conditions?: string
 }

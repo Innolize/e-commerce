@@ -16,9 +16,7 @@ import { PowerSupplyModel } from '../../module/PCBuilder/power-supply/module';
 import { DiskStorageModel } from '../../module/PCBuilder/disk-storage/module';
 import { PermissionModel, RoleModel } from '../../module/authorization/module';
 import { UserModel } from '../../module/user/module';
-import { User } from '../../module/user/entities/User';
-import { FullUser, IFullUserCreate } from '../../module/user/entities/FullUser';
-import { Permission } from '../../module/authorization/entities/Permission';
+import { hash } from 'bcrypt'
 
 async function configureDatabase() {
 
@@ -70,20 +68,16 @@ async function configureDatabase() {
             await database.sync({ force: true })
 
             await CategoryModel.create({ name: "testname" })
-
-
             await BrandModel.create({ name: "brandTest", logo: "test-logo" })
             await ProductModel.create({ name: "nombreDeProducto123", id_brand: 1, image: "image-test", description: "description-test", price: 12345, stock: true, id_category: 1 })
             await ProductModel.create({ name: "nombreDeProducto123-b", id_brand: 1, image: "image-test-b", description: "description-test-b", price: 123456, stock: true, id_category: 1 })
             await RoleModel.create({ name: 'admin' })
-            await PermissionModel.create({ action: "create", subject: "Brand", role_id: 1 })
-            await PermissionModel.create({ action: "read", subject: "Brand", role_id: 1 })
-            await PermissionModel.create({ action: "delete", subject: "Brand", role_id: 1, conditions:JSON.stringify({password: '12345'}) })
-            await PermissionModel.create({action: "create", subject: 'Product', role_id: 1, conditions:JSON.stringify({test: '${id}'})})
-            await UserModel.create({ mail: '123@gmail.com', password: '12345', role_id: 1 })
-            const userCreated = await UserModel.findByPk(1, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }] })
-            const test = new FullUser(userCreated?.toJSON() as IFullUserCreate)
-            console.log(test.role?.permissions)
+            await RoleModel.create({ name: 'client' })
+            await PermissionModel.create({ action: "manage", subject: "All", role_id: 1 })
+            await PermissionModel.create({ action: "update", subject: "User", role_id: 2, conditions: JSON.stringify({ id: "${id}" }) })
+            await PermissionModel.create({ action: "delete", subject: "User", role_id: 2, conditions: JSON.stringify({ id: "${id}" }) })
+            const adminPassword = await hash(<string>process.env.ADMIN_PASSWORD, Number(<string>process.env.BCRYPT_SALT_NUMBER))
+            await UserModel.create({ mail: <string>process.env.ADMIN_MAIL, password: adminPassword, role_id: 1 })
             await RamModel.create({ watts: 20, id_product: 2, max_frec: 1200, memory: 12, min_frec: 1300, ram_version: 'DDR4' })
             // const final = products.map(fromDbToFullProduct)
             console.log('exito!')

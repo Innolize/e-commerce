@@ -2,6 +2,7 @@ import { DISK_TYPE } from '../../../../config/constants/pcbuilder'
 import { IDiskStorageCreate } from '../interface/IDiskStorageCreate'
 
 export class DiskStorage {
+    static readonly modelName = 'DiskStorage'
     id?: number
     total_storage: number
     type: typeof DISK_TYPE

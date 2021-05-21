@@ -13,6 +13,8 @@ import { validateCreateBrandDto } from '../helper/create_dto_validator'
 import { IEditableBrand } from '../interfaces/IEditableBrand'
 import { validateEditBrandDto } from '../helper/edit_dto_validator'
 import { ImageUploadService } from '../../imageUploader/module'
+import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
+import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
 
 
 @injectable()
@@ -37,9 +39,9 @@ export class BrandController extends AbstractController {
     configureRoutes(app: App): void {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAllBrands.bind(this))
-        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("brand_logo"), this.createBrand.bind(this))
-        app.put(`/api${ROUTE}`, this.uploadMiddleware.single("brand_logo"), this.modifyBrand.bind(this))
-        app.delete(`/api${ROUTE}/:id`, this.deleteBrand.bind(this))
+        app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Brand' })], this.uploadMiddleware.single("brand_logo"), this.createBrand.bind(this))
+        app.put(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Brand' })], this.uploadMiddleware.single("brand_logo"), this.modifyBrand.bind(this))
+        app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Brand' })], this.deleteBrand.bind(this))
         app.get(`/api${ROUTE}/findByName/:name`, this.findBrandByName.bind(this))
         app.get(`/api${ROUTE}/findById/:id`, this.findBrandById.bind(this))
     }

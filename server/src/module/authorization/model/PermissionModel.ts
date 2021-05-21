@@ -1,9 +1,9 @@
 import { DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
 import { IPermissionModelAttributes } from "../interfaces/IPermissionModelAttributes";
-import { ACTIONS, SUBJECTS } from "../../../config/constants/roles";
 import { injectable } from "inversify";
 import { IPermissionCreateModelAttributes } from "../interfaces/IPermissionCreateModelAttributes";
+import { actions,subjects } from '../../authorization/util/abilityBuilder'
 
 @injectable()
 export class PermissionModel extends Model<IPermissionModelAttributes, IPermissionCreateModelAttributes>{
@@ -15,11 +15,11 @@ export class PermissionModel extends Model<IPermissionModelAttributes, IPermissi
                 primaryKey: true
             },
             action: {
-                type: DataTypes.ENUM(...ACTIONS),
+                type: DataTypes.ENUM(...actions),
                 allowNull: false
             },
             subject: {
-                type: DataTypes.ENUM(...SUBJECTS),
+                type: DataTypes.ENUM(...subjects),
                 allowNull: false
             },
             conditions: {

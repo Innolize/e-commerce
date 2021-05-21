@@ -16,6 +16,8 @@ import { ICabinetEdit } from '../interface/ICabinetEdit'
 import { CabinetService } from "../service/CabinetService";
 import { FullCabinet } from "../entities/FullCabinet";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
+import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
+import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 
 export class CabinetController extends AbstractController {
     private ROUTE_BASE: string
@@ -37,9 +39,9 @@ export class CabinetController extends AbstractController {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAll.bind(this))
         app.get(`/api${ROUTE}/:id`, this.getSingleCabinet.bind(this))
-        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("product_image"), this.create.bind(this))
-        app.put(`/api${ROUTE}/:id`, this.uploadMiddleware.none(), this.edit.bind(this))
-        app.delete(`/api${ROUTE}/:id`, this.delete.bind(this))
+        app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Cabinet' })], this.uploadMiddleware.single("product_image"), this.create.bind(this))
+        app.put(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Cabinet' })], this.uploadMiddleware.none(), this.edit.bind(this))
+        app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Cabinet' })], this.delete.bind(this))
     }
 
     getAll = async (req: Request, res: Response): Promise<Response> => {

@@ -16,6 +16,8 @@ import { IVideoCardEdit } from '../interface/IVideoCardEdit'
 import { VideoCardService } from "../service/VideoCardService";
 import { FullVideoCard } from "../entities/FullVideoCard";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
+import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
+import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 
 export class VideoCardController extends AbstractController {
     private ROUTE_BASE: string
@@ -37,9 +39,9 @@ export class VideoCardController extends AbstractController {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAll.bind(this))
         app.get(`/api${ROUTE}/:id`, this.getSingleRam.bind(this))
-        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("product_image"), this.create.bind(this))
-        app.put(`/api${ROUTE}/:id`, this.uploadMiddleware.none(), this.edit.bind(this))
-        app.delete(`/api${ROUTE}/:id`, this.delete.bind(this))
+        app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'VideoCard' })], this.uploadMiddleware.single("product_image"), this.create.bind(this))
+        app.put(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'VideoCard' })], this.uploadMiddleware.none(), this.edit.bind(this))
+        app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'VideoCard' })], this.delete.bind(this))
     }
 
     getAll = async (req: Request, res: Response): Promise<Response> => {
@@ -86,7 +88,7 @@ export class VideoCardController extends AbstractController {
             } else {
                 newProduct.image = null
             }
-            
+
             const response = await this.videoCardService.createRam(newProduct, newMotherboard)
             return res.status(200).send(response)
         } catch (err) {

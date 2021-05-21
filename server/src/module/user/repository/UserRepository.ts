@@ -1,11 +1,8 @@
-import { ForbiddenError } from "@casl/ability";
 import { inject, injectable } from "inversify";
 import { UniqueConstraintError } from "sequelize";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { RoleModel } from "../../authorization/module";
-import { buildAbility } from "../../authorization/util/abilityBuilder";
-import { Product } from "../../product/entity/Product";
 import { FullUser } from "../entities/FullUser";
 import { User } from "../entities/User";
 import { IUserEdit } from "../interfaces/IUserEdit";
@@ -34,11 +31,8 @@ export class UserRepository extends AbstractRepository {
                 throw Error("User not found")
             }
             
-            const test = fromDbToFullUser(user)
-            const userAbility = buildAbility(test.role)
-            const product = new Product({id: 3, description: '123123', id_brand: 1, image: 'null', name: 'test', price: 122, stock: true, id_category: 5})
-            ForbiddenError.from(userAbility).throwUnlessCan('create', 'Product')
-            return test
+            const response = fromDbToFullUser(user)
+            return response
         } catch (err) {
             throw Error(err)
         }

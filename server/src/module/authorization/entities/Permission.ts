@@ -1,13 +1,11 @@
 import { AnyObject } from "@casl/ability/dist/types/types"
 import { IPermissionCreate } from "../interfaces/IPermissionCreate"
-
-export type Actions = 'create' | 'read' | 'update' | 'delete'
-export type Subject = 'Product' | 'Brand'
+import { actions, subjects } from "../util/abilityBuilder"
 
 export class Permission {
     id?: number
-    action: Actions
-    subject: Subject
+    action: typeof actions[number]
+    subject: typeof subjects[number]
     condition?: AnyObject
     constructor({ id, action, subject, conditions }: IPermissionCreate) {
         if (id) {

@@ -1,7 +1,7 @@
-import { Roles } from "../../../config/constants/roles"
 import { IUserCreate } from "../interfaces/IUserCreate"
 
 export class User {
+    static readonly modelName = 'User'
     id?: number
     mail: string
     password: string

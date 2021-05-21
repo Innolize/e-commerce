@@ -16,6 +16,8 @@ import { IRamEdit } from '../interface/IProcessorEdit'
 import { ProcessorService } from "../service/ProcessorService";
 import { FullProcessor } from "../entities/FullProcessor";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
+import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
+import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 
 export class ProcessorController extends AbstractController {
     private ROUTE_BASE: string
@@ -37,9 +39,9 @@ export class ProcessorController extends AbstractController {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAll.bind(this))
         app.get(`/api${ROUTE}/:id`, this.getSingleProcessor.bind(this))
-        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("product_image"), this.create.bind(this))
-        app.put(`/api${ROUTE}/:id`, this.uploadMiddleware.none(), this.edit.bind(this))
-        app.delete(`/api${ROUTE}/:id`, this.delete.bind(this))
+        app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Processor' })], this.uploadMiddleware.single("product_image"), this.create.bind(this))
+        app.put(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Processor' })], this.uploadMiddleware.none(), this.edit.bind(this))
+        app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Processor' })], this.delete.bind(this))
     }
 
     getAll = async (req: Request, res: Response): Promise<Response> => {

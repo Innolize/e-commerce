@@ -16,6 +16,7 @@ export function configureLocalStrategy(userService: UserService, passport: Passp
                 }
                 return done(null, user)
             } catch (err) {
+                console.log(err)
                 return done(err)
             }
         }

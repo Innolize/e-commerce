@@ -1,6 +1,7 @@
 import { IMotherboardCreate } from '../interface/IMotherboardCreate'
 
 export class Motherboard {
+    static readonly modelName = 'Motherboard'
     id?: number
     cpu_socket: string
     cpu_brand: string

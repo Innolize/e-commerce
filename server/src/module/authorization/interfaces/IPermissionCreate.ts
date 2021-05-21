@@ -1,8 +1,8 @@
-import { Actions, Subject } from "../entities/Permission";
+import { actions, subjects } from '../../authorization/util/abilityBuilder'
 
 export interface IPermissionCreate {
     id?: number,
-    action: Actions,
-    subject: Subject,
+    action: typeof actions[number],
+    subject: typeof subjects[number],
     conditions?: string,
 }

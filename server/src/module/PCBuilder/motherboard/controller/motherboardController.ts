@@ -13,6 +13,8 @@ import { validateMotherboardAndProductDto, validateMotherboardEditDto, validateQ
 import { IMotherboard_Product } from "../interface/IMotherboardCreate";
 import { MotherboardService } from "../service/motherboardService";
 import { IMotherboardEdit } from '../interface/IMotherboardEdit'
+import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
+import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 
 export class MotherboardController extends AbstractController {
     private ROUTE_BASE: string
@@ -33,9 +35,9 @@ export class MotherboardController extends AbstractController {
     configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAll.bind(this))
-        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("product_image"), this.create.bind(this))
-        app.put(`/api${ROUTE}/:id`, this.uploadMiddleware.none(), this.edit.bind(this))
-        app.delete(`/api${ROUTE}/:id`, this.delete.bind(this))
+        app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Motherboard' })], this.uploadMiddleware.single("product_image"), this.create.bind(this))
+        app.put(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Motherboard' })], this.uploadMiddleware.none(), this.edit.bind(this))
+        app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Motherboard' })], this.delete.bind(this))
     }
 
     getAll = async (req: Request, res: Response): Promise<Response> => {

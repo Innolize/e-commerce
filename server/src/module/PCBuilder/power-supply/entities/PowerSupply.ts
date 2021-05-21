@@ -2,6 +2,7 @@ import { PWS_CERTIFICATION } from '../../../../config/constants/pcbuilder'
 import { IPowerSupplyCreate } from '../interface/IPowerSupplyCreate'
 
 export class PowerSupply {
+    static readonly modelName = 'PowerSupply'
     id?: number
     watts: number
     certification: typeof PWS_CERTIFICATION
