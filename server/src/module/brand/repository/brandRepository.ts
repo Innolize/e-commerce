@@ -3,7 +3,6 @@ import { Op } from "sequelize";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Brand } from "../entity/Brand";
-import { IBrand } from "../interfaces/IBrand";
 import { IEditableBrand } from "../interfaces/IEditableBrand";
 import { fromDbToBrand } from "../mapper/brandMapper";
 import { BrandModel } from "../model/brandModel";
@@ -18,13 +17,13 @@ export class BrandRepository extends AbstractRepository {
         this.brandModel = brandModel
     }
 
-    public async getAllBrands(): Promise<Error | IBrand[]> {
+    public async getAllBrands(): Promise<Error | Brand[]> {
         const response = await this.brandModel.findAll()
         return response.map(fromDbToBrand)
 
     }
 
-    public async getById(id: number): Promise<Error | IBrand> {
+    public async getById(id: number): Promise<Error | Brand> {
         if (id <= 0) {
             throw Error("Missing brand id")
         }
@@ -36,7 +35,7 @@ export class BrandRepository extends AbstractRepository {
         return fromDbToBrand(response)
     }
 
-    public async createBrand(brand: IBrand): Promise<Error | IBrand> {
+    public async createBrand(brand: Brand): Promise<Error | Brand> {
 
         const response = await this.brandModel.create(brand)
         return fromDbToBrand(response)

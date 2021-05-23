@@ -16,6 +16,8 @@ import { IRamEdit } from '../interface/IRamEdit'
 import { RamService } from "../service/ramService";
 import { FullRam } from "../entities/FullRam";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
+import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
+import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 
 export class RamController extends AbstractController {
     private ROUTE_BASE: string
@@ -37,9 +39,9 @@ export class RamController extends AbstractController {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAll.bind(this))
         app.get(`/api${ROUTE}/:id`, this.getSingleRam.bind(this))
-        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("product_image"), this.create.bind(this))
-        app.put(`/api${ROUTE}/:id`, this.uploadMiddleware.none(), this.edit.bind(this))
-        app.delete(`/api${ROUTE}/:id`, this.delete.bind(this))
+        app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Ram' })], this.uploadMiddleware.single("product_image"), this.create.bind(this))
+        app.put(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Ram' })], this.uploadMiddleware.none(), this.edit.bind(this))
+        app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Ram' })], this.delete.bind(this))
     }
 
     getAll = async (req: Request, res: Response): Promise<Response> => {

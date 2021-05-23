@@ -1,6 +1,7 @@
 import { IRamCreate } from '../interface/IRamCreate'
 
 export class Ram {
+    static readonly modelName = 'Ram'
     id?: number
     ram_version: "DDR1" | "DDR2" | "DDR3" | "DDR4"
     memory: number

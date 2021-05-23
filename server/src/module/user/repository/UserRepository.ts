@@ -2,9 +2,11 @@ import { inject, injectable } from "inversify";
 import { UniqueConstraintError } from "sequelize";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
+import { RoleModel } from "../../authorization/module";
+import { FullUser } from "../entities/FullUser";
 import { User } from "../entities/User";
 import { IUserEdit } from "../interfaces/IUserEdit";
-import { fromDbToUser } from "../mapper/userMapper";
+import { fromDbToFullUser, fromDbToUser } from "../mapper/userMapper";
 import { UserModel } from "../model/UserModel";
 
 @injectable()
@@ -22,15 +24,17 @@ export class UserRepository extends AbstractRepository {
         return users.map(fromDbToUser)
     }
 
-    async getSingleUser(id: number): Promise<User | Error> {
+    async getSingleUser(id: number): Promise<FullUser | Error> {
         try {
-            const user = await this.userModel.findByPk(id)
+            const user = await this.userModel.findByPk(id, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }] })
             if (!user) {
                 throw Error("User not found")
             }
-            return fromDbToUser(user)
+            
+            const response = fromDbToFullUser(user)
+            return response
         } catch (err) {
-            throw Error(err.message)
+            throw Error(err)
         }
     }
 

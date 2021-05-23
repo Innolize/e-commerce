@@ -5,6 +5,7 @@ import { User } from "../entities/User";
 import { IUserEdit } from "../interfaces/IUserEdit";
 import { UserRepository } from "../repository/UserRepository";
 import bcrypt from "bcrypt"
+import { FullUser } from "../entities/FullUser";
 
 @injectable()
 export class UserService extends AbstractService {
@@ -24,7 +25,7 @@ export class UserService extends AbstractService {
         return response
     }
 
-    async getSingleUser(id: number): Promise<User | Error> {
+    async getSingleUser(id: number): Promise<FullUser | Error> {
         return await this.userRepository.getSingleUser(id)
     }
 

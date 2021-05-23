@@ -32,19 +32,12 @@ initUserModule(app, container)
 initPCBuilderModule(app, container)
 initAuth(app, container)
 
-
-
-
-
-
-
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof MulterError) {
     return res.status(404).send({ "errors": ["Unexpected image field"] })
   }
-  console.log(1234)
+  console.log(err.message)
   return res.status(404).send(ReasonPhrases.NOT_FOUND)
 })
 

@@ -8,6 +8,6 @@ import { configureLocalStrategy } from "./LocalStrategy";
 
 export const configurePassportStrategies = (container: Container, passport: PassportStatic): void => {
     const userService = container.get<UserService>(TYPES.User.Service)
-    configureJwtStrategy(userService, passport)
     configureLocalStrategy(userService, passport)
+    configureJwtStrategy(userService, passport)
 }

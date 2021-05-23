@@ -1,13 +1,18 @@
 import { injectable } from "inversify"
-import { DataTypes, Model, Sequelize } from "sequelize"
-import { Roles } from "../../../config/constants/roles"
-import { User } from "../entities/User"
+import { Association, DataTypes, Model, Sequelize } from "sequelize"
+import { RoleModel } from "../../authorization/module"
+import { IUserAttributes } from '../interfaces/IUserAttributes'
 import { IUserCreate } from "../interfaces/IUserCreate"
 
 @injectable()
-export class UserModel extends Model<User, IUserCreate>{
+export class UserModel extends Model<IUserAttributes, IUserCreate>{
     static setup(database: Sequelize): typeof UserModel {
         UserModel.init({
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true
+            },
             mail: {
                 unique: true,
                 type: DataTypes.STRING,
@@ -16,10 +21,6 @@ export class UserModel extends Model<User, IUserCreate>{
             password: {
                 type: DataTypes.STRING,
                 allowNull: false,
-            },
-            role: {
-                type: DataTypes.ENUM(...Object.keys(Roles)),
-                allowNull: false
             }
         },
             {
@@ -31,4 +32,18 @@ export class UserModel extends Model<User, IUserCreate>{
         )
         return UserModel
     }
+    static setupRoleAssociation(model: typeof RoleModel): typeof UserModel {
+        UserModel.belongsTo(model, {
+            foreignKey: {
+                name: "role_id",
+                defaultValue: 1
+            },
+            as: 'role'
+        })
+        return UserModel
+    }
+
+    public static associations: {
+        role: Association<UserModel, RoleModel>;
+    };
 }

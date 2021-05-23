@@ -1,6 +1,7 @@
 import { IVideoCardCreate } from '../interface/IVideoCardCreate'
 
 export class VideoCard {
+    static readonly modelName = 'VideoCard'
     id?: number
     version: "DDR4" | "DDR5" | "DDR6"
     memory: number

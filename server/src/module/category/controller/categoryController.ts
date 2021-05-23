@@ -12,6 +12,8 @@ import { validateCreateCategoryDto } from '../helper/create_dto_validator'
 import { Category } from '../entity/Category'
 import { IEditableCategory } from '../interfaces/IEditableCategory'
 import { validateEditCategoryDto } from '../helper/edit_dto_validator'
+import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
+import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
 
 
 @injectable()
@@ -32,9 +34,9 @@ export class CategoryController extends AbstractController {
     configureRoutes(app: App): void {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAllCategories.bind(this))
-        app.post(`/api${ROUTE}`, this.uploadMiddleware.single("bulbasaur"), this.createCategory.bind(this))
-        app.put(`/api${ROUTE}`, this.uploadMiddleware.none(), this.modifyCategory.bind(this))
-        app.delete(`/api${ROUTE}/:id`, this.deleteCategory.bind(this))
+        app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Category' })], this.uploadMiddleware.single("bulbasaur"), this.createCategory.bind(this))
+        app.put(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Category' })], this.uploadMiddleware.none(), this.modifyCategory.bind(this))
+        app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Category' })], this.deleteCategory.bind(this))
         app.get(`/api${ROUTE}/findByName/:name`, this.findCategoryByName.bind(this))
         app.get(`/api${ROUTE}/findById/:id`, this.findCategoryById.bind(this))
     }

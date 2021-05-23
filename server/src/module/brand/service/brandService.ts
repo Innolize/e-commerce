@@ -2,7 +2,6 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractService } from "../../abstractClasses/abstractService";
 import { Brand } from "../entity/Brand";
-import { IBrand } from "../interfaces/IBrand";
 import { IEditableBrand } from "../interfaces/IEditableBrand";
 import { BrandRepository } from "../repository/brandRepository";
 
@@ -16,7 +15,7 @@ export class BrandService extends AbstractService {
         this.brandRepository = brandRepository
     }
 
-    async getAllCategories(): Promise<Error | IBrand[]> {
+    async getAllCategories(): Promise<Error | Brand[]> {
         console.log("entre al service")
         return await this.brandRepository.getAllBrands()
     }
@@ -29,7 +28,7 @@ export class BrandService extends AbstractService {
         return await this.brandRepository.modifyBrand(product)
     }
 
-    async createBrand(brand: IBrand): Promise<Brand | Error> {
+    async createBrand(brand: Brand): Promise<Brand | Error> {
         return await this.brandRepository.createBrand(brand)
     }
     async findBrandById(id: number): Promise<Error | Brand> {

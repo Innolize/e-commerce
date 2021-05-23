@@ -80,4 +80,12 @@ export const TYPES = {
         Service: Symbol('AuthService'),
         Controller: Symbol('AuthController'),
     },
+    Authorization: {
+        Permission: {
+            Model: Symbol('PermissionModel'),
+        },
+        Role: {
+            Model: Symbol('RoleModel'),
+        }
+    },
 }

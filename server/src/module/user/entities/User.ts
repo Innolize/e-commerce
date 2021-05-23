@@ -1,17 +1,17 @@
-import { Roles } from "../../../config/constants/roles"
 import { IUserCreate } from "../interfaces/IUserCreate"
 
 export class User {
+    static readonly modelName = 'User'
     id?: number
     mail: string
     password: string
-    role: Roles
-    constructor({ id, mail, password, role }: IUserCreate) {
+    role_id: number
+    constructor({ id, mail, password, role_id }: IUserCreate) {
         if (id) {
             this.id = id
         }
         this.mail = mail
         this.password = password
-        role ? this.role = role : this.role = Roles.client
+        this.role_id = role_id
     }
 }

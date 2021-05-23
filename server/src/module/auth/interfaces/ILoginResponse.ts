@@ -1,6 +1,6 @@
 import { User } from "../../user/entities/User";
 
-type UserPasswordless = Omit<User, 'password'>
+type UserPasswordless = Omit<User, 'password' | 'role_id'>
 
 export interface ILoginResponse {
     user: UserPasswordless,

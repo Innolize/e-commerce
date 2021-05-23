@@ -20,6 +20,7 @@ import { DiskStorageController, DiskStorageModel, DiskStorageRepository, DiskSto
 import { UserController, UserModel, UserRepository, UserService } from '../module/user/module'
 import bcrypt from 'bcrypt'
 import { AuthController, AuthService } from "../module/auth/module"
+import { PermissionModel, RoleModel } from "../module/authorization/module"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -101,7 +102,24 @@ export function configDiskStorageModel(container: Container): typeof DiskStorage
     return DiskStorageModel
 }
 export function configUserModel(container: Container): typeof UserModel {
-    return UserModel.setup(container.get(TYPES.Common.Database))
+    UserModel.setup(container.get(TYPES.Common.Database))
+    UserModel.setupRoleAssociation(container.get(TYPES.Authorization.Role.Model))
+    return UserModel
+}
+
+export function configRoleModel(container: Container): typeof RoleModel {
+    RoleModel.setup(container.get(TYPES.Common.Database))
+    RoleModel.setupPermissionAssociation(container.get(TYPES.Authorization.Permission.Model))
+    return RoleModel
+}
+
+export function configPermissionModel(container: Container): typeof PermissionModel {
+    return PermissionModel.setup(container.get(TYPES.Common.Database))
+}
+
+function configPermissionContainer(container: Container): void {
+    container.bind<typeof PermissionModel>(TYPES.Authorization.Permission.Model).toConstantValue(configPermissionModel(container));
+    container.bind<typeof RoleModel>(TYPES.Authorization.Role.Model).toConstantValue(configRoleModel(container))
 }
 
 function configureProductContainer(container: Container): void {
@@ -186,9 +204,10 @@ function configureDIC() {
     configureCategoryContainer(dependencyContainer)
     configureBrandContainer(dependencyContainer)
     configureProductContainer(dependencyContainer)
-    configureUserContainer(dependencyContainer)
     configurePCBuilder(dependencyContainer)
     configureAuthContainer(dependencyContainer)
+    configPermissionContainer(dependencyContainer)
+    configureUserContainer(dependencyContainer)
     return dependencyContainer
 }
 

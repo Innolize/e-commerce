@@ -1,6 +1,7 @@
 import { IProcessorCreate } from '../interface/IProcessorCreate'
 
 export class Processor {
+    static readonly modelName = 'Processor'
     id?: number
     cores: number
     frecuency: number
