@@ -30,7 +30,7 @@ const DeleteDialog = ({ open, closeDialog, handleDelete, toDelete }: Props) => {
 
   return (
     <Dialog open={open} onClose={closeDialog}>
-      <DialogTitle>Delete the {toDelete} ?</DialogTitle>
+      <DialogTitle>Do you want to delete this {toDelete} ?</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
           When you delete it, the {toDelete} will be lost. You still want to
