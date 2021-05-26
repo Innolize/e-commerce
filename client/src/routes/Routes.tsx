@@ -23,11 +23,11 @@ const Routes = () => {
     <Router>
       <Switch>
         <MainLayoutRoute path="/" exact component={Home} />
-        <MainLayoutRoute path="/build" exact component={Build} />
-        <MainLayoutRoute path="/products" exact component={Products} />
-        <MainLayoutRoute path="/login" exact component={Login} />
-        <MainLayoutRoute path="/register" exact component={Register} />
-        <MainLayoutRoute path="/cart" exact component={Cart} />
+        <MainLayoutRoute path="/build" component={Build} />
+        <MainLayoutRoute path="/products" component={Products} />
+        <MainLayoutRoute path="/login" component={Login} />
+        <MainLayoutRoute path="/register" component={Register} />
+        <MainLayoutRoute path="/cart" component={Cart} />
 
         <AdminLayoutRoute path="/admin" exact component={Dashboard} />
         <AdminLayoutRoute
@@ -37,12 +37,10 @@ const Routes = () => {
         />
         <AdminLayoutRoute
           path="/admin/products/create"
-          exact
           component={CreateProduct}
         />
         <AdminLayoutRoute
           path="/admin/products/edit/:id"
-          exact
           component={EditProduct}
         />
         <AdminLayoutRoute
@@ -52,25 +50,15 @@ const Routes = () => {
         />
         <AdminLayoutRoute
           path="/admin/categories/create"
-          exact
           component={CreateCategory}
         />
         <AdminLayoutRoute
           path="/admin/categories/edit/:id"
-          exact
           component={EditCategory}
         />
         <AdminLayoutRoute path="/admin/brands" exact component={Brands} />
-        <AdminLayoutRoute
-          path="/admin/brands/create"
-          exact
-          component={CreateBrand}
-        />
-        <AdminLayoutRoute
-          path="/admin/brands/edit/:id"
-          exact
-          component={EditBrand}
-        />
+        <AdminLayoutRoute path="/admin/brands/create" component={CreateBrand} />
+        <AdminLayoutRoute path="/admin/brands/edit/:id" component={EditBrand} />
       </Switch>
     </Router>
   );
