@@ -1,4 +1,4 @@
-import { Box, Button } from "@material-ui/core";
+import { Box, Button, ButtonGroup } from "@material-ui/core";
 import { DataGrid, GridCellParams, GridColDef } from "@material-ui/data-grid";
 import { Link as RouterLink } from "react-router-dom";
 import { ICategory } from "src/types";
@@ -16,7 +16,7 @@ const CategoryTable = ({ rows, handleDelete }: Props) => {
       <DataGrid
         columns={
           [
-            { field: "id", type: "number", headerName: "ID" },
+            { field: "id", type: "number", headerName: "ID", hide: true },
             { field: "name", width: 250, headerName: "Category name" },
             {
               field: "Edit options",
@@ -25,17 +25,17 @@ const CategoryTable = ({ rows, handleDelete }: Props) => {
               width: 250,
               flex: 1,
               renderCell: (params: GridCellParams) => (
-                <Box>
+                <ButtonGroup>
                   <Button
                     to={"categories/edit/" + params.row.id}
                     component={RouterLink}
                   >
-                    Edit
+                    Edit category
                   </Button>
                   <Button onClick={() => handleDelete(params.row.id as string)}>
                     Delete
                   </Button>
-                </Box>
+                </ButtonGroup>
               ),
             },
           ] as GridColDef[]
