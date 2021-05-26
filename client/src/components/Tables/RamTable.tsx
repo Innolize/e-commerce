@@ -40,13 +40,13 @@ const RamTable = ({ rows, handleDelete }: Props) => {
               renderCell: (params: GridCellParams) => (
                 <div>
                   <Button
-                    to={"products/edit/" + params.row.product_id}
+                    to={"edit/" + params.row.product_id}
                     component={RouterLink}
                   >
                     General
                   </Button>
                   <Button
-                    to={"products/edit/" + params.row.id}
+                    to={"edit_details/" + params.row.id}
                     component={RouterLink}
                   >
                     Details

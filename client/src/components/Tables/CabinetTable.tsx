@@ -16,7 +16,7 @@ const CabinetTable = ({ rows, handleDelete }: Props) => {
       <DataGrid
         columns={
           [
-            { field: "id", type: "number", hide: true },
+            { field: "id", type: "number" },
             { field: "product_id", type: "number", hide: true },
             { field: "name", width: 200, headerName: "Name" },
             { field: "description", width: 200, headerName: "Description" },
@@ -37,13 +37,13 @@ const CabinetTable = ({ rows, handleDelete }: Props) => {
               renderCell: (params: GridCellParams) => (
                 <div>
                   <Button
-                    to={"products/edit/" + params.row.product_id}
+                    to={"edit/" + params.row.product_id}
                     component={RouterLink}
                   >
                     General
                   </Button>
                   <Button
-                    to={"products/edit/" + params.row.id}
+                    to={"edit_details/" + params.row.id}
                     component={RouterLink}
                   >
                     Details
