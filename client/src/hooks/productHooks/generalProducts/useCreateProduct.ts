@@ -1,7 +1,7 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQueryClient, useMutation } from "react-query";
 import api from "../../../services/api";
-import { IProduct } from "../../../types";
+import { IProduct, ServerError } from "../../../types";
 
 export default function useCreateProduct() {
   const queryClient = useQueryClient();
@@ -10,16 +10,24 @@ export default function useCreateProduct() {
       api
         .post("/api/product", values)
         .then((res: AxiosResponse<IProduct>) => res.data)
-        .catch((error: AxiosError) => {
+        .catch((error: AxiosError<ServerError>) => {
           if (error.response) {
-            throw new Error(error.response.data.message);
+            if (error.response.data.errors) {
+              throw new Error(Object.values(error.response.data.errors[0])[0]);
+            } else {
+              throw new Error(error.response.data.message);
+            }
           } else {
             throw new Error(error.message);
           }
         }),
     {
       retry: false,
-      onSuccess: () => {
+      onSuccess: (newProduct) => {
+        queryClient.setQueryData("products", (previousProduct: any) => [
+          ...previousProduct,
+          newProduct,
+        ]);
         queryClient.invalidateQueries("products");
       },
       onError: (e: AxiosError) => {

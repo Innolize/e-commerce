@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import { useQueryClient, useMutation } from "react-query";
+import { IProduct } from "src/types";
 import api from "../../../services/api";
 
 export default function useDeleteProduct() {
@@ -18,11 +19,24 @@ export default function useDeleteProduct() {
         }),
     {
       retry: false,
-      onSuccess: () => {
+      onMutate: async (productToDelete) => {
+        // Optimistic update on delete.
+        await queryClient.cancelQueries("products");
+        const previousProduct = queryClient.getQueryData("products");
+        queryClient.setQueryData("products", (oldProducts: any) => {
+          const newProduct = oldProducts.filter(
+            (product: IProduct) => product.id !== productToDelete
+          );
+          return newProduct;
+        });
+        return { previousProduct };
+      },
+      onSettled: () => {
         queryClient.invalidateQueries("products");
       },
-      onError: (e: AxiosError) => {
+      onError: (e: AxiosError, _, context: any) => {
         console.error(e);
+        queryClient.setQueryData("products", context.previousProduct);
       },
     }
   );
