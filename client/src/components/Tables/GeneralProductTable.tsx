@@ -1,5 +1,10 @@
-import { Box, Button } from "@material-ui/core";
-import { DataGrid, GridCellParams, GridColDef } from "@material-ui/data-grid";
+import { Box, Button, ButtonGroup } from "@material-ui/core";
+import {
+  DataGrid,
+  GridCellParams,
+  GridColDef,
+  ValueFormatterParams,
+} from "@material-ui/data-grid";
 import { Link as RouterLink } from "react-router-dom";
 import { IProduct } from "src/types";
 import currencyFormatter from "src/utils/formatCurrency";
@@ -12,56 +17,60 @@ interface Props {
 
 const GeneralProductTable = ({ rows, handleDelete }: Props) => {
   return (
-    <Box height="500px" marginBottom="50px">
+    <Box width="100%" height="500px" marginBottom="50px">
       <DataGrid
         columns={
           [
             { field: "id", type: "number", hide: true },
-            { field: "Name", width: 200 },
-            { field: "Description", width: 200 },
-            { field: "Category", width: 150 },
+            { field: "name", width: 200, headerName: "Product name" },
+            { field: "description", width: 200, headerName: "Description" },
+            { field: "category", width: 150, headerName: "Category" },
             {
-              field: "Price",
-              width: 120,
+              field: "price",
+              width: 140,
+              headerName: "Price",
+              headerAlign: "center",
+              align: "left",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                currencyFormatter.format(Number(params.value)),
             },
-            { field: "Stock", width: 100 },
-            { field: "Brand", width: 100 },
+            { field: "stock", width: 100, headerName: "Stock" },
+            { field: "brand", width: 100, headerName: "Brand" },
             {
-              field: "Edit",
+              field: "Edit options",
               sortable: false,
               filterable: false,
               width: 300,
               flex: 1,
               renderCell: (params: GridCellParams) => (
-                <div>
+                <ButtonGroup>
                   <Button
+                    variant="outlined"
                     to={"products/edit/" + params.row.id}
                     component={RouterLink}
                   >
-                    General
+                    Edit
                   </Button>
                   <Button
-                    to={"products/edit/" + params.row.id}
-                    component={RouterLink}
+                    variant="outlined"
+                    onClick={() => handleDelete(params.row.id as string)}
                   >
-                    Details
-                  </Button>
-                  <Button onClick={() => handleDelete(params.row.id as string)}>
                     Delete
                   </Button>
-                </div>
+                </ButtonGroup>
               ),
             },
           ] as GridColDef[]
         }
         rows={rows.map((product: IProduct) => ({
           id: product.id,
-          Name: product.name,
-          Description: product.description,
-          Price: currencyFormatter.format(product.price),
-          Stock: product.stock ? "Yes" : "No",
-          Category: product.category?.name || "Not found",
-          Brand: product.brand?.name || "Not found",
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          stock: product.stock ? "Yes" : "No",
+          category: product.category?.name || "Not found",
+          brand: product.brand?.name || "Not found",
         }))}
         components={{
           Toolbar: CustomToolbar,
