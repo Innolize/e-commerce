@@ -1,25 +1,27 @@
-import { Formik, Form, ErrorMessage, Field } from "formik";
-import { makeStyles } from "@material-ui/core/styles";
-import InputField from "src/components/InputField";
 import {
   Box,
-  Button,
   Checkbox,
   Container,
   Input,
+  makeStyles,
   MenuItem,
   Typography,
 } from "@material-ui/core";
-import React, { useState } from "react";
-import { Redirect } from "react-router-dom";
-import { createProductSchema } from "../../utils/yup.validations";
-import Alert from "@material-ui/lab/Alert";
-import useCreateProduct from "src/hooks/productHooks/useCreateProduct";
-import useCategories from "src/hooks/categoryHooks/useCategories";
+import { Alert } from "@material-ui/lab";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import React, { useEffect, useState } from "react";
 import useBrands from "src/hooks/brandHooks/useBrands";
+import useCreateProduct from "src/hooks/productHooks/generalProducts/useCreateProduct";
 import { IBrand, ICategory } from "src/types";
-import SelectField from "src/components/SelectField";
+import { createProductSchema } from "src/utils/yup.validations";
+import InputField from "../../components/InputField";
+import SelectField from "../../components/SelectField";
 import { v4 as uuidv4 } from "uuid";
+import { Redirect } from "react-router-dom";
+import LoadingButton from "../../components/LoadingButton";
+import { IProductForm } from "src/form_types";
+import useCategories from "src/hooks/categoryHooks/useCategories";
+import SnackbarAlert from "src/components/SnackbarAlert";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -40,25 +42,29 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CreateProduct = () => {
-  const queryCategories = useCategories();
-  const queryBrands = useBrands();
-  const createProduct = useCreateProduct();
   const classes = useStyles();
+  const createProduct = useCreateProduct();
+  const queryBrands = useBrands();
+  const queryCategories = useCategories();
   const [redirect, setRedirect] = useState(false);
 
-  createProduct.isSuccess &&
-    setTimeout(() => {
-      setRedirect(true);
-    }, 2500);
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (createProduct.isSuccess) {
+      timer = setTimeout(() => {
+        setRedirect(true);
+      }, 2000);
+    }
+    return () => clearTimeout(timer);
+  }, [createProduct.isSuccess]);
 
   return (
     <Container>
       {createProduct.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">
-            Product created successfully. You will be redirected soon...
-          </Alert>
-        </Box>
+        <SnackbarAlert
+          severity="success"
+          text="Product created successfully. You will be redirected soon..."
+        ></SnackbarAlert>
       )}
 
       <Box className={classes.formContainer}>
@@ -68,18 +74,18 @@ const CreateProduct = () => {
             image: "",
             description: "",
             price: "",
-            stock: "",
+            stock: "true",
             category: "",
             brand: "",
           }}
-          onSubmit={(data) => {
+          onSubmit={(data: IProductForm) => {
             const formData = new FormData();
             formData.append("name", data.name);
             formData.append("description", data.description);
             formData.append("price", data.price);
             formData.append("stock", data.stock);
-            formData.append("id_category", data.category);
             formData.append("id_brand", data.brand);
+            formData.append("id_category", data.category);
             formData.append("product_image", data.image);
             createProduct.mutate(formData);
           }}
@@ -87,7 +93,7 @@ const CreateProduct = () => {
         >
           {({ setFieldValue }) => (
             <Form className={classes.form} encType="multipart/form-data">
-              <Typography variant="h4">Create a new product</Typography>
+              <Typography variant="h4">Create a product</Typography>
               <Box>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
@@ -160,17 +166,16 @@ const CreateProduct = () => {
                 </Box>
               )}
 
-              {redirect && <Redirect to="/admin/products" />}
+              {redirect && <Redirect to={`/admin/products`} />}
 
               <Box my={3}>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                >
-                  Submit
-                </Button>
+                {createProduct.isLoading ? (
+                  <LoadingButton isSubmitting name="Submiting..." />
+                ) : createProduct.isSuccess ? (
+                  <LoadingButton isSuccess name="Submited" />
+                ) : (
+                  <LoadingButton name="Submit" />
+                )}
               </Box>
             </Form>
           )}

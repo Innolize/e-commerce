@@ -14,6 +14,7 @@ import React, { useState } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
+import SnackbarAlert from "src/components/SnackbarAlert";
 import useEditBrand from "../../hooks/brandHooks/useEditBrand";
 import useGetBrandById from "../../hooks/brandHooks/useGetBrandById";
 import { IBrand } from "../../types";
@@ -53,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CreateBrand = () => {
+const EditBrand = () => {
   const { id } = useParams<{ id: string }>();
   const queryBrand = useGetBrandById(id);
   const editBrand = useEditBrand();
@@ -74,18 +75,20 @@ const CreateBrand = () => {
           </Typography>
         </Box>
       )}
+
       {queryBrand.isLoading && (
         <Box textAlign="center" mt={12}>
           <CircularProgress />
         </Box>
       )}
+
       {editBrand.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">
-            Sucessfully edited! You will be redirected soon...
-          </Alert>
-        </Box>
+        <SnackbarAlert
+          severity="success"
+          text="Brand edited successfully. You will be redirected soon..."
+        ></SnackbarAlert>
       )}
+
       {redirect && <Redirect to="/admin/brands" />}
 
       {queryBrand.isSuccess && (
@@ -97,7 +100,6 @@ const CreateBrand = () => {
               const formData = new FormData();
 
               // If the form was not modified we dont submit
-              // This will not stop the user from uploading the same image/file - TODO?
               if (data.name === queryBrand.data.name && !data.logo) {
                 return;
               }
@@ -174,4 +176,4 @@ const CreateBrand = () => {
   );
 };
 
-export default CreateBrand;
+export default EditBrand;

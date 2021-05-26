@@ -8,6 +8,7 @@ import { Redirect } from "react-router-dom";
 import { createBrandSchema } from "../../utils/yup.validations";
 import Alert from "@material-ui/lab/Alert";
 import LoadingButton from "src/components/LoadingButton";
+import SnackbarAlert from "src/components/SnackbarAlert";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -40,12 +41,12 @@ const CreateBrand = () => {
   return (
     <Container>
       {createBrand.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">
-            Brand created successfully. You will be redirected soon...
-          </Alert>
-        </Box>
+        <SnackbarAlert
+          severity="success"
+          text="Brand created successfully. You will be redirected soon..."
+        ></SnackbarAlert>
       )}
+
       {redirect && <Redirect to="/admin/brands" />}
       <Box className={classes.formContainer}>
         <Formik
@@ -61,9 +62,11 @@ const CreateBrand = () => {
           {({ setFieldValue }) => (
             <Form className={classes.form} encType="multipart/form-data">
               <Typography variant="h4">Create a new brand</Typography>
+
               <Box mb={3}>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
+
               <Box my={3}>
                 <Input
                   type="file"
@@ -80,6 +83,7 @@ const CreateBrand = () => {
                   name="logo"
                 />
               </Box>
+
               {createBrand.isError && (
                 <Box my={2}>
                   <Alert severity="error">{createBrand.error?.message}</Alert>

@@ -2,11 +2,14 @@ import { Box, CircularProgress } from "@material-ui/core";
 import { DataGrid } from "@material-ui/data-grid";
 import { JSXElementConstructor } from "react";
 import {
+  IBrand,
   ICabinet,
+  ICategory,
   IDiskStorage,
   IMotherboard,
   IPowerSupply,
   IProcessor,
+  IProduct,
   IRam,
   IVideoCard,
 } from "src/types";
@@ -22,6 +25,9 @@ interface Props {
     | IPowerSupply[]
     | IProcessor[]
     | IVideoCard[]
+    | IProduct[]
+    | IBrand[]
+    | ICategory[]
     | IDiskStorage[];
   Table: JSXElementConstructor<any>;
   handleDelete: (id: string) => void;

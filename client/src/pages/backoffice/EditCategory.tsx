@@ -15,6 +15,7 @@ import useEditCategory from "../../hooks/categoryHooks/useEditCategory";
 import useGetCategoryById from "../../hooks/categoryHooks/useGetCategoryById";
 import { ICategory } from "../../types";
 import { editCategorySchema } from "../../utils/yup.validations";
+import SnackbarAlert from "src/components/SnackbarAlert";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CreateCategory = () => {
+const EditCategory = () => {
   const { id } = useParams<{ id: string }>();
   const queryCategory = useGetCategoryById(id);
   const editCategory = useEditCategory();
@@ -71,17 +72,18 @@ const CreateCategory = () => {
           </Typography>
         </Box>
       )}
+
       {queryCategory.isLoading && (
         <Box textAlign="center" mt={12}>
           <CircularProgress />
         </Box>
       )}
+
       {editCategory.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">
-            Sucessfully edited! You will be redirected soon..
-          </Alert>
-        </Box>
+        <SnackbarAlert
+          severity="success"
+          text="Category edited successfully. You will be redirected soon..."
+        ></SnackbarAlert>
       )}
 
       {redirect && <Redirect to="/admin/categories" />}
@@ -116,6 +118,7 @@ const CreateCategory = () => {
                     </Alert>
                   </Box>
                 )}
+
                 <Box>
                   {editCategory.isLoading ? (
                     <LoadingButton isSubmitting name="Editing..." />
@@ -134,4 +137,4 @@ const CreateCategory = () => {
   );
 };
 
-export default CreateCategory;
+export default EditCategory;

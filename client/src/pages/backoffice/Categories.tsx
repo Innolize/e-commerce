@@ -1,13 +1,13 @@
 import { Box, Button, Container, Typography } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { DataGrid } from "@material-ui/data-grid";
 import useCategories from "../../hooks/categoryHooks/useCategories";
 import useDeleteCategory from "../../hooks/categoryHooks/useDeleteCategory";
-import Alert from "@material-ui/lab/Alert";
 import DeleteDialog from "../../components/DeleteDialogs/DeleteDialog";
 import { Link as RouterLink } from "react-router-dom";
 import { useState } from "react";
 import CategoryTable from "src/components/Tables/CategoryTable";
+import SnackbarAlert from "src/components/SnackbarAlert";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import TableLayout from "src/components/Tables/TableLayout";
 
 const Categories = () => {
   const query = useCategories();
@@ -35,18 +35,18 @@ const Categories = () => {
         <Typography variant="h3">Categories</Typography>
       </Box>
 
-      {deleteCategory.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">Category deleted successfully.</Alert>
-        </Box>
-      )}
-
-      {deleteCategory.isError && (
-        <Box my={2}>
-          <Alert severity="error">
-            Something went wrong deleting that category.
-          </Alert>
-        </Box>
+      {deleteCategory.isSuccess ? (
+        <SnackbarAlert
+          severity="success"
+          text="Category deleted successfully"
+        ></SnackbarAlert>
+      ) : (
+        deleteCategory.isError && (
+          <SnackbarAlert
+            severity="error"
+            text="Something went wrong"
+          ></SnackbarAlert>
+        )
       )}
 
       <DeleteDialog
@@ -56,19 +56,25 @@ const Categories = () => {
         handleDelete={handleDelete}
       />
 
-      <Button to="categories/create" component={RouterLink}>
-        Add new
-      </Button>
+      <Box mb={1}>
+        <Button
+          to="categories/create"
+          component={RouterLink}
+          variant="outlined"
+          endIcon={<AddCircleOutlineIcon />}
+        >
+          Add new category
+        </Button>
+      </Box>
 
-      {query.isError && <DataGrid error rows={[]} columns={[]} />}
-      {query.isLoading && (
-        <Box display="flex" justifyContent="center" mt={3}>
-          <CircularProgress />
-        </Box>
-      )}
-      {query.isSuccess && (
-        <CategoryTable rows={query.data} handleDelete={handleClickDeleteBtn} />
-      )}
+      <TableLayout
+        isError={query.isError}
+        isLoading={query.isLoading}
+        isSuccess={query.isSuccess}
+        handleDelete={handleClickDeleteBtn}
+        Table={CategoryTable}
+        rows={query.data}
+      />
     </Container>
   );
 };

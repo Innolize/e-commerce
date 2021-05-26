@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Checkbox,
   CircularProgress,
   Container,
@@ -13,17 +12,19 @@ import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import Image from "material-ui-image";
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
 import SelectField from "src/components/SelectField";
 import useBrands from "src/hooks/brandHooks/useBrands";
 import useCategories from "src/hooks/categoryHooks/useCategories";
-import useEditProduct from "src/hooks/productHooks/useEditProduct";
-import useGetProductId from "src/hooks/productHooks/useGetProductById";
+import useEditProduct from "src/hooks/productHooks/generalProducts/useEditProduct";
+import useGetProductById from "src/hooks/productHooks/generalProducts/useGetProductById";
 import { IBrand, ICategory } from "src/types";
 import { editProductSchema } from "../../utils/yup.validations";
 import { v4 as uuidv4 } from "uuid";
+import LoadingButton from "src/components/LoadingButton";
+import SnackbarAlert from "src/components/SnackbarAlert";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -59,13 +60,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CreateBrand = () => {
+const EditProduct = () => {
   const queryCategories = useCategories();
   const queryBrands = useBrands();
   const { id } = useParams<{ id: string }>();
-  const queryProduct = useGetProductId(id);
+  const queryProduct = useGetProductById(id);
   const editProduct = useEditProduct();
   const classes = useStyles();
+  const history = useHistory();
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (editProduct.isSuccess) {
+      timer = setTimeout(() => {
+        history.goBack();
+      }, 2000);
+    }
+    return () => clearTimeout(timer);
+  }, [editProduct.isSuccess, history]);
 
   return (
     <Container>
@@ -76,15 +88,18 @@ const CreateBrand = () => {
           </Typography>
         </Box>
       )}
+
       {queryProduct.isLoading && (
         <Box textAlign="center" mt={12}>
           <CircularProgress />
         </Box>
       )}
+
       {editProduct.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">Sucessfully edited!</Alert>
-        </Box>
+        <SnackbarAlert
+          severity="success"
+          text="Product edited successfully. You will be redirected soon..."
+        ></SnackbarAlert>
       )}
 
       {queryProduct.isSuccess && (
@@ -97,8 +112,8 @@ const CreateBrand = () => {
               description: queryProduct.data.description,
               price: queryProduct.data.price,
               stock: queryProduct.data.stock,
-              category: queryProduct.data.category?.id,
-              brand: queryProduct.data.brand?.id,
+              category: queryProduct.data.category?.id || "",
+              brand: queryProduct.data.brand?.id || "",
               id,
             }}
             onSubmit={async (data) => {
@@ -139,11 +154,7 @@ const CreateBrand = () => {
                 </Box>
 
                 {queryBrands.isSuccess && (
-                  <SelectField
-                    defaultValue={queryProduct.data.brand?.id || ""}
-                    name="brand"
-                    label="Brand"
-                  >
+                  <SelectField name="brand" label="Brand">
                     {queryBrands.data.map((brand: IBrand) => (
                       <MenuItem key={uuidv4()} value={brand.id}>
                         {brand.name}
@@ -153,11 +164,7 @@ const CreateBrand = () => {
                 )}
 
                 {queryCategories.isSuccess && (
-                  <SelectField
-                    defaultValue={queryProduct.data.category?.id || ""}
-                    name="category"
-                    label="Category"
-                  >
+                  <SelectField name="category" label="Category">
                     {queryCategories.data.map((category: ICategory) => (
                       <MenuItem key={uuidv4()} value={category.id}>
                         {category.name}
@@ -216,10 +223,14 @@ const CreateBrand = () => {
                     <Alert severity="error">{editProduct.error?.message}</Alert>
                   </Box>
                 )}
-                <Box my={3}>
-                  <Button type="submit" variant="contained" color="primary">
-                    Submit changes
-                  </Button>
+                <Box>
+                  {editProduct.isLoading ? (
+                    <LoadingButton isSubmitting name="Editing..." />
+                  ) : editProduct.isSuccess ? (
+                    <LoadingButton isSuccess name="Submited" />
+                  ) : (
+                    <LoadingButton name="Submit changes" />
+                  )}
                 </Box>
               </Form>
             )}
@@ -230,4 +241,4 @@ const CreateBrand = () => {
   );
 };
 
-export default CreateBrand;
+export default EditProduct;

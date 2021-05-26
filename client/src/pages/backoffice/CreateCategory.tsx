@@ -2,12 +2,13 @@ import { Formik, Form } from "formik";
 import { makeStyles } from "@material-ui/core/styles";
 import InputField from "src/components/InputField";
 import { Box, Container, Typography } from "@material-ui/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useCreateCategory from "../../hooks/categoryHooks/useCreateCategory";
 import { Redirect } from "react-router-dom";
 import { createCategorySchema } from "../../utils/yup.validations";
 import Alert from "@material-ui/lab/Alert";
 import LoadingButton from "src/components/LoadingButton";
+import SnackbarAlert from "src/components/SnackbarAlert";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -32,20 +33,25 @@ const CreateCategory = () => {
   const classes = useStyles();
   const [redirect, setRedirect] = useState(false);
 
-  createCategory.isSuccess &&
-    setTimeout(() => {
-      setRedirect(true);
-    }, 2500);
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (createCategory.isSuccess) {
+      timer = setTimeout(() => {
+        setRedirect(true);
+      }, 2000);
+    }
+    return () => clearTimeout(timer);
+  }, [createCategory.isSuccess]);
 
   return (
     <Container>
       {createCategory.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">
-            Category created successfully. You will be redirected soon...
-          </Alert>
-        </Box>
+        <SnackbarAlert
+          severity="success"
+          text="Category created successfully. You will be redirected soon..."
+        ></SnackbarAlert>
       )}
+
       <Box className={classes.formContainer}>
         <Formik
           initialValues={{ name: "" }}
@@ -56,12 +62,13 @@ const CreateCategory = () => {
           }}
           validationSchema={createCategorySchema}
         >
-          {({ setFieldValue }) => (
+          {() => (
             <Form className={classes.form} encType="multipart/form-data">
               <Typography variant="h4">Create a new category</Typography>
               <Box mb={3}>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
+
               {createCategory.isError && (
                 <Box my={2}>
                   <Alert severity="error">
@@ -71,6 +78,7 @@ const CreateCategory = () => {
               )}
 
               {redirect && <Redirect to="/admin/categories" />}
+
               <Box my={3}>
                 {createCategory.isLoading ? (
                   <LoadingButton isSubmitting name="Submiting..." />

@@ -1,13 +1,13 @@
 import { Box, Button, Typography } from "@material-ui/core";
 import useBrands from "../../hooks/brandHooks/useBrands";
 import { Container } from "@material-ui/core";
-import { DataGrid } from "@material-ui/data-grid";
 import { Link as RouterLink } from "react-router-dom";
 import { useState } from "react";
 import DeleteDialog from "../../components/DeleteDialogs/DeleteDialog";
 import useDeleteBrand from "../../hooks/brandHooks/useDeleteBrand";
-import Alert from "@material-ui/lab/Alert";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import SnackbarAlert from "src/components/SnackbarAlert";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import TableLayout from "src/components/Tables/TableLayout";
 import BrandTable from "src/components/Tables/BrandTable";
 
 const Brands = () => {
@@ -36,18 +36,18 @@ const Brands = () => {
         <Typography variant="h3">Brands</Typography>
       </Box>
 
-      {deleteBrand.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">Brand deleted successfully.</Alert>
-        </Box>
-      )}
-
-      {deleteBrand.isError && (
-        <Box my={2}>
-          <Alert severity="error">
-            Something went wrong deleting that brand.
-          </Alert>
-        </Box>
+      {deleteBrand.isSuccess ? (
+        <SnackbarAlert
+          severity="success"
+          text="Brand deleted successfully"
+        ></SnackbarAlert>
+      ) : (
+        deleteBrand.isError && (
+          <SnackbarAlert
+            severity="error"
+            text="Something went wrong"
+          ></SnackbarAlert>
+        )
       )}
 
       <DeleteDialog
@@ -57,19 +57,25 @@ const Brands = () => {
         handleDelete={handleDelete}
       />
 
-      <Button to="brands/create" component={RouterLink}>
-        Add new
-      </Button>
+      <Box mb={1}>
+        <Button
+          to="brands/create"
+          component={RouterLink}
+          variant="outlined"
+          endIcon={<AddCircleOutlineIcon />}
+        >
+          Add new brand
+        </Button>
+      </Box>
 
-      {query.isError && <DataGrid error rows={[]} columns={[]} />}
-      {query.isLoading && (
-        <Box display="flex" justifyContent="center" mt={3}>
-          <CircularProgress />
-        </Box>
-      )}
-      {query.isSuccess && (
-        <BrandTable rows={query.data} handleDelete={handleClickDeleteBtn} />
-      )}
+      <TableLayout
+        isError={query.isError}
+        isLoading={query.isLoading}
+        isSuccess={query.isSuccess}
+        handleDelete={handleClickDeleteBtn}
+        Table={BrandTable}
+        rows={query.data}
+      />
     </Container>
   );
 };
