@@ -3,15 +3,12 @@ import { useQueryClient, useMutation } from "react-query";
 import api from "../../../services/api";
 import { IProduct } from "../../../types";
 
-export default function useEditProduct(
-  successCallBack?: Function,
-  errorCallback?: Function
-) {
+export default function useEditProduct() {
   const queryClient = useQueryClient();
   return useMutation(
     (values: FormData) =>
       api
-        .put(`/api/product/`, values)
+        .put(`/api/motherboard/`, values)
         .then((res: AxiosResponse<IProduct>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
@@ -23,12 +20,10 @@ export default function useEditProduct(
     {
       retry: false,
       onSuccess: (product: IProduct) => {
-        queryClient.invalidateQueries("products");
-        successCallBack && successCallBack();
+        queryClient.invalidateQueries("motherboards");
       },
       onError: (e: AxiosError) => {
         console.log(e);
-        errorCallback && errorCallback();
       },
     }
   );

@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "react-query";
 import api from "../../../services/api";
 import { IProduct } from "../../../types";
 
-export default function useGetProductId(productId: string) {
+export default function useGetProductById(productId: string) {
   const queryClient = useQueryClient();
   return useQuery(
     ["products", productId],

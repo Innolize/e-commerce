@@ -20,11 +20,11 @@ export default function useCreateMotherboard() {
     {
       retry: false,
       onSuccess: () => {
-        queryClient.invalidateQueries("products");
+        queryClient.invalidateQueries("motherboards");
       },
       onError: (e: AxiosError) => {
         console.error(e);
-        queryClient.invalidateQueries("products");
+        queryClient.invalidateQueries("motherboards");
       },
     }
   );

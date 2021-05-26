@@ -2,12 +2,12 @@ import { AxiosError } from "axios";
 import { useQueryClient, useMutation } from "react-query";
 import api from "../../../services/api";
 
-export default function useDeleteProduct() {
+export default function useDeleteMotherboard() {
   const queryClient = useQueryClient();
   return useMutation(
     (id: string) =>
       api
-        .delete(`/api/product/${id}`)
+        .delete(`/api/motherboard/${id}`)
         .then((res) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
@@ -19,7 +19,7 @@ export default function useDeleteProduct() {
     {
       retry: false,
       onSuccess: () => {
-        queryClient.invalidateQueries("products");
+        queryClient.invalidateQueries("motherboards");
       },
       onError: (e: AxiosError) => {
         console.error(e);

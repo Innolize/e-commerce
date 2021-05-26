@@ -18,10 +18,11 @@ export default function useDeleteCabinet() {
         }),
     {
       retry: false,
-      onSuccess: () => {
+      onSettled: () => {
         queryClient.invalidateQueries("cabinets");
       },
       onError: (e: AxiosError) => {
+        queryClient.invalidateQueries("cabinets");
         console.error(e);
       },
     }
