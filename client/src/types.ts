@@ -1,9 +1,9 @@
-const CPU_BRANDS = ["INTEL", "AMD"];
-const RAM_VERSION = ["DDR1", "DDR2", "DDR3", "DDR4"];
-const SIZE = ["ATX", "Micro-ATX", "Mini-ATX"];
-const DISK_TYPE = ["SSD", "HDD"];
-const VIDEO_CARD_VERSION = ["DDR4", "DDR5", "DDR6"];
-const PWS_CERTIFICATION = [
+export const CPU_BRANDS = ["INTEL", "AMD"];
+export const RAM_VERSION = ["DDR1", "DDR2", "DDR3", "DDR4"];
+export const SIZE = ["ATX", "Micro-ATX", "Mini-ATX"];
+export const DISK_TYPE = ["SSD", "HDD"];
+export const VIDEO_CARD_VERSION = ["DDR4", "DDR5", "DDR6"];
+export const PWS_CERTIFICATION = [
   "GENERIC",
   "PLUS",
   "PLUS SILVER",
@@ -97,25 +97,11 @@ export interface IVideoCard {
   product?: IProduct;
 }
 
-export interface MotherboardForm {
-  id?: string;
-  cpu_socket: string;
-  cpu_brand: string;
-  ram_version: string;
-  min_frec: string;
-  max_frec: string;
-  video_socket: string;
-  model_size: string;
-  watts: string;
-}
+type ErrorsObject = {
+  prop: string;
+};
 
-export interface ProductForm {
-  id?: string;
-  name: string;
-  description: string;
-  image: string;
-  price: string;
-  stock: string;
-  category: string;
-  brand: string;
+export interface ServerError {
+  message?: string | undefined;
+  errors?: ErrorsObject[];
 }
