@@ -1,7 +1,7 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQueryClient, useMutation } from "react-query";
 import api from "../../services/api";
-import { ICategory } from "../../types";
+import { ICategory, ServerError } from "../../types";
 
 export default function useCreateCategory() {
   const queryClient = useQueryClient();
@@ -10,9 +10,13 @@ export default function useCreateCategory() {
       api
         .post("/api/category", values)
         .then((res: AxiosResponse<ICategory>) => res.data)
-        .catch((error: AxiosError) => {
+        .catch((error: AxiosError<ServerError>) => {
           if (error.response) {
-            throw new Error(error.response.data.message);
+            if (error.response.data.errors) {
+              throw new Error(Object.values(error.response.data.errors[0])[0]);
+            } else {
+              throw new Error(error.response.data.message);
+            }
           } else {
             throw new Error(error.message);
           }
