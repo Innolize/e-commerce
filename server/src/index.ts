@@ -15,9 +15,11 @@ import { ReasonPhrases } from "http-status-codes";
 import passport from "passport";
 import { configurePassportStrategies } from "./module/auth/strategies";
 import cookieParser from 'cookie-parser'
+import morgan from 'morgan'
 
 const app = express()
 const port = process.env.PORT
+app.use(morgan('dev'))
 app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
