@@ -1,7 +1,8 @@
-import { Application, Request, Response } from "express";
+import { Application, NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { inject } from "inversify";
 import { Multer } from "multer";
+import { nextTick } from "node:process";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
 import { jwtAuthentication } from "../../auth/util/passportMiddlewares";
@@ -9,6 +10,7 @@ import { authorizationMiddleware } from "../../authorization/util/authorizationM
 import { bodyValidator, mapperMessageError } from "../../common/helpers/bodyValidator";
 import { idNumberOrError } from "../../common/helpers/idNumberOrError";
 import { User } from "../entities/User";
+import { UserError } from "../error/UserError";
 import { validateCreateUserDto } from "../helper/create_dto_validator";
 import { validateEditUserDto } from "../helper/edit_dto_validator";
 import { IUserCreate } from "../interfaces/IUserCreate";
@@ -32,7 +34,7 @@ export class UserController extends AbstractController {
 
     configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE_BASE
-        app.get(`/api${ROUTE}`,this.getUsers.bind(this))
+        app.get(`/api${ROUTE}`, this.getUsers.bind(this))
         app.get(`/api${ROUTE}/:id`, this.getSingleUser.bind(this))
         app.post(`/api${ROUTE}`, this.uploadMiddleware.none(), this.createUser.bind(this))
         app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'User' })], this.createUser.bind(this))
@@ -43,18 +45,18 @@ export class UserController extends AbstractController {
         return res.status(StatusCodes.OK).send(response)
     }
 
-    async getSingleUser(req: Request, res: Response): Promise<Response> {
+    async getSingleUser(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params
             const response = await this.userService.getSingleUser(Number(id))
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            return res.status(StatusCodes.BAD_REQUEST).send(err.message)
+            next(err)
         }
 
     }
 
-    async createUser(req: Request, res: Response): Promise<Response> {
+    async createUser(req: Request, res: Response, next: NextFunction){
         try {
             const dto: IUserCreate = req.body
             const validatedDto = await bodyValidator(validateCreateUserDto, dto)
@@ -68,22 +70,22 @@ export class UserController extends AbstractController {
                     errors: errorArray
                 })
             }
-            return res.status(StatusCodes.CONFLICT).send({ error: err.message })
+            next(err)
         }
     }
 
-    async deleteUser(req: Request, res: Response): Promise<Response> {
+    async deleteUser(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params
             const validId = idNumberOrError(id) as number
             const response = await this.userService.deleteUser(validId)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            return res.status(StatusCodes.BAD_REQUEST).send(err.message)
+            next(err)
         }
     }
 
-    async editUser(req: Request, res: Response): Promise<Response> {
+    async editUser(req: Request, res: Response, next: NextFunction) {
         try {
             const dto: IUserEdit = req.body
             const validDto = await bodyValidator(validateEditUserDto, dto)
@@ -96,7 +98,7 @@ export class UserController extends AbstractController {
                     errors: errorArray
                 })
             }
-            return res.status(400).send(err.message)
+            next(err)
         }
     }
 }

@@ -5,6 +5,7 @@ import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { RoleModel } from "../../authorization/module";
 import { FullUser } from "../entities/FullUser";
 import { User } from "../entities/User";
+import { UserError } from "../error/UserError";
 import { IUserEdit } from "../interfaces/IUserEdit";
 import { fromDbToFullUser, fromDbToUser } from "../mapper/userMapper";
 import { UserModel } from "../model/UserModel";
@@ -25,17 +26,13 @@ export class UserRepository extends AbstractRepository {
     }
 
     async getSingleUser(id: number): Promise<FullUser | Error> {
-        try {
             const user = await this.userModel.findByPk(id, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }] })
             if (!user) {
-                throw Error("User not found")
+                throw UserError.notFound()
             }
             
             const response = fromDbToFullUser(user)
             return response
-        } catch (err) {
-            throw Error(err)
-        }
     }
 
     async createUser(user: User): Promise<User | Error> {
@@ -65,12 +62,10 @@ export class UserRepository extends AbstractRepository {
             // database. Second argument are the array of elements. Im updating by id so there is only 
             // one element in the array.
             if (!userEdited) {
-                throw new Error("User not found")
+                throw UserError.notFound()
             }
             const editedUser = fromDbToUser(userArray[0])
-
             return editedUser
-
         } catch (err) {
             throw new Error(err.message)
         }
@@ -80,7 +75,7 @@ export class UserRepository extends AbstractRepository {
         try {
             const response = await this.userModel.destroy({ where: { id } })
             if (!response) {
-                throw Error("User doesn't exists")
+                throw UserError.notFound()
             }
             return true
         } catch (err) {

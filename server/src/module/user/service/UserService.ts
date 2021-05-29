@@ -6,6 +6,7 @@ import { IUserEdit } from "../interfaces/IUserEdit";
 import { UserRepository } from "../repository/UserRepository";
 import bcrypt from "bcrypt"
 import { FullUser } from "../entities/FullUser";
+import { UserError } from "../error/UserError";
 
 @injectable()
 export class UserService extends AbstractService {
@@ -33,7 +34,7 @@ export class UserService extends AbstractService {
         try {
             const mailInUse = await this.userRepository.findUserByMail(user.mail)
             if (mailInUse) {
-                throw Error('Mail already in use!')
+                throw UserError.mailAlreadyInUse()
             }
             const hashedPassword = await this.encryption.hash(user.password, Number(<string>process.env.BCRYPT_SALT_NUMBER))
             const userHashed = new User({ ...user, password: hashedPassword })
