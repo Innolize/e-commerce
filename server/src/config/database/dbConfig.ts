@@ -73,7 +73,7 @@ async function configureDatabase() {
             await ProductModel.create({ name: "nombreDeProducto123-b", id_brand: 1, image: "image-test-b", description: "description-test-b", price: 123456, stock: true, id_category: 1 })
             await RoleModel.create({ name: 'admin' })
             await RoleModel.create({ name: 'client' })
-            await PermissionModel.create({ action: "manage", subject: "All", role_id: 1 })
+            await PermissionModel.create({ action: "manage", subject: "all", role_id: 1 })
             await PermissionModel.create({ action: "update", subject: "User", role_id: 2, conditions: JSON.stringify({ id: "${id}" }) })
             await PermissionModel.create({ action: "delete", subject: "User", role_id: 2, conditions: JSON.stringify({ id: "${id}" }) })
             const adminPassword = await hash(<string>process.env.ADMIN_PASSWORD, Number(<string>process.env.BCRYPT_SALT_NUMBER))

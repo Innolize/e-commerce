@@ -1,4 +1,4 @@
-import { Application as App } from 'express'
+import { Application as App, NextFunction } from 'express'
 import { inject, injectable } from 'inversify'
 import { TYPES } from '../../../config/inversify.types'
 import { AbstractController } from '../../abstractClasses/abstractController'
@@ -18,6 +18,8 @@ import { BrandService } from '../../brand/module'
 import { CategoryService } from '../../category/module'
 import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
 import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
+import { nextTick } from 'node:process'
+import { ProductError } from '../error/ProductError'
 
 @injectable()
 export class ProductController extends AbstractController {
@@ -59,13 +61,14 @@ export class ProductController extends AbstractController {
         res.status(StatusCodes.OK).send(products)
     }
 
-    async createProduct(req: Request, res: Response): Promise<Response> {
+    async createProduct(req: Request, res: Response, next: NextFunction) {
         let product: Product | undefined
         try {
             const dto: IProductCreate = req.body
             const validatedDto = await bodyValidator(validateCreateProductDto, dto)
             if (req.file) {
-                const uploadedImage = await this.uploadService.uploadProduct(req.file.buffer, req.file.originalname)
+                const { buffer, originalname } = req.file
+                const uploadedImage = await this.uploadService.uploadProduct(buffer, originalname)
                 validatedDto.image = uploadedImage.Location
             } else {
                 validatedDto.image = null
@@ -73,86 +76,74 @@ export class ProductController extends AbstractController {
             const response = await this.productService.createProduct(validatedDto)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            if (err.isJoi === true) {
-                const errorArray = mapperMessageError(err)
-                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
-                    errors: errorArray
-                })
-            }
             if (req.file && product?.image) {
                 await this.uploadService.deleteProduct(product.image)
             }
-            return res.status(StatusCodes.BAD_GATEWAY).send(err.message)
+            next(err)
+            return
         }
     }
 
-    async findProductByName(req: Request, res: Response): Promise<Error | Response> {
+    async findProductByName(req: Request, res: Response, next: NextFunction) {
         const { name } = req.params
         if (!name) {
-            throw Error("Query param 'name' is missing")
+            throw ProductError.nameMissing()
         }
         try {
             const response = await this.productService.findProductByName(name)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            throw Error(err.message)
+            next(err)
         }
     }
 
-    async findProductById(req: Request, res: Response): Promise<void> {
+    async findProductById(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { id } = req.params
         if (!id) {
-            throw Error("Query param 'name' is missing")
+            throw ProductError.nameMissing()
         }
         try {
             const response = await this.productService.findProductById(Number(id))
             res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            res.status(StatusCodes.BAD_REQUEST).send({ error: err.message })
-
+            next(err)
         }
     }
 
-    async modifyProduct(req: Request, res: Response): Promise<Response> {
+    async modifyProduct(req: Request, res: Response, next: NextFunction) {
         let product: Product | undefined
         try {
             const dto: IProductEdit = req.body
             const validatedDto = await bodyValidator(validateEditProductDto, dto)
             if (req.file) {
-                const uploadedImage = await this.uploadService.uploadProduct(req.file.buffer, req.file.originalname)
+                const { buffer, originalname } = req.file
+                const uploadedImage = await this.uploadService.uploadProduct(buffer, originalname)
                 validatedDto.image = uploadedImage.Location
-            } else {
-                validatedDto.image = null
             }
             product = await this.productService.modifyProduct(validatedDto) as Product
             return res.status(StatusCodes.OK).send(product)
         } catch (err) {
-            if (err.isJoi === true) {
-                const errorArray = mapperMessageError(err)
-                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
-                    errors: errorArray
-                })
-            }
             if (req.file && product?.image) {
                 await this.uploadService.deleteProduct(product.image)
             }
-
-            return res.status(StatusCodes.BAD_REQUEST).send({ message: err.message })
+            next(err)
         }
     }
 
-    async deleteProduct(req: Request, res: Response): Promise<void> {
-        const { id } = req.params
+    async deleteProduct(req: Request, res: Response, next: NextFunction) {
         try {
+            const { id } = req.params
+            if (!id) {
+                throw ProductError.idMissing()
+            }
             const product = await this.productService.findProductById(Number(id)) as FullProduct
             await this.productService.deleteProduct(Number(id))
             if (product.image) {
                 await this.uploadService.deleteProduct(product.image)
             }
-            res.status(StatusCodes.OK)
-                .send({ message: "Product successfully deleted" })
+            res.status(StatusCodes.OK).send({ message: "Product successfully deleted" })
         } catch (err) {
-            res.status(StatusCodes.BAD_REQUEST).send({ message: err.message })
+            next(err)
         }
     }
 }

@@ -13,8 +13,8 @@ import { User } from '../../user/entities/User'
 import { Role } from '../entities/Role'
 
 export const actions = ['manage', 'create', 'read', 'delete', 'update'] as const
-export const subjects = ['Product', 'Brand', 'Category', 'User', 'Cabinet', 'DiskStorage', 'Motherboard', 'PowerSupply', 'Processor', 'Ram', 'VideoCard', 'All' ] as const
-export type subjects = InferSubjects<typeof Product | typeof Brand | typeof Category | typeof User | typeof Cabinet | typeof DiskStorage | typeof Motherboard | typeof PowerSupply | typeof Processor | typeof Ram | typeof VideoCard | 'All', true>
+export const subjects = ['Product', 'Brand', 'Category', 'User', 'Cabinet', 'DiskStorage', 'Motherboard', 'PowerSupply', 'Processor', 'Ram', 'VideoCard', 'all' ] as const
+export type subjects = InferSubjects<typeof Product | typeof Brand | typeof Category | typeof User | typeof Cabinet | typeof DiskStorage | typeof Motherboard | typeof PowerSupply | typeof Processor | typeof Ram | typeof VideoCard | 'all', true>
 
 export interface IAbility {
     action: typeof actions[number],

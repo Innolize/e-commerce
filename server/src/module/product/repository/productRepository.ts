@@ -4,6 +4,7 @@ import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { FullProduct } from "../entity/FullProduct";
 import { Product } from "../entity/Product";
+import { ProductError } from "../error/ProductError";
 import { IProductCreate } from "../interfaces/IProductCreate";
 import { IProductEdit } from "../interfaces/IProductEdit";
 import { fromDbToFullProduct, fromDbToProduct } from "../mapper/productMapper";
@@ -32,7 +33,7 @@ export class ProductRepository extends AbstractRepository {
 
         const response = await this.productModel.findByPk(id, { include: ["category", "brand"] })
         if (!response) {
-            throw new Error("Product not found")
+            throw ProductError.notFound()
         }
         return fromDbToFullProduct(response)
 
@@ -46,44 +47,36 @@ export class ProductRepository extends AbstractRepository {
             throw new Error(e)
         }
     }
-    public async deleteProduct(productId: number): Promise<Error | boolean> {
 
-        const response = await this.productModel.destroy({
-            where:
-                { id: productId }
-        })
+    public async deleteProduct(productId: number): Promise<Error | boolean> {
+        const response = await this.productModel.destroy({ where: { id: productId } })
         if (!response) {
-            throw new Error("Product doesnt exist")
+            throw ProductError.notFound()
         }
         return true
     }
 
     public async modifyProduct(product: IProductEdit): Promise<Error | Product> {
 
-        try {
-            const [productEdited, productArray] = await this.productModel.update(product, { where: { id: product.id }, returning: true })
-            // update returns an array, first argument is the number of elements updated in the
-            // database. Second argument are the array of elements. Im updating by id so there is only 
-            // one element in the array.
-            if (!productEdited) {
-                throw new Error("Product not found")
-            }
-            const newProduct = fromDbToProduct(productArray[0])
-
-            return newProduct
-
-        } catch (err) {
-            throw new Error(err.message)
+        const [productEdited, productArray] = await this.productModel.update(product, { where: { id: product.id }, returning: true })
+        // update returns an array, first argument is the number of elements updated in the
+        // database. Second argument are the array of elements. Im updating by id so there is only 
+        // one element in the array.
+        if (!productEdited) {
+            throw ProductError.notFound()
         }
+        const newProduct = fromDbToProduct(productArray[0])
+
+        return newProduct
+
+
     }
 
     public async getProductsByName(name: string): Promise<FullProduct[] | Error> {
 
         const response = await this.productModel.findAll({
             where: {
-                name: {
-                    [Op.substring]: name
-                }
+                name: { [Op.substring]: name }
             },
             include: ["category", "brand"]
         })
