@@ -16,6 +16,7 @@ import { ImageUploadService } from '../../imageUploader/module'
 import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
 import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
 import { BrandError } from '../error/BrandError'
+import { fromRequestToBrand } from '../mapper/brandMapper'
 
 
 @injectable()
@@ -47,8 +48,11 @@ export class BrandController extends AbstractController {
     }
 
     async getAllBrands(req: Request, res: Response, next: NextFunction) {
+        const { name } = req.query
+        let queryParams: IGetAllBrandsQueries = {}
+        name ? queryParams.name = String(name) : ''
         try {
-            const products = await this.brandService.getAllCategories()
+            const products = await this.brandService.getAllCategories(queryParams)
             res.status(StatusCodes.OK).send(products)
         } catch (err) {
             next(err)
@@ -57,7 +61,7 @@ export class BrandController extends AbstractController {
     }
 
     async createBrand(req: Request, res: Response, next: NextFunction) {
-        let brand: Brand | undefined
+        let brandImage: string | undefined
         try {
             const dto: IBrandCreate = req.body
             const validatedDto = await bodyValidator(validateCreateBrandDto, dto)
@@ -65,36 +69,27 @@ export class BrandController extends AbstractController {
                 const { buffer, originalname } = req.file
                 const uploadedImage = await this.uploadService.uploadBrand(buffer, originalname)
                 validatedDto.logo = uploadedImage.Location
+                brandImage = uploadedImage.Location
             } else {
                 validatedDto.logo = null
             }
-            brand = new Brand(validatedDto)
-
+            const brand = fromRequestToBrand(validatedDto)
             const response = await this.brandService.createBrand(brand)
 
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            if (req.file && brand && brand.logo) {
-                await this.uploadService.deleteBrand(brand.logo)
+            if (brandImage) {
+                await this.uploadService.deleteBrand(brandImage)
             }
             next(err)
             return
         }
     }
 
-    async findBrandByName(req: Request, res: Response, next: NextFunction): Promise<void> {
-        const { name } = req.params
-        if (!name) {
-            throw Error("Query param 'name' is missing")
-        }
-        const response = await this.brandService.findBrandByName(name)
-        res.status(StatusCodes.OK).send(response)
-    }
-
     async findBrandById(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params
         if (!id) {
-            throw BrandError.idMissing()
+            throw BrandError.missingId()
         }
         try {
             const response = await this.brandService.findBrandById(Number(id))
@@ -106,20 +101,21 @@ export class BrandController extends AbstractController {
     }
 
     async modifyBrand(req: Request, res: Response, next: NextFunction) {
-        let brand: IEditableBrand | undefined
-
+        let brandImage: string | undefined
         try {
             const dto: IEditableBrand = req.body
-            brand = await bodyValidator(validateEditBrandDto, dto)
+            const validatedDto = await bodyValidator(validateEditBrandDto, dto)
             if (req.file) {
-                const uploadedImage = await this.uploadService.uploadBrand(req.file.buffer, req.file.originalname)
-                brand.logo = uploadedImage.Location
+                const { buffer, originalname } = req.file
+                const uploadedImage = await this.uploadService.uploadBrand(buffer, originalname)
+                validatedDto.logo = uploadedImage.Location
+                brandImage = uploadedImage.Location
             }
-            const response = await this.brandService.modifyBrand(dto)
+            const response = await this.brandService.modifyBrand(validatedDto)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            if (req.file && brand?.logo) {
-                await this.uploadService.deleteBrand(brand.logo)
+            if (brandImage) {
+                await this.uploadService.deleteBrand(brandImage)
             }
             next(err)
             return
@@ -129,7 +125,7 @@ export class BrandController extends AbstractController {
     async deleteBrand(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params
         if (!id) {
-            throw BrandError.idMissing()
+            throw BrandError.missingId()
         }
         try {
             const brand = await this.brandService.findBrandById(Number(id)) as Brand

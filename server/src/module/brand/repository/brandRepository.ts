@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify";
+import { WhereOptions } from "sequelize";
 import { Op } from "sequelize";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
@@ -18,14 +19,18 @@ export class BrandRepository extends AbstractRepository {
         this.brandModel = brandModel
     }
 
-    public async getAllBrands(): Promise<Error | Brand[]> {
-        const response = await this.brandModel.findAll()
+    public async getAllBrands(queryParams?: IGetAllBrandsQueries): Promise<Error | Brand[]> {
+        const findQuery: WhereOptions<Brand> = {}
+        if (queryParams) {
+            queryParams.name ? findQuery.name = { [Op.substring]: queryParams.name } : ''
+        }
+        const response = await this.brandModel.findAll({ where: findQuery })
         return response.map(fromDbToBrand)
     }
 
     public async getById(id: number): Promise<Error | Brand> {
         if (id <= 0) {
-            throw BrandError.idMissing()
+            throw BrandError.missingId()
         }
         const response = await this.brandModel.findByPk(id)
         if (!response) {
@@ -69,21 +74,6 @@ export class BrandRepository extends AbstractRepository {
         }
         catch (err) {
             throw err
-        }
-    }
-
-    public async getBrandsByName(name: string): Promise<Brand[] | Error> {
-        try {
-            const response = await this.brandModel.findAll({
-                where: {
-                    name: {
-                        [Op.substring]: name
-                    }
-                }
-            })
-            return response.map(fromDbToBrand)
-        } catch (e) {
-            throw e
         }
     }
 }

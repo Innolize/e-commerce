@@ -1,0 +1,3 @@
+interface IGetAllBrandsQueries {
+    name?: string
+}

@@ -52,10 +52,10 @@ const sampleProduct = new Product(
     200,
 )
 
-const sampleBrand = new Brand({
-    name: "test-brand",
-    logo: "test-brand-logo"
-})
+const sampleBrand = new Brand(
+    "test-brand",
+    "test-brand-logo"
+)
 
 const sampleCategory = new Category({
     name: "test-category"

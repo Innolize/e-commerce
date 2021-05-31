@@ -8,7 +8,7 @@ export class BrandError extends BaseError{
     static notFound(){
         return new BrandError(this.name,StatusCodes.NOT_FOUND, 'Brand not found')
     }
-    static idMissing(){
+    static missingId(){
         return new BrandError(this.name,StatusCodes.CONFLICT, 'Brand id missing')
     }
     static invalidId(){
