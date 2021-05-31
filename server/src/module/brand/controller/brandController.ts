@@ -1,4 +1,4 @@
-import { Application as App } from 'express'
+import { Application as App, NextFunction } from 'express'
 import { inject, injectable } from 'inversify'
 import { TYPES } from '../../../config/inversify.types'
 import { AbstractController } from '../../abstractClasses/abstractController'
@@ -15,6 +15,7 @@ import { validateEditBrandDto } from '../helper/edit_dto_validator'
 import { ImageUploadService } from '../../imageUploader/module'
 import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
 import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
+import { BrandError } from '../error/BrandError'
 
 
 @injectable()
@@ -42,22 +43,27 @@ export class BrandController extends AbstractController {
         app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Brand' })], this.uploadMiddleware.single("brand_logo"), this.createBrand.bind(this))
         app.put(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Brand' })], this.uploadMiddleware.single("brand_logo"), this.modifyBrand.bind(this))
         app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Brand' })], this.deleteBrand.bind(this))
-        app.get(`/api${ROUTE}/findByName/:name`, this.findBrandByName.bind(this))
-        app.get(`/api${ROUTE}/findById/:id`, this.findBrandById.bind(this))
+        app.get(`/api${ROUTE}/:id`, this.findBrandById.bind(this))
     }
 
-    async getAllBrands(req: Request, res: Response): Promise<void> {
-        const products = await this.brandService.getAllCategories()
-        res.status(StatusCodes.OK).send(products)
+    async getAllBrands(req: Request, res: Response, next: NextFunction) {
+        try {
+            const products = await this.brandService.getAllCategories()
+            res.status(StatusCodes.OK).send(products)
+        } catch (err) {
+            next(err)
+            return
+        }
     }
 
-    async createBrand(req: Request, res: Response): Promise<Response> {
+    async createBrand(req: Request, res: Response, next: NextFunction) {
         let brand: Brand | undefined
         try {
             const dto: IBrandCreate = req.body
             const validatedDto = await bodyValidator(validateCreateBrandDto, dto)
             if (req.file) {
-                const uploadedImage = await this.uploadService.uploadBrand(req.file.buffer, req.file.originalname)
+                const { buffer, originalname } = req.file
+                const uploadedImage = await this.uploadService.uploadBrand(buffer, originalname)
                 validatedDto.logo = uploadedImage.Location
             } else {
                 validatedDto.logo = null
@@ -68,21 +74,15 @@ export class BrandController extends AbstractController {
 
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            if (err.isJoi === true) {
-                const errorArray = mapperMessageError(err)
-                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
-                    errors: errorArray
-                })
-            }
             if (req.file && brand && brand.logo) {
                 await this.uploadService.deleteBrand(brand.logo)
             }
-
-            return res.status(StatusCodes.BAD_GATEWAY).send(err.message)
+            next(err)
+            return
         }
     }
 
-    async findBrandByName(req: Request, res: Response): Promise<void> {
+    async findBrandByName(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { name } = req.params
         if (!name) {
             throw Error("Query param 'name' is missing")
@@ -91,21 +91,21 @@ export class BrandController extends AbstractController {
         res.status(StatusCodes.OK).send(response)
     }
 
-    async findBrandById(req: Request, res: Response): Promise<void> {
+    async findBrandById(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params
         if (!id) {
-            throw Error("Query param 'name' is missing")
+            throw BrandError.idMissing()
         }
         try {
             const response = await this.brandService.findBrandById(Number(id))
             res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            res.status(StatusCodes.BAD_REQUEST).send({ message: err.message })
-
+            next(err)
+            return
         }
     }
 
-    async modifyBrand(req: Request, res: Response): Promise<Response> {
+    async modifyBrand(req: Request, res: Response, next: NextFunction) {
         let brand: IEditableBrand | undefined
 
         try {
@@ -114,27 +114,23 @@ export class BrandController extends AbstractController {
             if (req.file) {
                 const uploadedImage = await this.uploadService.uploadBrand(req.file.buffer, req.file.originalname)
                 brand.logo = uploadedImage.Location
-            } else {
-                brand.logo = null
             }
             const response = await this.brandService.modifyBrand(dto)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            if (err.isJoi === true) {
-                const errorArray = mapperMessageError(err)
-                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
-                    errors: errorArray
-                })
-            }
             if (req.file && brand?.logo) {
                 await this.uploadService.deleteBrand(brand.logo)
             }
-            return res.status(StatusCodes.BAD_REQUEST).send({ message: err.message })
+            next(err)
+            return
         }
     }
 
-    async deleteBrand(req: Request, res: Response): Promise<void> {
+    async deleteBrand(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params
+        if (!id) {
+            throw BrandError.idMissing()
+        }
         try {
             const brand = await this.brandService.findBrandById(Number(id)) as Brand
             await this.brandService.deleteBrand(Number(id))
@@ -144,7 +140,8 @@ export class BrandController extends AbstractController {
             res.status(StatusCodes.OK)
                 .send({ message: "Product successfully deleted" })
         } catch (err) {
-            res.status(StatusCodes.BAD_REQUEST).send({ message: err.message })
+            next(err)
+            return
         }
     }
 }
