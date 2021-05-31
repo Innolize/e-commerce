@@ -13,13 +13,13 @@ import { Product } from '../entity/Product'
 import { IProductEdit } from '../interfaces/IProductEdit'
 import { IProductCreate } from '../interfaces/IProductCreate'
 import { ImageUploadService } from '../../imageUploader/module'
-import { FullProduct } from '../entity/FullProduct'
 import { BrandService } from '../../brand/module'
 import { CategoryService } from '../../category/module'
 import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
 import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
-import { nextTick } from 'node:process'
 import { ProductError } from '../error/ProductError'
+import { fromRequestToProduct } from '../mapper/productMapper'
+import { IGetAllProductsQueries } from '../interfaces/IGetAllProductsQueries'
 
 @injectable()
 export class ProductController extends AbstractController {
@@ -52,17 +52,25 @@ export class ProductController extends AbstractController {
         app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Product' })], this.uploadMiddleware.single('product_image'), this.createProduct.bind(this))
         app.put(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Product' })], this.uploadMiddleware.single('product_image'), this.modifyProduct.bind(this))
         app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Product' })], this.deleteProduct.bind(this))
-        app.get(`/api${ROUTE}/findByName/:name`, this.findProductByName.bind(this))
         app.get(`/api${ROUTE}/:id`, this.findProductById.bind(this))
     }
 
-    async getAllProducts(req: Request, res: Response): Promise<void> {
-        const products = await this.productService.getAllProducts()
-        res.status(StatusCodes.OK).send(products)
+    async getAllProducts(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { category_id, name } = req.query
+            let queryParams: IGetAllProductsQueries = {}
+            category_id ? queryParams.category_id = Number(category_id) : ''
+            name ? queryParams.name = String(name) : ''
+            const products = await this.productService.getAllProducts(queryParams)
+            res.status(StatusCodes.OK).send(products)
+        } catch (err) {
+            next(err)
+            return
+        }
     }
 
     async createProduct(req: Request, res: Response, next: NextFunction) {
-        let product: Product | undefined
+        let productImage: string | undefined
         try {
             const dto: IProductCreate = req.body
             const validatedDto = await bodyValidator(validateCreateProductDto, dto)
@@ -70,30 +78,19 @@ export class ProductController extends AbstractController {
                 const { buffer, originalname } = req.file
                 const uploadedImage = await this.uploadService.uploadProduct(buffer, originalname)
                 validatedDto.image = uploadedImage.Location
+                productImage = uploadedImage.Location
             } else {
                 validatedDto.image = null
             }
-            const response = await this.productService.createProduct(validatedDto)
+            const product = fromRequestToProduct(validatedDto)
+            const response = await this.productService.createProduct(product)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            if (req.file && product?.image) {
-                await this.uploadService.deleteProduct(product.image)
+            if (productImage) {
+                await this.uploadService.deleteProduct(productImage)
             }
             next(err)
             return
-        }
-    }
-
-    async findProductByName(req: Request, res: Response, next: NextFunction) {
-        const { name } = req.params
-        if (!name) {
-            throw ProductError.nameMissing()
-        }
-        try {
-            const response = await this.productService.findProductByName(name)
-            return res.status(StatusCodes.OK).send(response)
-        } catch (err) {
-            next(err)
         }
     }
 
@@ -111,7 +108,7 @@ export class ProductController extends AbstractController {
     }
 
     async modifyProduct(req: Request, res: Response, next: NextFunction) {
-        let product: Product | undefined
+        let productImage: string | undefined
         try {
             const dto: IProductEdit = req.body
             const validatedDto = await bodyValidator(validateEditProductDto, dto)
@@ -119,14 +116,16 @@ export class ProductController extends AbstractController {
                 const { buffer, originalname } = req.file
                 const uploadedImage = await this.uploadService.uploadProduct(buffer, originalname)
                 validatedDto.image = uploadedImage.Location
+                productImage = uploadedImage.Location
             }
-            product = await this.productService.modifyProduct(validatedDto) as Product
-            return res.status(StatusCodes.OK).send(product)
+            const response = await this.productService.modifyProduct(validatedDto) as Product
+            return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            if (req.file && product?.image) {
-                await this.uploadService.deleteProduct(product.image)
+            if (productImage) {
+                await this.uploadService.deleteProduct(productImage)
             }
             next(err)
+            return
         }
     }
 
@@ -136,7 +135,7 @@ export class ProductController extends AbstractController {
             if (!id) {
                 throw ProductError.idMissing()
             }
-            const product = await this.productService.findProductById(Number(id)) as FullProduct
+            const product = await this.productService.findProductById(Number(id)) as Product
             await this.productService.deleteProduct(Number(id))
             if (product.image) {
                 await this.uploadService.deleteProduct(product.image)
@@ -144,6 +143,7 @@ export class ProductController extends AbstractController {
             res.status(StatusCodes.OK).send({ message: "Product successfully deleted" })
         } catch (err) {
             next(err)
+            return
         }
     }
 }

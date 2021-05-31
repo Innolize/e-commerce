@@ -18,7 +18,6 @@ export class CategoryService extends AbstractService {
     }
 
     async getAllCategories(): Promise<Error | ICategory[]> {
-        console.log("entre al service")
         return await this.categoryRepository.getAllCategories()
     }
 

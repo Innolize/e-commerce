@@ -1,4 +1,5 @@
 import { Product } from "../../../product/entity/Product"
+import { fromRequestToProduct } from "../../../product/mapper/productMapper"
 import { IMotherboard } from "../interface/IMotherboard"
 
 export class FullMotherboard {
@@ -23,7 +24,7 @@ export class FullMotherboard {
             this.model_size = model_size,
             this.watts = watts
         if (product) {
-            this.product = new Product(product)
+            this.product = fromRequestToProduct(product)
         }
 
     }

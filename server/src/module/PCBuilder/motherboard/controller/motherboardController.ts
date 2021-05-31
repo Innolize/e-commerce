@@ -15,6 +15,7 @@ import { MotherboardService } from "../service/motherboardService";
 import { IMotherboardEdit } from '../interface/IMotherboardEdit'
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
+import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 
 export class MotherboardController extends AbstractController {
     private ROUTE_BASE: string
@@ -61,7 +62,7 @@ export class MotherboardController extends AbstractController {
             const dto: IMotherboard_Product = req.body
             await bodyValidator(validateMotherboardAndProductDto, dto)
             const newMotherboard = new Motherboard(dto)
-            const newProduct = new Product(dto)
+            const newProduct = fromRequestToProduct(dto)
             if (req.file) {
                 const { buffer, originalname } = req.file
                 upload = await this.uploadService.uploadProduct(buffer, originalname)

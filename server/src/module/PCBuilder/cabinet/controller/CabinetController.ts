@@ -18,6 +18,7 @@ import { FullCabinet } from "../entities/FullCabinet";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
+import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 
 export class CabinetController extends AbstractController {
     private ROUTE_BASE: string
@@ -80,7 +81,7 @@ export class CabinetController extends AbstractController {
             const dto: ICabinet_Product = req.body
             await bodyValidator(validateCabinetAndProductDto, dto)
             const newCabinet = new Cabinet(dto)
-            const newProduct = new Product(dto)
+            const newProduct = fromRequestToProduct(dto)
             if (req.file) {
                 const { buffer, originalname } = req.file
                 upload = await this.uploadService.uploadProduct(buffer, originalname)

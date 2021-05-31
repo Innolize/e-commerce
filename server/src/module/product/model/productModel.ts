@@ -1,17 +1,16 @@
 import { decorate, injectable } from "inversify";
-import { DataTypes, Sequelize } from "sequelize";
+import { Association, DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
 import { CategoryModel } from "../../category/module";
 import { IProduct } from "../interfaces/IProduct";
 import { BrandModel } from "../../brand/module";
 import { IProductCreate } from "../interfaces/IProductCreate";
+import { Product } from "../entity/Product";
 
 decorate(injectable(), (Model))
 
-type ProductAttributes = Omit<IProduct, 'kind'>
-
 @injectable()
-export class ProductModel extends Model<ProductAttributes, IProductCreate>{
+export class ProductModel extends Model<Product, IProductCreate>{
 
     static setup(database: Sequelize): typeof ProductModel {
         ProductModel.init({
@@ -44,6 +43,14 @@ export class ProductModel extends Model<ProductAttributes, IProductCreate>{
             stock: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false
+            },
+            id_brand: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
+            id_category: {
+                type: DataTypes.INTEGER,
+                allowNull: false
             }
         },
             {
@@ -65,5 +72,10 @@ export class ProductModel extends Model<ProductAttributes, IProductCreate>{
             as: "brand",
             foreignKey: "id_brand",
         })
+    }
+
+    public static associations: {
+        category: Association<ProductModel, CategoryModel>,
+        brand: Association<ProductModel, CategoryModel>
     }
 }

@@ -1,4 +1,5 @@
 import { Product } from "../../../product/entity/Product"
+import { fromRequestToProduct } from "../../../product/mapper/productMapper"
 import { IVideoCard } from "../interface/IVideoCard"
 
 export class FullVideoCard {
@@ -15,7 +16,7 @@ export class FullVideoCard {
             this.clock_speed = clock_speed,
             this.watts = watts
         if (product) {
-            this.product = new Product(product)
+            this.product = fromRequestToProduct(product)
         }
     }
 }

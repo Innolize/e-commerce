@@ -1,4 +1,5 @@
 import { Product } from "../../../product/entity/Product"
+import { fromRequestToProduct } from "../../../product/mapper/productMapper"
 import { IProcessor } from "../interface/IProcessor"
 
 export class FullProcessor {
@@ -15,7 +16,7 @@ export class FullProcessor {
             this.socket = socket,
             this.watts = watts
         if (product) {
-            this.product = new Product(product)
+            this.product = fromRequestToProduct(product)
         }
     }
 }

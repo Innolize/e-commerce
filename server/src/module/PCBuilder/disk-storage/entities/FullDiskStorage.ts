@@ -1,4 +1,5 @@
 import { Product } from "../../../product/entity/Product"
+import { fromRequestToProduct } from "../../../product/mapper/productMapper"
 import { IDiskStorage } from "../interface/IDiskStorage"
 
 export class FullDiskStorage {
@@ -15,7 +16,7 @@ export class FullDiskStorage {
             this.mbs = mbs,
             this.watts = watts
         if (product) {
-            this.product = new Product(product)
+            this.product = fromRequestToProduct(product)
         }
     }
 }

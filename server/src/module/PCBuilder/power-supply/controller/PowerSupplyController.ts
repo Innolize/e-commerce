@@ -18,6 +18,7 @@ import { FullPowerSupply } from "../entities/FullPowerSupply";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
+import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 
 export class PowerSupplyController extends AbstractController {
     private ROUTE_BASE: string
@@ -80,7 +81,7 @@ export class PowerSupplyController extends AbstractController {
             const dto: IPowerSupply_Product = req.body
             await bodyValidator(validatePowerSupplyAndProductDto, dto)
             const newPowerSupply = new PowerSupply(dto)
-            const newProduct = new Product(dto)
+            const newProduct = fromRequestToProduct(dto)
             if (req.file) {
                 const { buffer, originalname } = req.file
                 upload = await this.uploadService.uploadProduct(buffer, originalname)

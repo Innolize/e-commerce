@@ -18,6 +18,7 @@ import { FullProcessor } from "../entities/FullProcessor";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
+import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 
 export class ProcessorController extends AbstractController {
     private ROUTE_BASE: string
@@ -80,7 +81,7 @@ export class ProcessorController extends AbstractController {
             const dto: IProcessor_Product = req.body
             await bodyValidator(validateProcessorAndProductDto, dto)
             const newMotherboard = new Processor(dto)
-            const newProduct = new Product(dto)
+            const newProduct = fromRequestToProduct(dto)
             if (req.file) {
                 const { buffer, originalname } = req.file
                 upload = await this.uploadService.uploadProduct(buffer, originalname)

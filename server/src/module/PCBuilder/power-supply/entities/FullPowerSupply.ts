@@ -1,5 +1,6 @@
 import { PWS_CERTIFICATION } from "../../../../config/constants/pcbuilder"
 import { Product } from "../../../product/entity/Product"
+import { fromRequestToProduct } from "../../../product/mapper/productMapper"
 import { IPowerSupply } from "../interface/IPowerSupply"
 
 export class FullPowerSupply {
@@ -12,7 +13,7 @@ export class FullPowerSupply {
             this.watts = watts,
             this.certification = certification
         if (product) {
-            this.product = new Product(product)
+            this.product = fromRequestToProduct(product)
         }
     }
 }

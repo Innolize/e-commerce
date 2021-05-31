@@ -3,6 +3,7 @@ import { Op } from "sequelize";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Category } from "../entity/Category";
+import { CategoryError } from "../error/CategoryError";
 import { ICategory } from "../interfaces/ICategory";
 import { IEditableCategory } from "../interfaces/IEditableCategory";
 import { fromDbToCategory } from "../mapper/categoryMapper";
@@ -26,7 +27,7 @@ export class CategoryRepository extends AbstractRepository {
     public async findCategoryById(id: number): Promise<Error | ICategory> {
         const response = await this.categoryModel.findByPk(id)
         if (!response) {
-            throw Error("product not found")
+            throw CategoryError.notFound()
         }
 
         return fromDbToCategory(response)
@@ -46,16 +47,12 @@ export class CategoryRepository extends AbstractRepository {
         if (categoryId <= 0) {
             throw Error('Category Id should be higher than 0')
         }
-        try {
-            const response = await this.categoryModel.destroy({
-                where:
-                    { id: categoryId }
-            })
-            if (!response) {
-                throw Error("not found")
-            }
-        } catch (err) {
-            throw Error(err)
+        const response = await this.categoryModel.destroy({
+            where:
+                { id: categoryId }
+        })
+        if (!response) {
+            throw CategoryError.notFound()
         }
         return true
     }
@@ -66,7 +63,7 @@ export class CategoryRepository extends AbstractRepository {
         // database. Second argument are the array of elements. Im updating by id so there is only 
         // one element in the array.
         if (!categoriesEdited) {
-            throw new Error("Category not found")
+            throw CategoryError.notFound()
         }
         const categoryEdited = categoryArray[0]
         const newProduct = fromDbToCategory(categoryEdited)

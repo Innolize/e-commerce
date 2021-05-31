@@ -18,6 +18,7 @@ import { FullDiskStorage } from "../entities/FullDiskStorage";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
+import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 
 export class DiskStorageController extends AbstractController {
     private ROUTE_BASE: string
@@ -80,7 +81,7 @@ export class DiskStorageController extends AbstractController {
             const dto: IDiskStorage_Product = req.body
             await bodyValidator(validateRamAndProductDto, dto)
             const newDiskStorage = new DiskStorage(dto)
-            const newProduct = new Product(dto)
+            const newProduct = fromRequestToProduct(dto)
             if (req.file) {
                 const { buffer, originalname } = req.file
                 upload = await this.uploadService.uploadProduct(buffer, originalname)

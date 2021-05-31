@@ -1,5 +1,6 @@
 import { SIZE } from "../../../../config/constants/pcbuilder"
 import { Product } from "../../../product/entity/Product"
+import { fromRequestToProduct } from "../../../product/mapper/productMapper"
 import { ICabinet } from "../interface/ICabinet"
 
 export class FullCabinet {
@@ -12,7 +13,7 @@ export class FullCabinet {
             this.generic_pws = generic_pws,
             this.size = size
         if (product) {
-            this.product = new Product(product)
+            this.product = fromRequestToProduct(product)
         }
     }
 }

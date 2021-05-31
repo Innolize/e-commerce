@@ -9,7 +9,6 @@ import { CategoryModel } from "../../../category/module";
 import { BrandModel } from "../../../brand/module";
 import { Brand } from "../../../brand/entity/Brand";
 import { Category } from "../../../category/entity/Category";
-import { FullProduct } from "../../entity/FullProduct";
 
 const sequelizeInstance = new Sequelize(<string>process.env.TEST_DATABASE_URL, {
     logging: false,
@@ -43,15 +42,15 @@ beforeEach(async (done) => {
     done();
 });
 
-const sampleProduct = new Product({
-    name: "new-product",
-    description: "new-product-description",
-    id_brand: 1,
-    id_category: 1,
-    image: "image-test",
-    price: 200,
-    stock: true
-})
+const sampleProduct = new Product(
+    "new-product",
+    null,
+    "new-product-description",
+    1,
+    true,
+    1,
+    200,
+)
 
 const sampleBrand = new Brand({
     name: "test-brand",
@@ -76,8 +75,8 @@ describe('Get a product by id', () => {
         await category.create(sampleCategory)
         await repository.createProduct(sampleProduct) as Product
 
-        const result = await repository.getById(1) as FullProduct
-        expect(result).toBeInstanceOf(FullProduct)
+        const result = await repository.getById(1) as Product
+        expect(result).toBeInstanceOf(Product)
         expect(result.id).toEqual(1)
     })
     it("returns error if product was not found", async () => {
@@ -115,22 +114,6 @@ describe("Modify a product", () => {
 
         await expect(repository.modifyProduct({ id: 1, name: "test", id_category: 15 })).rejects.toThrow()
     })
-})
-
-describe("Get product by name", () => {
-    it("Search products with 'duct' in name", async () => {
-        await brand.create(sampleBrand)
-        await category.create(sampleCategory)
-        await product.create(sampleProduct)
-        await expect(repository.getProductsByName("duct")).resolves.toHaveLength(1)
-    })
-    it("Search inexistent product", async () => {
-        await brand.create(sampleBrand)
-        await category.create(sampleCategory)
-        await product.create(sampleProduct)
-        await expect(repository.getProductsByName("asdfg")).resolves.toHaveLength(0)
-    })
-
 })
 
 describe("Return a list of products", () => {

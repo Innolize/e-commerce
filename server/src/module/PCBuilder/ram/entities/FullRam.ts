@@ -1,4 +1,5 @@
 import { Product } from "../../../product/entity/Product"
+import { fromRequestToProduct } from "../../../product/mapper/productMapper"
 import { IRam } from "../interface/IRam"
 
 export class FullRam {
@@ -17,7 +18,7 @@ export class FullRam {
             this.max_frec = max_frec,
             this.watts = watts
         if (product) {
-            this.product = new Product(product)
+            this.product = fromRequestToProduct(product)
         }
     }
 }
