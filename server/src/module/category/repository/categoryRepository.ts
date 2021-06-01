@@ -1,11 +1,12 @@
 import { inject, injectable } from "inversify";
-import { Op } from "sequelize";
+import { Op, WhereOptions } from "sequelize";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
+import { Brand } from "../../brand/entity/Brand";
 import { Category } from "../entity/Category";
 import { CategoryError } from "../error/CategoryError";
-import { ICategory } from "../interfaces/ICategory";
 import { IEditableCategory } from "../interfaces/IEditableCategory";
+import { IGetAllCategoriesQueries } from "../interfaces/IGetAllCategoriesQueries";
 import { fromDbToCategory } from "../mapper/categoryMapper";
 import { CategoryModel } from "../model/categoryModel";
 
@@ -19,12 +20,16 @@ export class CategoryRepository extends AbstractRepository {
         this.categoryModel = categoryModel
     }
 
-    public async getAllCategories(): Promise<Error | ICategory[]> {
-        const response = await this.categoryModel.findAll()
+    public async getAllCategories(queryParams?: IGetAllCategoriesQueries): Promise<Error | Category[]> {
+        const findQuery: WhereOptions<Brand> = {}
+        if (queryParams) {
+            queryParams.name ? findQuery.name = { [Op.substring]: queryParams.name } : ''
+        }
+        const response = await this.categoryModel.findAll({ where: findQuery })
         return response.map(fromDbToCategory)
     }
 
-    public async findCategoryById(id: number): Promise<Error | ICategory> {
+    public async findCategoryById(id: number): Promise<Error | Category> {
         const response = await this.categoryModel.findByPk(id)
         if (!response) {
             throw CategoryError.notFound()
@@ -33,8 +38,7 @@ export class CategoryRepository extends AbstractRepository {
         return fromDbToCategory(response)
     }
 
-    public async createCategory(category: ICategory): Promise<Error | ICategory> {
-
+    public async createCategory(category: Category): Promise<Error | Category> {
         try {
             const response = await this.categoryModel.create(category)
             return fromDbToCategory(response)
@@ -45,7 +49,7 @@ export class CategoryRepository extends AbstractRepository {
 
     public async deleteCategory(categoryId: number): Promise<Error | boolean> {
         if (categoryId <= 0) {
-            throw Error('Category Id should be higher than 0')
+            throw CategoryError.invalidId()
         }
         const response = await this.categoryModel.destroy({
             where:
@@ -69,21 +73,5 @@ export class CategoryRepository extends AbstractRepository {
         const newProduct = fromDbToCategory(categoryEdited)
         return newProduct
 
-    }
-
-    public async getCategoryByName(name: string): Promise<Category[] | Error> {
-
-        try {
-            const response = await this.categoryModel.findAll({
-                where: {
-                    name: {
-                        [Op.substring]: name
-                    }
-                }
-            })
-            return response.map(fromDbToCategory)
-        } catch (e) {
-            throw Error(e)
-        }
     }
 }

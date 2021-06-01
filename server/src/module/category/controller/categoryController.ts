@@ -15,7 +15,7 @@ import { validateEditCategoryDto } from '../helper/edit_dto_validator'
 import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
 import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
 import { CategoryError } from '../error/CategoryError'
-import { nextTick } from 'node:process'
+import { IGetAllCategoriesQueries } from '../interfaces/IGetAllCategoriesQueries'
 
 
 @injectable()
@@ -39,15 +39,15 @@ export class CategoryController extends AbstractController {
         app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Category' })], this.uploadMiddleware.single("bulbasaur"), this.createCategory.bind(this))
         app.put(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Category' })], this.uploadMiddleware.none(), this.modifyCategory.bind(this))
         app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Category' })], this.deleteCategory.bind(this))
-        app.get(`/api${ROUTE}/:name`, this.findCategoryByName.bind(this))
         app.get(`/api${ROUTE}/:id`, this.findCategoryById.bind(this))
     }
 
     async getAllCategories(req: Request, res: Response, next: NextFunction) {
-
+        const { name } = req.query
+        const queryParams: IGetAllCategoriesQueries = {}
+        name ? queryParams.name = String(name) : ''
         try {
-
-            const products = await this.categoryService.getAllCategories()
+            const products = await this.categoryService.getAllCategories(queryParams)
             res.status(StatusCodes.OK).send(products)
         } catch (err) {
             next(err)
@@ -66,24 +66,10 @@ export class CategoryController extends AbstractController {
         }
     }
 
-    async findCategoryByName(req: Request, res: Response, next: NextFunction): Promise<void> {
-        const { name } = req.params
-        if (!name) {
-            throw CategoryError.invalidQueryParam('name')
-        }
-        try {
-            const response = await this.categoryService.findProductByName(name)
-            res.status(StatusCodes.OK).send(response)
-        } catch (err) {
-            next(err)
-        }
-
-    }
-
     async findCategoryById(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params
         if (!id) {
-            throw CategoryError.invalidQueryParam('name')
+            throw CategoryError.invalidId()
         }
         try {
             const response = await this.categoryService.findCategoryById(Number(id))

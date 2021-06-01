@@ -88,16 +88,3 @@ describe("Modifiy category", () => {
         await expect(repository.modifyCategory({ id: 15, name: "updated-category" })).rejects.toThrowError()
     })
 })
-
-describe("Get category by name", ()=>{
-    it("Should return two categories", async()=>{
-        await category.create(categorySample1)
-        await category.create(categorySample2)
-        await expect(repository.getCategoryByName("test")).resolves.toHaveLength(2)
-    })
-    it("Should return zero categories", async()=>{
-        await category.create(categorySample1)
-        await category.create(categorySample2)
-        await expect(repository.getCategoryByName("123456")).resolves.toHaveLength(0)
-    })
-})

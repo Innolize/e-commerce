@@ -65,6 +65,7 @@ export class ProductModel extends Model<Product, IProductCreate>{
         ProductModel.belongsTo(model, {
             as: "category",
             foreignKey: "id_category",
+            onDelete: "cascade"
         })
     }
     static setupBrandAssociation(model: typeof BrandModel): void {
