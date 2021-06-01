@@ -5,8 +5,8 @@ import { User } from "../entities/User";
 import { IUserEdit } from "../interfaces/IUserEdit";
 import { UserRepository } from "../repository/UserRepository";
 import bcrypt from "bcrypt"
-import { FullUser } from "../entities/FullUser";
 import { UserError } from "../error/UserError";
+import { fromRequestToUser } from "../mapper/userMapper";
 
 @injectable()
 export class UserService extends AbstractService {
@@ -26,7 +26,7 @@ export class UserService extends AbstractService {
         return response
     }
 
-    async getSingleUser(id: number): Promise<FullUser | Error> {
+    async getSingleUser(id: number): Promise<User | Error> {
         return await this.userRepository.getSingleUser(id)
     }
 
@@ -37,7 +37,7 @@ export class UserService extends AbstractService {
                 throw UserError.mailAlreadyInUse()
             }
             const hashedPassword = await this.encryption.hash(user.password, Number(<string>process.env.BCRYPT_SALT_NUMBER))
-            const userHashed = new User({ ...user, password: hashedPassword })
+            const userHashed = fromRequestToUser({ ...user, password: hashedPassword })
             return await this.userRepository.createUser(userHashed)
         } catch (err) {
             throw Error(err.message)

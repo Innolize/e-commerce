@@ -1,17 +1,12 @@
-import { IUserCreate } from "../interfaces/IUserCreate"
+import { Role } from "../../authorization/entities/Role"
 
 export class User {
     static readonly modelName = 'User'
-    id?: number
-    mail: string
-    password: string
-    role_id: number
-    constructor({ id, mail, password, role_id }: IUserCreate) {
-        if (id) {
-            this.id = id
-        }
-        this.mail = mail
-        this.password = password
-        this.role_id = role_id
-    }
+    constructor(
+        public mail: string,
+        public password: string,
+        public role_id: number,
+        public id?: number,
+        public role?: Role
+    ) { }
 }

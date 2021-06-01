@@ -2,19 +2,17 @@ import { Application, NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { inject } from "inversify";
 import { Multer } from "multer";
-import { nextTick } from "node:process";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
 import { jwtAuthentication } from "../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../authorization/util/authorizationMiddleware";
 import { bodyValidator, mapperMessageError } from "../../common/helpers/bodyValidator";
 import { idNumberOrError } from "../../common/helpers/idNumberOrError";
-import { User } from "../entities/User";
-import { UserError } from "../error/UserError";
 import { validateCreateUserDto } from "../helper/create_dto_validator";
 import { validateEditUserDto } from "../helper/edit_dto_validator";
 import { IUserCreate } from "../interfaces/IUserCreate";
 import { IUserEdit } from "../interfaces/IUserEdit";
+import { fromRequestToUser } from "../mapper/userMapper";
 import { UserService } from "../service/UserService";
 
 
@@ -56,20 +54,14 @@ export class UserController extends AbstractController {
 
     }
 
-    async createUser(req: Request, res: Response, next: NextFunction){
+    async createUser(req: Request, res: Response, next: NextFunction) {
         try {
             const dto: IUserCreate = req.body
             const validatedDto = await bodyValidator(validateCreateUserDto, dto)
-            const user = new User(validatedDto)
+            const user = fromRequestToUser(validatedDto)
             const createdUser = await this.userService.createUser(user)
             return res.status(StatusCodes.CREATED).send(createdUser)
         } catch (err) {
-            if (err.isJoi) {
-                const errorArray = mapperMessageError(err)
-                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
-                    errors: errorArray
-                })
-            }
             next(err)
         }
     }
@@ -92,12 +84,6 @@ export class UserController extends AbstractController {
             const editedUser = await this.userService.modifyUser(validDto)
             return res.status(200).send(editedUser)
         } catch (err) {
-            if (err.isJoi) {
-                const errorArray = mapperMessageError(err)
-                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
-                    errors: errorArray
-                })
-            }
             next(err)
         }
     }
