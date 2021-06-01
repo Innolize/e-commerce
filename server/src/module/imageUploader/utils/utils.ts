@@ -1,8 +1,10 @@
+import { ImageUploaderError } from "../error/imageUploaderError"
+
 export const obtainExtension = (filename: string): string | Error => {
     console.log(filename)
     const extension = filename.split(".").pop()
     if (!extension) {
-        throw Error("Filename has no extension")
+        throw ImageUploaderError.inexistentExtension()
     }
     return extension
 }
@@ -10,7 +12,7 @@ export const obtainExtension = (filename: string): string | Error => {
 export const obtainFilename = (filepath: string): string | Error => {
     const filename = filepath.split("/").pop()
     if (!filename) {
-        throw Error("Unexpected image path")
+        throw ImageUploaderError.UnexpectedPath()
     }
     return filename
 }
