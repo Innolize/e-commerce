@@ -1,5 +1,5 @@
 import { ManagedUpload } from "aws-sdk/clients/s3";
-import { Application, Request, Response } from "express";
+import { Application, NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { inject } from "inversify";
 import { Multer } from "multer";
@@ -7,18 +7,17 @@ import { TYPES } from "../../../../config/inversify.types";
 import { AbstractController } from "../../../abstractClasses/abstractController";
 import { bodyValidator, mapperMessageError } from "../../../common/helpers/bodyValidator";
 import { ImageUploadService } from "../../../imageUploader/module";
-import { Product } from "../../../product/entity/Product";
 import { Cabinet } from "../entities/Cabinet";
 import { validateCabinetAndProductDto, validateCabinetEditDto, validateCabinetQuerySchema } from "../helpers/dto-validator";
 import { ICabinet_Product } from "../interface/ICabinetCreate";
 import { ICabinetQuery } from "../interface/ICabinetQuery";
 import { ICabinetEdit } from '../interface/ICabinetEdit'
 import { CabinetService } from "../service/CabinetService";
-import { FullCabinet } from "../entities/FullCabinet";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
+import { fromRequestToCabinet } from "../mapper/cabinetMapper";
 
 export class CabinetController extends AbstractController {
     private ROUTE_BASE: string
@@ -61,27 +60,24 @@ export class CabinetController extends AbstractController {
         }
     }
 
-    getSingleCabinet = async (req: Request, res: Response): Promise<Response> => {
+    getSingleCabinet = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { id } = req.params
             const validId = idNumberOrError(id) as number
-            const response = await this.cabinetService.getSingleCabinet(validId) as FullCabinet
+            const response = await this.cabinetService.getSingleCabinet(validId) as Cabinet
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            if (err.isJoi) {
-                return res.status(StatusCodes.BAD_REQUEST).send({ error: err.message })
-            }
-            return res.status(StatusCodes.NOT_FOUND).send({ error: err.message })
+            next(err)
         }
     }
 
-    create = async (req: Request, res: Response): Promise<Response> => {
+    create = async (req: Request, res: Response, next: NextFunction) => {
         let upload: ManagedUpload.SendData | undefined
         try {
             const dto: ICabinet_Product = req.body
-            await bodyValidator(validateCabinetAndProductDto, dto)
-            const newCabinet = new Cabinet(dto)
-            const newProduct = fromRequestToProduct(dto)
+            const validatedDto = await bodyValidator(validateCabinetAndProductDto, dto)
+            const newCabinet = fromRequestToCabinet(validatedDto)
+            const newProduct = fromRequestToProduct(validatedDto)
             if (req.file) {
                 const { buffer, originalname } = req.file
                 upload = await this.uploadService.uploadProduct(buffer, originalname)
@@ -92,48 +88,36 @@ export class CabinetController extends AbstractController {
             const response = await this.cabinetService.createCabinet(newProduct, newCabinet)
             return res.status(200).send(response)
         } catch (err) {
-            if (err.isJoi) {
-                const joiErrors = mapperMessageError(err)
-                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(joiErrors)
-            }
+            console.log(err)
             if (req.file && upload) {
                 this.uploadService.deleteProduct(upload.Location)
             }
-            return res.status(200).send(err)
+            next(err)
         }
     }
 
-    edit = async (req: Request, res: Response): Promise<Response> => {
-        let ram: Cabinet | undefined
+    edit = async (req: Request, res: Response, next: NextFunction) => {
+        let cabinet: Cabinet | undefined
         try {
             const { id } = req.params
             const validId = idNumberOrError(id) as number
             const dto: ICabinetEdit = req.body
             const validatedDto = await bodyValidator(validateCabinetEditDto, dto)
-            ram = await this.cabinetService.modifyCabinet(validId, validatedDto) as Cabinet
-            return res.status(StatusCodes.OK).send(ram)
+            cabinet = await this.cabinetService.modifyCabinet(validId, validatedDto) as Cabinet
+            return res.status(StatusCodes.OK).send(cabinet)
         } catch (err) {
-            if (err.isJoi === true) {
-                const errorArray = mapperMessageError(err)
-                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
-                    errors: errorArray
-                })
-            }
-            return res.status(StatusCodes.BAD_REQUEST).send({ message: err.message })
+            next(err)
         }
     }
 
-    delete = async (req: Request, res: Response): Promise<Response | Error> => {
+    delete = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { id } = req.params
             const validId = idNumberOrError(id) as number
             await this.cabinetService.deleteCabinet(validId)
             return res.status(StatusCodes.OK).send({ message: "Cabinet successfully deleted" })
         } catch (err) {
-            if (err.isJoi) {
-                return res.status(StatusCodes.BAD_REQUEST).send({ error: err.message })
-            }
-            return res.status(StatusCodes.BAD_REQUEST).send({ error: err.message })
+            next(err)
         }
     }
 }

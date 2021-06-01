@@ -7,5 +7,5 @@ export interface ICabinetCreate {
     id?: number,
     size: typeof SIZE,
     generic_pws: boolean,
-    id_product?: number
+    id_product: number
 }
