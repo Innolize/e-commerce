@@ -21,6 +21,7 @@ import { UserController, UserModel, UserRepository, UserService } from '../modul
 import bcrypt from 'bcrypt'
 import { AuthController, AuthService } from "../module/auth/module"
 import { PermissionModel, RoleModel } from "../module/authorization/module"
+import { ImageUploadRepository } from "../module/imageUploader/repository/imageUploadRepository"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -195,6 +196,7 @@ function configurePCBuilder(container: Container): void {
 
 function configureImageUploaderContainer(container: Container): void {
     container.bind<ImageUploadService>(TYPES.ImageUploader.Service).to(ImageUploadService)
+    container.bind<ImageUploadRepository>(TYPES.ImageUploader.Repository).to(ImageUploadRepository)
 }
 
 function configureDIC() {
