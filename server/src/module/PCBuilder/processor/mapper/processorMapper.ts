@@ -1,12 +1,16 @@
-import { FullProcessor } from "../entities/FullProcessor"
 import { Processor } from "../entities/Processor"
 import { ProcessorModel } from "../model/ProcessorModel"
 import { IProcessorCreate } from '../interface/IProcessorCreate'
-
-export const fromDbToFullProcessor = (model: ProcessorModel): FullProcessor => {
-    return new FullProcessor(model.toJSON() as FullProcessor)
-}
+import { fromRequestToProduct } from "../../../product/mapper/productMapper"
 
 export const fromDbToProcessor = (model: ProcessorModel): Processor => {
-    return new Processor(model.toJSON() as IProcessorCreate)
+    const processor = model.toJSON() as Processor
+    const { cores, id, id_product, watts, product, frecuency, socket } = processor
+    const processorProduct = product ? fromRequestToProduct(product) : undefined
+    return new Processor(cores, frecuency, socket, watts, id_product, id, processorProduct)
+}
+
+export const fromRequestToProcessor = (request: IProcessorCreate): Processor => {
+    const { cores, socket, frecuency, watts, id_product, id } = request
+    return new Processor(cores, frecuency, socket, watts, id_product, id)
 }

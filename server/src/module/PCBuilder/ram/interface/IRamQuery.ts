@@ -1,5 +1,7 @@
+import { RAM_VERSION } from "../../../../config/constants/pcbuilder";
+
 export interface IRamQuery{
-    ram_version?: "DDR1" | "DDR2" | "DDR3" | "DDR4",
+    ram_version?: typeof RAM_VERSION[number],
     min_frec?: number,
     max_frec?: number,
 }

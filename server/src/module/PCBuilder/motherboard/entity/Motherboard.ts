@@ -1,32 +1,19 @@
-import { IMotherboardCreate } from '../interface/IMotherboardCreate'
+import { CPU_BRANDS, RAM_VERSION, SIZE, VIDEO_CARD_VERSION } from '../../../../config/constants/pcbuilder'
+import { Product } from '../../../product/entity/Product'
 
 export class Motherboard {
     static readonly modelName = 'Motherboard'
-    id?: number
-    cpu_socket: string
-    cpu_brand: string
-    ram_version: number
-    min_frec: number
-    max_frec: number
-    video_socket: string
-    model_size: string
-    watts: number
-    id_product?: number
-    constructor({ id, cpu_socket, cpu_brand, ram_version, min_frec, max_frec, video_socket, model_size, watts, id_product }: IMotherboardCreate) {
-        if (id) {
-            this.id = id
-        }
-        this.cpu_socket = cpu_socket,
-            this.cpu_brand = cpu_brand,
-            this.ram_version = ram_version,
-            this.min_frec = min_frec,
-            this.max_frec = max_frec,
-            this.video_socket = video_socket,
-            this.model_size = model_size,
-            this.watts = watts
-        if (id_product) {
-            this.id_product = id_product
-        }
-
-    }
+    constructor(
+        public cpu_socket: string,
+        public cpu_brand: typeof CPU_BRANDS[number],
+        public ram_version: typeof RAM_VERSION[number],
+        public min_frec: number,
+        public max_frec: number,
+        public video_socket: typeof VIDEO_CARD_VERSION[number],
+        public model_size: typeof SIZE[number],
+        public watts: number,
+        public id_product: number,
+        public id?: number,
+        public product?: Product
+    ) { }
 }

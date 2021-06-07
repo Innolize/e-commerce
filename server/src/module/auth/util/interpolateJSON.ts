@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { interpolation } from 'interpolate-json'
 import { Permission } from '../../authorization/entities/Permission'
-import { FullUser } from '../../user/entities/FullUser'
+import { User } from '../../user/entities/User'
 
 
-export const interpolatePermission = (permissions: Permission[], user: FullUser): Permission[] => {
+export const interpolatePermission = (permissions: Permission[], user: User): Permission[] => {
     return permissions.map( permission => interpolation.expand(permission, user))
 }

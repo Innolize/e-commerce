@@ -2,7 +2,7 @@ import { PassportStatic } from 'passport'
 import { Strategy as JwtStrategy, StrategyOptions, ExtractJwt } from 'passport-jwt'
 import { IUserWithAuthorization } from '../../authorization/interfaces/IUserWithAuthorization';
 import { buildAbility } from '../../authorization/util/abilityBuilder';
-import { FullUser } from '../../user/entities/FullUser';
+import { User } from '../../user/entities/User';
 import { UserService } from '../../user/module';
 import { interpolatePermission } from '../util/interpolateJSON'
 
@@ -18,8 +18,8 @@ export function configureJwtStrategy(userService: UserService, passport: Passpor
         async (payload, done) => {
             try {
                 const { sub: id } = payload
-                const user = await userService.getSingleUser(Number(id)) as FullUser
-                if(user.role.permissions){
+                const user = await userService.getSingleUser(Number(id)) as User
+                if(user.role?.permissions){
                     const permissions = interpolatePermission(user.role.permissions, user)
                     user.role.permissions = permissions
                     const role = buildAbility(user.role)

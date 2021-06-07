@@ -1,7 +1,8 @@
+import { SIZE } from "../../../../config/constants/pcbuilder";
 import { ICabinetCreate } from "./ICabinetCreate";
 
 
-export interface ICabinetEdit extends ICabinetCreate {
-    id: number,
-    product_id: number
+export interface ICabinetEdit {
+    size?: typeof SIZE[number],
+    generic_pws?: boolean,
 }

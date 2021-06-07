@@ -1,4 +1,4 @@
-import { DataTypes, Model, Sequelize } from 'sequelize'
+import { Association, DataTypes, Model, Sequelize } from 'sequelize'
 import { injectable } from "inversify";
 import { ProductModel } from "../../../product/module";
 import { PowerSupply } from '../entities/PowerSupply'
@@ -22,6 +22,10 @@ export class PowerSupplyModel extends Model<PowerSupply, IPowerSupplyCreate>{
             watts: {
                 type: DataTypes.INTEGER,
                 allowNull: false
+            },
+            id_product: {
+                type: DataTypes.INTEGER,
+                allowNull: false
             }
         }
             , {
@@ -39,5 +43,8 @@ export class PowerSupplyModel extends Model<PowerSupply, IPowerSupplyCreate>{
                 allowNull: false,
             },
         })
+    }
+    static associations: {
+        product: Association<PowerSupplyModel, ProductModel>
     }
 }

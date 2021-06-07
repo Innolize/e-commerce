@@ -6,7 +6,6 @@ import { UserService } from "../../user/module";
 import { sign, verify } from 'jsonwebtoken'
 import { ILoginResponse } from "../interfaces/ILoginResponse";
 import { IJwtToken } from "../interfaces/IJwtToken";
-import { FullUser } from "../../user/entities/FullUser";
 
 @injectable()
 export class AuthService extends AbstractService {
@@ -38,7 +37,7 @@ export class AuthService extends AbstractService {
             const token = verify(refreshToken, <string>process.env.JWT_SECRET_REFRESH) as IJwtToken
             const { sub } = token
             const payload = { sub }
-            const user = await this.userService.getSingleUser(sub) as FullUser
+            const user = await this.userService.getSingleUser(sub) as User
             const { password, role, ...rest } = user
             const access_token = sign(rest, <string>process.env.JWT_SECRET, { expiresIn: "6h" })
             const refresh_token = this.signRefreshToken(payload)
@@ -48,7 +47,7 @@ export class AuthService extends AbstractService {
                 refresh_token
             }
         } catch (err) {
-            throw Error(err.message)
+            throw err
         }
     }
 

@@ -3,10 +3,10 @@ import { UniqueConstraintError } from "sequelize";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { RoleModel } from "../../authorization/module";
-import { FullUser } from "../entities/FullUser";
 import { User } from "../entities/User";
+import { UserError } from "../error/UserError";
 import { IUserEdit } from "../interfaces/IUserEdit";
-import { fromDbToFullUser, fromDbToUser } from "../mapper/userMapper";
+import { fromDbToUser } from "../mapper/userMapper";
 import { UserModel } from "../model/UserModel";
 
 @injectable()
@@ -24,18 +24,14 @@ export class UserRepository extends AbstractRepository {
         return users.map(fromDbToUser)
     }
 
-    async getSingleUser(id: number): Promise<FullUser | Error> {
-        try {
+    async getSingleUser(id: number): Promise<User | Error> {
             const user = await this.userModel.findByPk(id, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }] })
             if (!user) {
-                throw Error("User not found")
+                throw UserError.notFound()
             }
             
-            const response = fromDbToFullUser(user)
+            const response = fromDbToUser(user)
             return response
-        } catch (err) {
-            throw Error(err)
-        }
     }
 
     async createUser(user: User): Promise<User | Error> {
@@ -44,7 +40,7 @@ export class UserRepository extends AbstractRepository {
             return fromDbToUser(newUser)
         } catch (err) {
             if (err instanceof UniqueConstraintError) {
-                throw Error('Mail already in use!')
+                throw UserError.mailAlreadyInUse()
             }
             throw Error(err)
         }
@@ -65,14 +61,12 @@ export class UserRepository extends AbstractRepository {
             // database. Second argument are the array of elements. Im updating by id so there is only 
             // one element in the array.
             if (!userEdited) {
-                throw new Error("User not found")
+                throw UserError.notFound()
             }
             const editedUser = fromDbToUser(userArray[0])
-
             return editedUser
-
         } catch (err) {
-            throw new Error(err.message)
+            throw err
         }
     }
 
@@ -80,7 +74,7 @@ export class UserRepository extends AbstractRepository {
         try {
             const response = await this.userModel.destroy({ where: { id } })
             if (!response) {
-                throw Error("User doesn't exists")
+                throw UserError.notFound()
             }
             return true
         } catch (err) {

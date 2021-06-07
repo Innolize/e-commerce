@@ -1,11 +1,11 @@
 import { injectable } from "inversify"
 import { Association, DataTypes, Model, Sequelize } from "sequelize"
 import { RoleModel } from "../../authorization/module"
-import { IUserAttributes } from '../interfaces/IUserAttributes'
+import { User } from "../entities/User"
 import { IUserCreate } from "../interfaces/IUserCreate"
 
 @injectable()
-export class UserModel extends Model<IUserAttributes, IUserCreate>{
+export class UserModel extends Model<User, IUserCreate>{
     static setup(database: Sequelize): typeof UserModel {
         UserModel.init({
             id: {
@@ -20,6 +20,10 @@ export class UserModel extends Model<IUserAttributes, IUserCreate>{
             },
             password: {
                 type: DataTypes.STRING,
+                allowNull: false,
+            },
+            role_id: {
+                type: DataTypes.INTEGER,
                 allowNull: false,
             }
         },

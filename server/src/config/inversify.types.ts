@@ -24,7 +24,8 @@ export const TYPES = {
         Controller: Symbol("BrandController"),
     },
     ImageUploader: {
-        Service: Symbol("ImageUploaderService")
+        Service: Symbol("ImageUploaderService"),
+        Repository: Symbol("ImageUploaderRepository")
     },
     PCBuilder: {
         Motherboard: {

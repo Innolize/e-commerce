@@ -11,7 +11,6 @@ const sequelizeInstance = new Sequelize(<string>process.env.TEST_DATABASE_URL, {
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
     dialect: 'postgres'
-
 })
 let brand: typeof BrandModel
 let repository: BrandRepository
@@ -28,8 +27,8 @@ beforeEach(async (done) => {
     done();
 });
 
-const brandSample1 = new Brand({ name: "test-brand-1", logo: "test-brand-logo-1" })
-const brandSample2 = new Brand({ name: "test-brand-2", logo: "test-brand-logo-2" })
+const brandSample1 = new Brand("test-brand-1", "test-brand-logo-1")
+const brandSample2 = new Brand("test-brand-2", "test-brand-logo-2")
 
 describe("Get all brands from database", () => {
     it("Returns an array of 2 brands", async () => {
@@ -89,33 +88,5 @@ describe("Modifiy brand", () => {
     it("Update brand without id should throw an error", async () => {
 
         await expect(repository.modifyBrand({ id: 15, name: "updated-brand" })).rejects.toThrowError()
-    })
-})
-
-describe("Get brand by name", () => {
-    it("Should return two brand", async () => {
-        await brand.create(brandSample1)
-        await brand.create(brandSample2)
-        await expect(repository.getBrandsByName("test")).resolves.toHaveLength(2)
-    })
-    it("Should return zero brands", async () => {
-        await brand.create(brandSample1)
-        await brand.create(brandSample2)
-        await expect(repository.getBrandsByName("123456")).resolves.toHaveLength(0)
-    })
-})
-
-describe("Get brand by name", () => {
-    it("Return list of brands with 'test' in their name", async () => {
-        await brand.create(brandSample1)
-        await brand.create(brandSample2)
-        const response = await repository.getBrandsByName("test")
-        expect(response).toHaveLength(2)
-    })
-    it("Return list with 0 products", async () => {
-        await brand.create(brandSample1)
-        await brand.create(brandSample2)
-        const response = await repository.getBrandsByName("12345")
-        expect(response).toHaveLength(0)
     })
 })

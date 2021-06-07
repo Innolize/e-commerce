@@ -1,23 +1,15 @@
-import { IVideoCardCreate } from '../interface/IVideoCardCreate'
+import { VIDEO_CARD_VERSION } from '../../../../config/constants/pcbuilder'
+import { Product } from '../../../product/entity/Product'
 
 export class VideoCard {
     static readonly modelName = 'VideoCard'
-    id?: number
-    version: "DDR4" | "DDR5" | "DDR6"
-    memory: number
-    clock_speed: number
-    watts: number
-    id_product?: number
-    constructor({ id, id_product, clock_speed, version, memory, watts }: IVideoCardCreate) {
-        if (id) {
-            this.id = id
-        }
-        this.version = version,
-            this.memory = memory,
-            this.clock_speed = clock_speed,
-            this.watts = watts
-        if (id_product) {
-            this.id_product = id_product
-        }
-    }
+    constructor(
+        public version: typeof VIDEO_CARD_VERSION[number],
+        public memory: number,
+        public clock_speed: number,
+        public watts: number,
+        public id_product: number,
+        public id?: number,
+        public product?: Product
+    ) { }
 }

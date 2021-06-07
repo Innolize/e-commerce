@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { CPU_BRANDS, RAM_VERSION, SIZE } from "../../../../config/constants/pcbuilder";
+import { CPU_BRANDS, RAM_VERSION, SIZE, VIDEO_CARD_VERSION } from "../../../../config/constants/pcbuilder";
 import { validateCreateProductSchema } from "../../../product/helper/create_dto_validator";
 
 export const validateEditMotherboardDto = Joi.object({
@@ -18,8 +18,9 @@ export const validateEditMotherboardDto = Joi.object({
     max_frec: Joi.number()
         .greater(Joi.ref('...min_frec'))
         .required(),
-    video_socket: Joi.string().
-        required(),
+    video_socket: Joi.any()
+        .valid(...VIDEO_CARD_VERSION)
+        .required(),
     model_size: Joi.any()
         .valid(...SIZE)
         .required(),
@@ -43,8 +44,9 @@ export const validateMotherboardCreateSchema = {
     max_frec: Joi.number()
         .greater(Joi.ref('min_frec'))
         .required(),
-    video_socket: Joi.string().
-        required(),
+    video_socket: Joi.any()
+        .valid(...VIDEO_CARD_VERSION)
+        .required(),
     model_size: Joi.any()
         .valid(...SIZE)
         .required(),

@@ -15,9 +15,8 @@ export class BrandService extends AbstractService {
         this.brandRepository = brandRepository
     }
 
-    async getAllCategories(): Promise<Error | Brand[]> {
-        console.log("entre al service")
-        return await this.brandRepository.getAllBrands()
+    async getAllCategories(queryParams?: IGetAllBrandsQueries): Promise<Error | Brand[]> {
+        return await this.brandRepository.getAllBrands(queryParams)
     }
 
     async deleteBrand(id: number): Promise<boolean | Error> {
@@ -31,11 +30,7 @@ export class BrandService extends AbstractService {
     async createBrand(brand: Brand): Promise<Brand | Error> {
         return await this.brandRepository.createBrand(brand)
     }
-    async findBrandById(id: number): Promise<Error | Brand> {
+    async findBrandById(id: number): Promise< Brand> {
         return await this.brandRepository.getById(id)
     }
-    async findBrandByName(productName: string): Promise<Brand[] | Error> {
-        return await this.brandRepository.getBrandsByName(productName)
-    }
-
 }

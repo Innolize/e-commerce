@@ -1,4 +1,4 @@
-import { DataTypes, Model, Sequelize } from 'sequelize'
+import { Association, DataTypes, Model, Sequelize } from 'sequelize'
 import { injectable } from "inversify";
 import { ProductModel } from "../../../product/module";
 import { DiskStorage } from '../entities/DiskStorage'
@@ -30,6 +30,10 @@ export class DiskStorageModel extends Model<DiskStorage, IDiskStorageCreate>{
             watts: {
                 type: DataTypes.INTEGER,
                 allowNull: false
+            },
+            id_product: {
+                type: DataTypes.INTEGER,
+                allowNull: false
             }
         }, {
             sequelize: database,
@@ -46,5 +50,9 @@ export class DiskStorageModel extends Model<DiskStorage, IDiskStorageCreate>{
                 allowNull: false,
             },
         })
+    }
+
+    public static associations:{
+        product: Association<DiskStorageModel, ProductModel>
     }
 }

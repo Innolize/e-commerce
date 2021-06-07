@@ -1,26 +1,17 @@
-import { IProductCreate } from "../interfaces/IProductCreate";
+import { Brand } from "../../brand/entity/Brand";
+import { Category } from "../../category/entity/Category";
 
 export class Product {
-    static readonly modelName: 'Product'
-    id?: number;
-    name: string;
-    image: string | null;
-    description: string | null;
-    price: number;
-    stock: boolean;
-    id_category: number
-    id_brand: number
-    constructor({ id, name, image, description, price, stock, id_category, id_brand }: IProductCreate) {
-        if (id) {
-            this.id = id
-        }
-        this.id = id
-        this.name = name,
-            this.image = image,
-            this.description = description,
-            this.price = price,
-            this.stock = stock
-        this.id_category = id_category
-        this.id_brand = id_brand
-    }
+    static readonly modelName: 'Product';
+    constructor(public name: string,
+        public image: string | null,
+        public description: string | null,
+        public price: number,
+        public stock: boolean,
+        public id_category: number,
+        public id_brand: number,
+        public id?: number,
+        public category?: Category,
+        public brand?: Brand
+        ) { }
 }

@@ -2,7 +2,6 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
 import { Product } from "../../../product/entity/Product";
-import { FullDiskStorage } from "../entities/FullDiskStorage";
 import { DiskStorage } from "../entities/DiskStorage";
 import { IDiskStorageQuery } from "../interface/IDiskStorageQuery";
 import { DiskStorageRepository } from "../repository/DiskStorageRepository";
@@ -17,15 +16,15 @@ export class DiskStorageService extends AbstractService {
         this.diskStorageRepository = diskStorageRepository
     }
 
-    async getDisks(query?: IDiskStorageQuery): Promise<FullDiskStorage[]> {
+    async getDisks(query?: IDiskStorageQuery): Promise<DiskStorage[]> {
         return await this.diskStorageRepository.getDisks(query)
     }
 
-    async getSingleDisk(id: number): Promise<FullDiskStorage | Error> {
+    async getSingleDisk(id: number): Promise<DiskStorage | Error> {
         return await this.diskStorageRepository.getSingleDisk(id)
     }
 
-    async createDisk(product: Product, disk: DiskStorage): Promise<FullDiskStorage | Error> {
+    async createDisk(product: Product, disk: DiskStorage): Promise<DiskStorage | Error> {
         return await this.diskStorageRepository.createDisk(product, disk)
     }
 

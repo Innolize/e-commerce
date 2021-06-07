@@ -30,4 +30,5 @@ export class CategoryModel extends Model<ICategory>{
         })
         return CategoryModel
     }
+
 }

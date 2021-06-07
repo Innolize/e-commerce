@@ -1,4 +1,4 @@
-import { Application as App } from 'express'
+import { Application as App, NextFunction } from 'express'
 import { inject, injectable } from 'inversify'
 import { TYPES } from '../../../config/inversify.types'
 import { AbstractController } from '../../abstractClasses/abstractController'
@@ -14,6 +14,8 @@ import { IEditableCategory } from '../interfaces/IEditableCategory'
 import { validateEditCategoryDto } from '../helper/edit_dto_validator'
 import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
 import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
+import { CategoryError } from '../error/CategoryError'
+import { IGetAllCategoriesQueries } from '../interfaces/IGetAllCategoriesQueries'
 
 
 @injectable()
@@ -37,100 +39,71 @@ export class CategoryController extends AbstractController {
         app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Category' })], this.uploadMiddleware.single("bulbasaur"), this.createCategory.bind(this))
         app.put(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Category' })], this.uploadMiddleware.none(), this.modifyCategory.bind(this))
         app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Category' })], this.deleteCategory.bind(this))
-        app.get(`/api${ROUTE}/findByName/:name`, this.findCategoryByName.bind(this))
-        app.get(`/api${ROUTE}/findById/:id`, this.findCategoryById.bind(this))
+        app.get(`/api${ROUTE}/:id`, this.findCategoryById.bind(this))
     }
 
-    async getAllCategories(req: Request, res: Response): Promise<void> {
-
+    async getAllCategories(req: Request, res: Response, next: NextFunction) {
+        const { name } = req.query
+        const queryParams: IGetAllCategoriesQueries = {}
+        name ? queryParams.name = String(name) : ''
         try {
-
-            const products = await this.categoryService.getAllCategories()
+            const products = await this.categoryService.getAllCategories(queryParams)
             res.status(StatusCodes.OK).send(products)
         } catch (err) {
-            res.status(StatusCodes.NOT_FOUND).send('no se que poner')
+            next(err)
         }
     }
 
-    async createCategory(req: Request, res: Response): Promise<Response> {
+    async createCategory(req: Request, res: Response, next: NextFunction) {
         try {
             const dto: ICategory = req.body
-            console.log(dto)
             const validatedDto = await bodyValidator(validateCreateCategoryDto, dto)
             const product = new Category(validatedDto)
             const response = await this.categoryService.createCategory(product)
-            return res.status(StatusCodes.OK).send(response)
+            return res.status(StatusCodes.CREATED).send(response)
         } catch (err) {
-            if (err.isJoi === true) {
-                const errorArray = mapperMessageError(err)
-                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
-                    errors: errorArray
-                })
-            }
-            return res.send(err)
+            next(err)
         }
     }
 
-    async findCategoryByName(req: Request, res: Response): Promise<void> {
-        const { name } = req.params
-        if (!name) {
-            throw Error("Query param 'name' is missing")
-        }
-        try {
-            const response = await this.categoryService.findProductByName(name)
-            res.status(StatusCodes.OK).send(response)
-        } catch (err) {
-            console.log('hubo un error')
-        }
-
-    }
-
-    async findCategoryById(req: Request, res: Response): Promise<Response> {
+    async findCategoryById(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params
-        console.log("id:", id)
-        if (!id) {
-            throw Error("Query param 'name' is missing")
-        }
         try {
+            if (!id) {
+                throw CategoryError.invalidId()
+            }
             const response = await this.categoryService.findCategoryById(Number(id))
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            return res.status(StatusCodes.BAD_REQUEST).send({ errors: err.message })
-
+            next(err)
         }
     }
 
-    async modifyCategory(req: Request, res: Response): Promise<Response> {
-        console.log(req.body)
+    async modifyCategory(req: Request, res: Response, next: NextFunction) {
         try {
             const dto: IEditableCategory = req.body
-            console.log(req.body)
             await bodyValidator(validateEditCategoryDto, dto)
             const response = await this.categoryService.modifyCategory(dto)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            if (err.isJoi === true) {
-                const errorArray = mapperMessageError(err)
-                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
-                    errors: errorArray
-                })
-            }
-            console.log(err)
-            return res.status(StatusCodes.NOT_FOUND).send({ message: err.message })
+            next(err)
         }
     }
 
-    async deleteCategory(req: Request, res: Response): Promise<void> {
+    async deleteCategory(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params
-        if (!id && id !== "0") {
-            throw Error('missing id')
-        }
         try {
+            const idNumber = Number(id)
+            if (!idNumber || idNumber <= 0) {
+                throw CategoryError.invalidId()
+            }
+            if (idNumber <= 7) {
+                throw CategoryError.undeletableCategory()
+            }
             await this.categoryService.deleteCategory(Number(id))
-            res.status(StatusCodes.OK)
-                .send({ message: "Product successfully deleted" })
-        } catch (e) {
-            res.status(StatusCodes.BAD_REQUEST).send({ message: ReasonPhrases.BAD_REQUEST })
+            res.status(StatusCodes.OK).send({ message: "Category successfully deleted" })
+        } catch (err) {
+            next(err)
         }
     }
 }

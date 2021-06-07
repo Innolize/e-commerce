@@ -4,7 +4,7 @@ import { Product } from "../../../product/entity/Product";
 export interface IPowerSupply {
     id: number,
     watts: number
-    certification: typeof PWS_CERTIFICATION,
+    certification: typeof PWS_CERTIFICATION[number],
     product?: Product
 }
 

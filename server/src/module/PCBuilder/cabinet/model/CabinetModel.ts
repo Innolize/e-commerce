@@ -1,4 +1,4 @@
-import { DataTypes, Model, Sequelize } from 'sequelize'
+import { Association, DataTypes, Model, Sequelize } from 'sequelize'
 import { injectable } from "inversify";
 import { ProductModel } from "../../../product/module";
 import { Cabinet } from '../entities/Cabinet'
@@ -22,6 +22,10 @@ export class CabinetModel extends Model<Cabinet, ICabinetCreate>{
             size: {
                 type: DataTypes.ENUM(...SIZE),
                 allowNull: false
+            },
+            id_product: {
+                type: DataTypes.INTEGER,
+                allowNull: false
             }
         }, {
             sequelize: database,
@@ -38,5 +42,8 @@ export class CabinetModel extends Model<Cabinet, ICabinetCreate>{
                 allowNull: false,
             },
         })
+    }
+    public static associations: {
+        product: Association<CabinetModel, ProductModel>
     }
 }

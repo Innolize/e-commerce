@@ -1,11 +1,16 @@
-import { FullVideoCard } from "../entities/FullVideoCard"
+import { fromRequestToProduct } from "../../../product/mapper/productMapper"
 import { VideoCard } from "../entities/VideoCard"
+import { IVideoCardCreate } from "../interface/IVideoCardCreate"
 import { VideoCardModel } from "../model/VideoCardModel"
 
-export const fromDbToFullVideoCard = (model: VideoCardModel): FullVideoCard => {
-    return new FullVideoCard(model.toJSON() as FullVideoCard)
+export const fromRequestToVideoCard = (model: IVideoCardCreate): VideoCard => {
+    const { clock_speed, watts, memory, id_product, id, version } = model
+    return new VideoCard(version, memory, clock_speed, watts, id_product, id)
 }
 
 export const fromDbToVideoCard = (model: VideoCardModel): VideoCard => {
-    return new VideoCard(model.toJSON() as VideoCard)
+    const videoCard = model.toJSON() as VideoCard
+    const { clock_speed, id, id_product, product, memory, version, watts } = videoCard
+    const ramProduct = product ? fromRequestToProduct(product) : undefined
+    return new VideoCard(version, memory, clock_speed, watts, id_product, id, ramProduct)
 }

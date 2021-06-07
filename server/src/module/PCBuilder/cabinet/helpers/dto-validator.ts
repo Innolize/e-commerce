@@ -13,16 +13,16 @@ export const validateCabinetCreateSchema = {
         .valid(...SIZE)
         .required(),
     generic_pws: Joi.boolean()
+        .required(),
+    id_product: Joi.number()
+        .required()
 }
 
 export const validateCabinetEditSchema = {
-    ...validateCabinetCreateSchema,
-    id: Joi.number()
-        .required,
-    product_id: Joi.number()
-        .required,
+    size: Joi.any()
+        .valid(...SIZE),
+    id: Joi.number(),
     generic_pws: Joi.boolean()
-        .required()
 }
 
 export const validateCabinetAndProductDto = Joi.object({ ...validateCabinetCreateSchema, ...validateCreateProductSchema })

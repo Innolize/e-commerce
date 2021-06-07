@@ -1,4 +1,4 @@
-import { DataTypes, Model, Sequelize } from 'sequelize'
+import { Association, DataTypes, Model, Sequelize } from 'sequelize'
 import { injectable } from "inversify";
 import { ProductModel } from "../../../product/module";
 import { VideoCard } from '../entities/VideoCard'
@@ -31,6 +31,10 @@ export class VideoCardModel extends Model<VideoCard, IVideoCardCreate>{
                 type: DataTypes.ENUM(...VIDEO_CARD_VERSION),
                 allowNull: false
             },
+            id_product: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            }
         }, {
             sequelize: database,
             modelName: "VideoCard"
@@ -46,5 +50,8 @@ export class VideoCardModel extends Model<VideoCard, IVideoCardCreate>{
                 allowNull: false,
             },
         })
+    }
+    static associations: {
+        product: Association<VideoCardModel, ProductModel>
     }
 }

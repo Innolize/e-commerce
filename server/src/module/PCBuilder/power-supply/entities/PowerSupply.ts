@@ -1,20 +1,13 @@
 import { PWS_CERTIFICATION } from '../../../../config/constants/pcbuilder'
-import { IPowerSupplyCreate } from '../interface/IPowerSupplyCreate'
+import { Product } from '../../../product/entity/Product'
 
 export class PowerSupply {
     static readonly modelName = 'PowerSupply'
-    id?: number
-    watts: number
-    certification: typeof PWS_CERTIFICATION
-    id_product?: number
-    constructor({ id, id_product, certification, watts }: IPowerSupplyCreate) {
-        if (id) {
-            this.id = id
-        }
-        this.watts = watts,
-            this.certification = certification
-        if (id_product) {
-            this.id_product = id_product
-        }
-    }
+    constructor(
+        public watts: number,
+        public certification: typeof PWS_CERTIFICATION[number],
+        public id_product: number,
+        public id?: number,
+        public product?: Product
+    ) { }
 }

@@ -1,4 +1,4 @@
-import { DataTypes, Model, Sequelize } from 'sequelize'
+import { Association, DataTypes, Model, Sequelize } from 'sequelize'
 import { injectable } from "inversify";
 import { ProductModel } from "../../../product/module";
 import { IProcessorCreate } from '../interface/IProcessorCreate'
@@ -26,8 +26,12 @@ export class ProcessorModel extends Model<Processor, IProcessorCreate>{
                 type: DataTypes.INTEGER,
                 allowNull: false
             },
-            socket:{
+            socket: {
                 type: DataTypes.STRING,
+                allowNull: false
+            },
+            id_product: {
+                type: DataTypes.INTEGER,
                 allowNull: false
             }
         }, {
@@ -45,5 +49,8 @@ export class ProcessorModel extends Model<Processor, IProcessorCreate>{
                 allowNull: false,
             },
         })
+    }
+    static associations: {
+        product: Association<ProcessorModel, ProductModel>
     }
 }
