@@ -75,12 +75,13 @@ export class CabinetController extends AbstractController {
     }
 
     create = async (req: Request, res: Response, next: NextFunction) => {
+        const CABINET_CATEGORY = 1
         let productImage: string | undefined
         try {
             const dto: ICabinet_Product = req.body
             const validatedDto = await bodyValidator(validateCabinetAndProductDto, dto)
             const newCabinet = fromRequestToCabinet(validatedDto)
-            const newProduct = fromRequestToProduct(validatedDto)
+            const newProduct = fromRequestToProduct({...validatedDto, id_brand: CABINET_CATEGORY})
             await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file

@@ -68,10 +68,10 @@ export class CategoryController extends AbstractController {
 
     async findCategoryById(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params
-        if (!id) {
-            throw CategoryError.invalidId()
-        }
         try {
+            if (!id) {
+                throw CategoryError.invalidId()
+            }
             const response = await this.categoryService.findCategoryById(Number(id))
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {

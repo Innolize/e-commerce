@@ -75,12 +75,13 @@ export class PowerSupplyController extends AbstractController {
     }
 
     create = async (req: Request, res: Response, next: NextFunction) => {
+        const POWER_SUPPLY_CATEGORY = 4
         let productImage: string | undefined
         try {
             const dto: IPowerSupply_Product = req.body
-            await bodyValidator(validatePowerSupplyAndProductDto, dto)
-            const newPowerSupply = fromRequestToPowerSupply(dto)
-            const newProduct = fromRequestToProduct(dto)
+            const validatedDto = await bodyValidator(validatePowerSupplyAndProductDto, dto)
+            const newPowerSupply = fromRequestToPowerSupply(validatedDto)
+            const newProduct = fromRequestToProduct({ ...validatedDto, id_category: POWER_SUPPLY_CATEGORY })
             await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file

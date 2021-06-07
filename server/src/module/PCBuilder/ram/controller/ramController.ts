@@ -77,12 +77,13 @@ export class RamController extends AbstractController {
     }
 
     create = async (req: Request, res: Response, next: NextFunction) => {
+        const RAM_CATEGORY = 6
         let productImage: string | undefined
         try {
             const dto: IRam_Product = req.body
-            await bodyValidator(validateRamAndProductDto, dto)
-            const newMotherboard = fromRequestToRam(dto)
-            const newProduct = fromRequestToProduct(dto)
+            const validatedDto = await bodyValidator(validateRamAndProductDto, dto)
+            const newMotherboard = fromRequestToRam(validatedDto)
+            const newProduct = fromRequestToProduct({ ...validatedDto, id_category: RAM_CATEGORY })
             await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file

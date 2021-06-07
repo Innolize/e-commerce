@@ -18,7 +18,7 @@ export const validateEditMotherboardDto = Joi.object({
     max_frec: Joi.number()
         .greater(Joi.ref('...min_frec'))
         .required(),
-    video_socket: Joi.string()
+    video_socket: Joi.any()
         .valid(...VIDEO_CARD_VERSION)
         .required(),
     model_size: Joi.any()
@@ -44,8 +44,9 @@ export const validateMotherboardCreateSchema = {
     max_frec: Joi.number()
         .greater(Joi.ref('min_frec'))
         .required(),
-    video_socket: Joi.string().
-        required(),
+    video_socket: Joi.any()
+        .valid(...VIDEO_CARD_VERSION)
+        .required(),
     model_size: Joi.any()
         .valid(...SIZE)
         .required(),

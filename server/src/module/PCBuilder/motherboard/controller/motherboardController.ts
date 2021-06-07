@@ -76,12 +76,13 @@ export class MotherboardController extends AbstractController {
     }
 
     create = async (req: Request, res: Response, next: NextFunction) => {
+        const MOTHERBOARD_CATEGORY = 3
         let productImage: string | undefined
         try {
             const dto: IMotherboard_Product = req.body
             const validatedDto = await bodyValidator(validateMotherboardAndProductDto, dto)
             const newMotherboard = fromRequestToMotherboard(validatedDto)
-            const newProduct = fromRequestToProduct(validatedDto)
+            const newProduct = fromRequestToProduct({ ...validatedDto, id_category: MOTHERBOARD_CATEGORY })
             await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file

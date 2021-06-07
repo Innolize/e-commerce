@@ -75,12 +75,13 @@ export class ProcessorController extends AbstractController {
     }
 
     create = async (req: Request, res: Response, next: NextFunction) => {
+        const PROCESSOR_CATEGORY = 5
         let productImage: string | undefined
         try {
             const dto: IProcessor_Product = req.body
-            await bodyValidator(validateProcessorAndProductDto, dto)
-            const newMotherboard = fromRequestToProcessor(dto)
-            const newProduct = fromRequestToProduct(dto)
+            const validatedDto = await bodyValidator(validateProcessorAndProductDto, dto)
+            const newMotherboard = fromRequestToProcessor(validatedDto)
+            const newProduct = fromRequestToProduct({ ...validatedDto, id_category: PROCESSOR_CATEGORY })
             await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file

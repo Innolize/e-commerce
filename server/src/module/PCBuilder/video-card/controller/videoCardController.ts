@@ -18,6 +18,7 @@ import { authorizationMiddleware } from "../../../authorization/util/authorizati
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToVideoCard } from "../mapper/videoCardMapper";
 import { ProductService } from "../../../product/module";
+import { VIDEO_CARD_VERSION } from "../../../../config/constants/pcbuilder";
 
 export class VideoCardController extends AbstractController {
     private ROUTE_BASE: string
@@ -76,12 +77,13 @@ export class VideoCardController extends AbstractController {
     }
 
     create = async (req: Request, res: Response, next: NextFunction) => {
+        const VIDEO_CARD_CATEGORY = 7
         let productImage: string | undefined
         try {
             const dto: IVideoCard_Product = req.body
-            await bodyValidator(validateVideoCardAndProductDto, dto)
-            const newMotherboard = fromRequestToVideoCard(dto)
-            const newProduct = fromRequestToProduct(dto)
+            const validatedDto = await bodyValidator(validateVideoCardAndProductDto, dto)
+            const newMotherboard = fromRequestToVideoCard(validatedDto)
+            const newProduct = fromRequestToProduct({ ...validatedDto, id_category: VIDEO_CARD_CATEGORY })
             await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file

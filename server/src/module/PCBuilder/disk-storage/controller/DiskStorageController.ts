@@ -79,12 +79,13 @@ export class DiskStorageController extends AbstractController {
     }
 
     create = async (req: Request, res: Response, next: NextFunction) => {
+        const DISK_STORAGE_CATEGORY = 1
         let productImage: string | undefined
         try {
             const dto: IDiskStorage_Product = req.body
             const validatedDto = await bodyValidator(validateRamAndProductDto, dto)
             const newDiskStorage = fromRequestToDiskStorage(validatedDto)
-            const newProduct = fromRequestToProduct(validatedDto)
+            const newProduct = fromRequestToProduct({...validatedDto, id_category: DISK_STORAGE_CATEGORY})
             await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file
