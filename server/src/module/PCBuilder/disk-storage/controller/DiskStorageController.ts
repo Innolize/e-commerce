@@ -17,22 +17,28 @@ import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToDiskStorage } from "../mapper/diskStorageMapper";
+import { ProductService } from "../../../product/module";
 
 export class DiskStorageController extends AbstractController {
     private ROUTE_BASE: string
     private diskStorageService: DiskStorageService;
     private uploadMiddleware: Multer
     private uploadService: ImageUploadService
+    private productService: ProductService
+
     constructor(
         @inject(TYPES.PCBuilder.DiskStorage.Service) diskStorageService: DiskStorageService,
         @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer,
-        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService
+        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService,
+        @inject(TYPES.Product.Service) productService: ProductService
+
     ) {
         super()
         this.ROUTE_BASE = "/disk-storage"
         this.diskStorageService = diskStorageService
         this.uploadMiddleware = uploadMiddleware
         this.uploadService = uploadService
+        this.productService = productService
     }
     configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE_BASE
@@ -79,6 +85,7 @@ export class DiskStorageController extends AbstractController {
             const validatedDto = await bodyValidator(validateRamAndProductDto, dto)
             const newDiskStorage = fromRequestToDiskStorage(validatedDto)
             const newProduct = fromRequestToProduct(validatedDto)
+            await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file
                 const upload = await this.uploadService.uploadProduct(buffer, originalname)

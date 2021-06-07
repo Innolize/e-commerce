@@ -17,22 +17,26 @@ import { authorizationMiddleware } from "../../../authorization/util/authorizati
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToCabinet } from "../mapper/cabinetMapper";
+import { ProductService } from "../../../product/module";
 
 export class CabinetController extends AbstractController {
     private ROUTE_BASE: string
     private cabinetService: CabinetService;
     private uploadMiddleware: Multer
     private uploadService: ImageUploadService
+    private productService: ProductService
     constructor(
         @inject(TYPES.PCBuilder.Cabinet.Service) cabinetService: CabinetService,
         @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer,
-        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService
+        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService,
+        @inject(TYPES.Product.Service) productService: ProductService
     ) {
         super()
         this.ROUTE_BASE = "/cabinet"
         this.cabinetService = cabinetService
         this.uploadMiddleware = uploadMiddleware
         this.uploadService = uploadService
+        this.productService = productService
     }
     configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE_BASE
@@ -77,6 +81,7 @@ export class CabinetController extends AbstractController {
             const validatedDto = await bodyValidator(validateCabinetAndProductDto, dto)
             const newCabinet = fromRequestToCabinet(validatedDto)
             const newProduct = fromRequestToProduct(validatedDto)
+            await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file
                 const upload = await this.uploadService.uploadProduct(buffer, originalname)

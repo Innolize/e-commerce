@@ -17,22 +17,27 @@ import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToVideoCard } from "../mapper/videoCardMapper";
+import { ProductService } from "../../../product/module";
 
 export class VideoCardController extends AbstractController {
     private ROUTE_BASE: string
     private videoCardService: VideoCardService;
     private uploadMiddleware: Multer
     private uploadService: ImageUploadService
+    private productService: ProductService
+
     constructor(
         @inject(TYPES.PCBuilder.VideoCard.Service) videoCardService: VideoCardService,
         @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer,
-        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService
+        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService,
+        @inject(TYPES.Product.Service) productService: ProductService
     ) {
         super()
         this.ROUTE_BASE = "/video-card"
         this.videoCardService = videoCardService
         this.uploadMiddleware = uploadMiddleware
         this.uploadService = uploadService
+        this.productService = productService
     }
     configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE_BASE
@@ -77,6 +82,7 @@ export class VideoCardController extends AbstractController {
             await bodyValidator(validateVideoCardAndProductDto, dto)
             const newMotherboard = fromRequestToVideoCard(dto)
             const newProduct = fromRequestToProduct(dto)
+            await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file
                 const upload = await this.uploadService.uploadProduct(buffer, originalname)

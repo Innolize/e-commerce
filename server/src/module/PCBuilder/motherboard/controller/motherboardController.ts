@@ -17,22 +17,27 @@ import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToMotherboard } from "../mapper/motherboardMapper";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
 import { MotherboardError } from '../error/MotherboardError'
+import { ProductService } from "../../../product/module";
 
 export class MotherboardController extends AbstractController {
     private ROUTE_BASE: string
     private motherboardService: MotherboardService;
     private uploadMiddleware: Multer
     private uploadService: ImageUploadService
+    private productService: ProductService
+
     constructor(
         @inject(TYPES.PCBuilder.Motherboard.Service) motherboardService: MotherboardService,
         @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer,
-        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService
+        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService,
+        @inject(TYPES.Product.Service) productService: ProductService
     ) {
         super()
         this.ROUTE_BASE = "/motherboard"
         this.motherboardService = motherboardService
         this.uploadMiddleware = uploadMiddleware
         this.uploadService = uploadService
+        this.productService = productService
     }
     configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE_BASE
@@ -77,6 +82,7 @@ export class MotherboardController extends AbstractController {
             const validatedDto = await bodyValidator(validateMotherboardAndProductDto, dto)
             const newMotherboard = fromRequestToMotherboard(validatedDto)
             const newProduct = fromRequestToProduct(validatedDto)
+            await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file
                 const upload = await this.uploadService.uploadProduct(buffer, originalname)

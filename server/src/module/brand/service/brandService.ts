@@ -30,7 +30,7 @@ export class BrandService extends AbstractService {
     async createBrand(brand: Brand): Promise<Brand | Error> {
         return await this.brandRepository.createBrand(brand)
     }
-    async findBrandById(id: number): Promise<Error | Brand> {
+    async findBrandById(id: number): Promise< Brand> {
         return await this.brandRepository.getById(id)
     }
 }

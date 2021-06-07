@@ -28,7 +28,7 @@ export class BrandRepository extends AbstractRepository {
         return response.map(fromDbToBrand)
     }
 
-    public async getById(id: number): Promise<Error | Brand> {
+    public async getById(id: number): Promise<Brand> {
         if (id <= 0) {
             throw BrandError.missingId()
         }

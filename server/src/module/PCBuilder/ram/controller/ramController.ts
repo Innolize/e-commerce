@@ -17,22 +17,28 @@ import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToRam } from "../mapper/ramMapper";
+import { ProductService } from "../../../product/module";
 
 export class RamController extends AbstractController {
     private ROUTE_BASE: string
     private ramService: RamService;
     private uploadMiddleware: Multer
     private uploadService: ImageUploadService
+    private productService: ProductService
+
     constructor(
         @inject(TYPES.PCBuilder.Ram.Service) ramService: RamService,
         @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer,
-        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService
+        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService,
+        @inject(TYPES.Product.Service) productService: ProductService
+
     ) {
         super()
         this.ROUTE_BASE = "/ram"
         this.ramService = ramService
         this.uploadMiddleware = uploadMiddleware
         this.uploadService = uploadService
+        this.productService = productService
     }
     configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE_BASE
@@ -77,6 +83,7 @@ export class RamController extends AbstractController {
             await bodyValidator(validateRamAndProductDto, dto)
             const newMotherboard = fromRequestToRam(dto)
             const newProduct = fromRequestToProduct(dto)
+            await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file
                 const upload = await this.uploadService.uploadProduct(buffer, originalname)
