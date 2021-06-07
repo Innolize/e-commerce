@@ -64,10 +64,9 @@ async function configureDatabase() {
 
 
         try {
-            console.log('live')
             await database.sync({ force: true })
+            bootstrapCategories()
 
-            await CategoryModel.create({ name: "testname" })
             await BrandModel.create({ name: "brandTest", logo: "test-logo" })
             await ProductModel.create({ name: "nombreDeProducto123", id_brand: 1, image: "image-test", description: "description-test", price: 12345, stock: true, id_category: 1 })
             await ProductModel.create({ name: "nombreDeProducto123-b", id_brand: 1, image: "image-test-b", description: "description-test-b", price: 123456, stock: true, id_category: 1 })
@@ -87,6 +86,17 @@ async function configureDatabase() {
     }
     await configure()
     await createData()
+}
+
+const bootstrapCategories = async (): Promise<void> => {
+    await CategoryModel.create({ name: "cabinet" })
+    await CategoryModel.create({ name: "disk-storage" })
+    await CategoryModel.create({ name: "motherboard" })
+    await CategoryModel.create({ name: "power-supply" })
+    await CategoryModel.create({ name: "processor" })
+    await CategoryModel.create({ name: "ram" })
+    await CategoryModel.create({ name: "video-card" })
+    console.log('Base categories created successfuly')
 }
 
 configureDatabase()

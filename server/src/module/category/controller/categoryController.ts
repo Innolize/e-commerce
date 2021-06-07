@@ -92,12 +92,17 @@ export class CategoryController extends AbstractController {
 
     async deleteCategory(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params
-        if (!id && id !== "0") {
-            throw CategoryError.invalidId()
-        }
         try {
+            console.log(id)
+            const idNumber = Number(id)
+            if (!idNumber || idNumber <= 0) {
+                throw CategoryError.invalidId()
+            }
+            if (idNumber <= 7) {
+                throw CategoryError.undeletableCategory()
+            }
             await this.categoryService.deleteCategory(Number(id))
-            res.status(StatusCodes.OK).send({ message: "Product successfully deleted" })
+            res.status(StatusCodes.OK).send({ message: "Category successfully deleted" })
         } catch (err) {
             next(err)
         }

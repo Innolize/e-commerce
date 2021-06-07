@@ -15,4 +15,7 @@ export class CategoryError extends BaseError {
     static invalidQueryParam(query: string) {
         return new CategoryError(this.name, StatusCodes.UNPROCESSABLE_ENTITY, `Invalid Category query "${query}"`)
     }
+    static undeletableCategory(){
+        return new CategoryError(this.name, StatusCodes.BAD_REQUEST, `This category cannot be deleted.`)
+    }
 }
