@@ -7,12 +7,12 @@ export const fromDbToRam = (model: RamModel): Ram => {
     const ram = model.toJSON() as Ram
     const { max_frec, id, id_product, watts, product, memory, min_frec, ram_version } = ram
     const ramProduct = product ? fromRequestToProduct(product) : undefined
-    return new Ram(ram_version, memory, min_frec, max_frec, watts, id, id_product, ramProduct)
+    return new Ram(ram_version, memory, min_frec, max_frec, watts, id_product, id, ramProduct)
 }
 
 export const fromRequestToRam = (request: IRamCreate): Ram => {
     const { max_frec, id_product, id, memory, min_frec, ram_version, watts } = request
-    return new Ram(ram_version, memory, min_frec, max_frec, watts, id, id_product)
+    return new Ram(ram_version, memory, min_frec, max_frec, watts, id_product, id)
 }
 
 // export const fromDbToRam = (model: RamModel): Ram => {

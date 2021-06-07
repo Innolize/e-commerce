@@ -9,8 +9,9 @@ export class Ram {
         public min_frec: number,
         public max_frec: number,
         public watts: number,
+        public id_product: number,
         public id?: number,
-        public id_product?: number,
+
         public product?: Product
     ) { }
 }

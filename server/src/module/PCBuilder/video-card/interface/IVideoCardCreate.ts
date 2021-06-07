@@ -9,5 +9,5 @@ export interface IVideoCardCreate {
     memory: number
     clock_speed: number
     watts: number
-    id_product?: number
+    id_product: number
 }

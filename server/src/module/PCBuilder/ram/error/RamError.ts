@@ -10,4 +10,7 @@ export class RamError extends BaseError {
     static notFound() {
         return new RamError(this.name, StatusCodes.NOT_FOUND, 'Ram not found')
     }
+    static invalidId(){
+        return new RamError(this.name, StatusCodes.UNPROCESSABLE_ENTITY, 'Invalid Ram id')
+    }
 }

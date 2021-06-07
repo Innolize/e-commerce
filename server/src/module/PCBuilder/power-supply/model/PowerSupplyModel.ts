@@ -22,6 +22,10 @@ export class PowerSupplyModel extends Model<PowerSupply, IPowerSupplyCreate>{
             watts: {
                 type: DataTypes.INTEGER,
                 allowNull: false
+            },
+            id_product: {
+                type: DataTypes.INTEGER,
+                allowNull: false
             }
         }
             , {

@@ -18,6 +18,7 @@ import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToCabinet } from "../mapper/cabinetMapper";
 import { ProductService } from "../../../product/module";
+import { CabinetError } from "../error/CabinetError";
 
 export class CabinetController extends AbstractController {
     private ROUTE_BASE: string
@@ -81,7 +82,7 @@ export class CabinetController extends AbstractController {
             const dto: ICabinet_Product = req.body
             const validatedDto = await bodyValidator(validateCabinetAndProductDto, dto)
             const newCabinet = fromRequestToCabinet(validatedDto)
-            const newProduct = fromRequestToProduct({...validatedDto, id_brand: CABINET_CATEGORY})
+            const newProduct = fromRequestToProduct({ ...validatedDto, id_brand: CABINET_CATEGORY })
             await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file
@@ -115,10 +116,13 @@ export class CabinetController extends AbstractController {
     }
 
     delete = async (req: Request, res: Response, next: NextFunction) => {
+        const { id } = req.params
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
-            await this.cabinetService.deleteCabinet(validId)
+            const idNumber = Number(id)
+            if (!idNumber || idNumber <= 0) {
+                throw CabinetError.invalidId()
+            }
+            await this.cabinetService.deleteCabinet(idNumber)
             return res.status(StatusCodes.OK).send({ message: "Cabinet successfully deleted" })
         } catch (err) {
             next(err)

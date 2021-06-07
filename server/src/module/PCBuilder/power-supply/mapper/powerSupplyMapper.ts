@@ -7,10 +7,10 @@ export const fromDbToPowerSupply = (model: PowerSupplyModel): PowerSupply => {
     const powerSupply = model.toJSON() as PowerSupply
     const { certification, watts, id, id_product, product } = powerSupply
     const powerSupplyProduct = product ? fromRequestToProduct(product) : undefined
-    return new PowerSupply(watts, certification, id, id_product, powerSupplyProduct)
+    return new PowerSupply(watts, certification, id_product, id, powerSupplyProduct)
 }
 
 export const fromRequestToPowerSupply = (request: IPowerSupplyCreate): PowerSupply => {
     const { certification, watts, id_product, id } = request
-    return new PowerSupply(watts, certification, id, id_product)
+    return new PowerSupply(watts, certification, id_product, id)
 }

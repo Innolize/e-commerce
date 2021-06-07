@@ -10,4 +10,7 @@ export class VideoCardError extends BaseError {
     static notFound() {
         return new VideoCardError(this.name, StatusCodes.NOT_FOUND, 'Video Card not found')
     }
+    static invalidId(){
+        return new VideoCardError(this.name, StatusCodes.UNPROCESSABLE_ENTITY, 'Invalid video card id')
+    }
 }

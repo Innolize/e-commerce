@@ -7,5 +7,5 @@ export interface IPowerSupplyCreate {
     id?: number,
     watts: number
     certification: typeof PWS_CERTIFICATION[number]
-    id_product?: number
+    id_product: number
 }

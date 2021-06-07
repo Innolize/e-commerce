@@ -7,10 +7,10 @@ export const fromDbToDiskStorage = (model: DiskStorageModel): DiskStorage => {
     const diskStorage = model.toJSON() as DiskStorage
     const { mbs, total_storage, type, watts, id, id_product, product } = diskStorage
     const diskStorageProduct = product ? fromRequestToProduct(product) : undefined
-    return new DiskStorage(total_storage, type, mbs, watts, id, id_product, diskStorageProduct)
+    return new DiskStorage(total_storage, type, mbs, watts, id_product, id, diskStorageProduct)
 }
 
 export const fromRequestToDiskStorage = (request: IDiskStorageCreate): DiskStorage => {
     const { mbs, id_product, id, watts, total_storage, type } = request
-    return new DiskStorage(total_storage, type, mbs, watts, id, id_product, undefined)
+    return new DiskStorage(total_storage, type, mbs, watts, id_product, id, undefined)
 }

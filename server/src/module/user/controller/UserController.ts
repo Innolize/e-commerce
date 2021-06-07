@@ -8,6 +8,7 @@ import { jwtAuthentication } from "../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../authorization/util/authorizationMiddleware";
 import { bodyValidator, mapperMessageError } from "../../common/helpers/bodyValidator";
 import { idNumberOrError } from "../../common/helpers/idNumberOrError";
+import { UserError } from "../error/UserError";
 import { validateCreateUserDto } from "../helper/create_dto_validator";
 import { validateEditUserDto } from "../helper/edit_dto_validator";
 import { IUserCreate } from "../interfaces/IUserCreate";
@@ -67,10 +68,13 @@ export class UserController extends AbstractController {
     }
 
     async deleteUser(req: Request, res: Response, next: NextFunction) {
+        const { id } = req.params
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
-            const response = await this.userService.deleteUser(validId)
+            const idNumber = Number(id)
+            if (!idNumber || idNumber <= 0) {
+                throw UserError.invalidId()
+            }
+            const response = await this.userService.deleteUser(idNumber)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)

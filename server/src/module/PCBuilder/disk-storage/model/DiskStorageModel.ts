@@ -30,6 +30,10 @@ export class DiskStorageModel extends Model<DiskStorage, IDiskStorageCreate>{
             watts: {
                 type: DataTypes.INTEGER,
                 allowNull: false
+            },
+            id_product: {
+                type: DataTypes.INTEGER,
+                allowNull: false
             }
         }, {
             sequelize: database,

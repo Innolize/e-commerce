@@ -8,8 +8,8 @@ export class VideoCard {
         public memory: number,
         public clock_speed: number,
         public watts: number,
+        public id_product: number,
         public id?: number,
-        public id_product?: number,
         public product?: Product
     ) { }
 }

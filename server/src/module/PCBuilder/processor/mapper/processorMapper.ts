@@ -7,10 +7,10 @@ export const fromDbToProcessor = (model: ProcessorModel): Processor => {
     const processor = model.toJSON() as Processor
     const { cores, id, id_product, watts, product, frecuency, socket } = processor
     const processorProduct = product ? fromRequestToProduct(product) : undefined
-    return new Processor(cores, frecuency, socket, watts, id, id_product, processorProduct)
+    return new Processor(cores, frecuency, socket, watts, id_product, id, processorProduct)
 }
 
 export const fromRequestToProcessor = (request: IProcessorCreate): Processor => {
     const { cores, socket, frecuency, watts, id_product, id } = request
-    return new Processor(cores, frecuency, socket, watts, id, id_product)
+    return new Processor(cores, frecuency, socket, watts, id_product, id)
 }

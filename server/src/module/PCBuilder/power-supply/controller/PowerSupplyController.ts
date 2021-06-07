@@ -18,6 +18,7 @@ import { authorizationMiddleware } from "../../../authorization/util/authorizati
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToPowerSupply } from "../mapper/powerSupplyMapper";
 import { ProductService } from "../../../product/module";
+import { PowerSupplyError } from "../error/PowerSupplyError";
 
 export class PowerSupplyController extends AbstractController {
     private ROUTE_BASE: string
@@ -116,10 +117,13 @@ export class PowerSupplyController extends AbstractController {
     }
 
     delete = async (req: Request, res: Response, next: NextFunction) => {
+        const { id } = req.params
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
-            await this.powerSupplyService.deletePowerSupply(validId)
+            const idNumber = Number(id)
+            if (!idNumber || idNumber <= 0) {
+                throw PowerSupplyError.invalidId()
+            }
+            await this.powerSupplyService.deletePowerSupply(idNumber)
             return res.status(StatusCodes.NO_CONTENT).send({ message: "Power supply successfully deleted" })
         } catch (err) {
             next(err)

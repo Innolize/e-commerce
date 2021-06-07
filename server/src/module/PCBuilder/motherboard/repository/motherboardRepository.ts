@@ -52,7 +52,7 @@ export class MotherboardRepository extends AbstractRepository {
         const transaction = await this.ORM.transaction()
         try {
             const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
-            const id_product = newProduct.getDataValue("id")
+            const id_product = newProduct.getDataValue("id") as number
             const myMotherboard = fromRequestToMotherboard({ ...motherboard, id_product })
             const createdMotherboard = await this.motherboardModel.create(myMotherboard, { transaction, isNewRecord: true })
             transaction.commit()

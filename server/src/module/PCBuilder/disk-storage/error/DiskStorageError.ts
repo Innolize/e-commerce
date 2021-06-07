@@ -10,4 +10,7 @@ export class DiskStorageError extends BaseError {
     static notFound() {
         return new DiskStorageError(this.name, StatusCodes.NOT_FOUND, 'Cabinet not found')
     }
+    static invalidId(){
+        return new DiskStorageError(this.name,StatusCodes.UNPROCESSABLE_ENTITY, 'Invalid cabinet id')
+    }
 }

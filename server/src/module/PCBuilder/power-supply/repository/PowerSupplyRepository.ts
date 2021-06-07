@@ -53,7 +53,7 @@ export class PowerSupplyRepository extends AbstractRepository {
         const transaction = await this.ORM.transaction()
         try {
             const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
-            const id_product = newProduct.getDataValue("id")
+            const id_product = newProduct.getDataValue("id") as number
             const newPowerSupply = fromRequestToPowerSupply({ ...powerSupply, id_product })
             const createdPowerSupply = await this.powerSupplyModel.create(newPowerSupply, { transaction, isNewRecord: true })
             transaction.commit()

@@ -17,4 +17,8 @@ export class ProductError extends BaseError {
     static idMissing() {
         return new ProductError(this.name, StatusCodes.UNPROCESSABLE_ENTITY, 'Product id missing')
     }
+
+    static invalidId() {
+        return new ProductError(this.name, StatusCodes.UNPROCESSABLE_ENTITY, 'Invalid product id')
+    }
 }

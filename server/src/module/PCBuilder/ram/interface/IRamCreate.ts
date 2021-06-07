@@ -10,5 +10,5 @@ export interface IRamCreate {
     min_frec: number,
     max_frec: number,
     watts: number,
-    id_product?: number
+    id_product: number
 }

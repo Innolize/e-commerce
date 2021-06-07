@@ -115,12 +115,13 @@ export class MotherboardController extends AbstractController {
     }
 
     delete = async (req: Request, res: Response, next: NextFunction) => {
+        const { id } = req.params
         try {
-            const { id } = req.params
-            if (!id) {
-                throw MotherboardError.notFound()
+            const idNumber = Number(id)
+            if (!idNumber || idNumber <= 0) {
+                throw MotherboardError.invalidId()
             }
-            await this.motherboardService.deleteMotherboard(Number(id))
+            await this.motherboardService.deleteMotherboard(idNumber)
             return res.status(StatusCodes.NO_CONTENT).send({ message: "Motherboard deleted successfully" })
         } catch (err) {
             next(err)

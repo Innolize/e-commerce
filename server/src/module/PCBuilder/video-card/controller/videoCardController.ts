@@ -19,6 +19,7 @@ import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToVideoCard } from "../mapper/videoCardMapper";
 import { ProductService } from "../../../product/module";
 import { VIDEO_CARD_VERSION } from "../../../../config/constants/pcbuilder";
+import { VideoCardError } from "../error/VideoCardError";
 
 export class VideoCardController extends AbstractController {
     private ROUTE_BASE: string
@@ -119,10 +120,13 @@ export class VideoCardController extends AbstractController {
     }
 
     delete = async (req: Request, res: Response, next: NextFunction) => {
+        const { id } = req.params
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
-            await this.videoCardService.deleteVideoCard(validId)
+            const idNumber = Number(id)
+            if (!idNumber || idNumber <= 0) {
+                throw VideoCardError.invalidId()
+            }
+            await this.videoCardService.deleteVideoCard(idNumber)
             return res.status(StatusCodes.NO_CONTENT).send({ message: "Video card successfully deleted" })
         } catch (err) {
             next(err)

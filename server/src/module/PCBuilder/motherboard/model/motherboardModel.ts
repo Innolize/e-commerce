@@ -47,6 +47,10 @@ export class MotherboardModel extends Model<Motherboard, IMotherboardCreate>{
                 type: DataTypes.INTEGER,
                 allowNull: false
             },
+            id_product: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            }
         }, {
             sequelize: database,
             modelName: "Motherboard"

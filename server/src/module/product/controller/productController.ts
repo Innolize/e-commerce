@@ -7,7 +7,7 @@ import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { Multer } from 'multer'
 import { validateCreateProductDto } from '../helper/create_dto_validator'
-import { bodyValidator, mapperMessageError } from '../../common/helpers/bodyValidator'
+import { bodyValidator } from '../../common/helpers/bodyValidator'
 import { validateEditProductDto } from '../helper/edit_dto_validator'
 import { Product } from '../entity/Product'
 import { IProductEdit } from '../interfaces/IProductEdit'
@@ -130,12 +130,13 @@ export class ProductController extends AbstractController {
     }
 
     async deleteProduct(req: Request, res: Response, next: NextFunction) {
+        const { id } = req.params
         try {
-            const { id } = req.params
-            if (!id) {
-                throw ProductError.idMissing()
+            const idNumber = Number(id)
+            if (!idNumber || idNumber <= 0) {
+                throw ProductError.invalidId()
             }
-            const product = await this.productService.findProductById(Number(id)) as Product
+            const product = await this.productService.findProductById(idNumber) as Product
             await this.productService.deleteProduct(Number(id))
             if (product.image) {
                 await this.uploadService.deleteProduct(product.image)

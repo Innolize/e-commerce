@@ -11,4 +11,7 @@ export class UserError extends BaseError{
     static mailAlreadyInUse(){
         return new UserError(this.name,StatusCodes.CONFLICT, 'Mail already in use')
     }
+    static invalidId(){
+        return new UserError(this.name,StatusCodes.UNPROCESSABLE_ENTITY, 'Invalid user id')
+    }
 }

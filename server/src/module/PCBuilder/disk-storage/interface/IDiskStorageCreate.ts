@@ -6,8 +6,8 @@ export interface IDiskStorage_Product extends IDiskStorageCreate, IProductCreate
 export interface IDiskStorageCreate {
     id?: number,
     total_storage: number,
-    type: typeof DISK_TYPE,
+    type: typeof DISK_TYPE[number],
     mbs: number,
     watts: number,
-    id_product?: number
+    id_product: number
 }

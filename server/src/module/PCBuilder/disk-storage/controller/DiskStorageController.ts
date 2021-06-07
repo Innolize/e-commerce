@@ -18,6 +18,7 @@ import { authorizationMiddleware } from "../../../authorization/util/authorizati
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToDiskStorage } from "../mapper/diskStorageMapper";
 import { ProductService } from "../../../product/module";
+import { DiskStorageError } from "../error/DiskStorageError";
 
 export class DiskStorageController extends AbstractController {
     private ROUTE_BASE: string
@@ -119,10 +120,13 @@ export class DiskStorageController extends AbstractController {
     }
 
     delete = async (req: Request, res: Response, next: NextFunction) => {
+        const { id } = req.params
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
-            await this.diskStorageService.deleteDisk(validId)
+            const idNumber = Number(id)
+            if (!idNumber || idNumber <= 0) {
+                throw DiskStorageError.invalidId()
+            }
+            await this.diskStorageService.deleteDisk(idNumber)
             return res.status(StatusCodes.OK).send({ message: "Disk storage successfully deleted" })
         } catch (err) {
             next(err)

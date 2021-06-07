@@ -124,11 +124,12 @@ export class BrandController extends AbstractController {
 
     async deleteBrand(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params
-        if (!id) {
-            throw BrandError.missingId()
-        }
         try {
-            const brand = await this.brandService.findBrandById(Number(id)) as Brand
+            const idNumber = Number(id)
+            if (!idNumber || idNumber <= 0) {
+                throw BrandError.invalidId()
+            }
+            const brand = await this.brandService.findBrandById(idNumber) as Brand
             await this.brandService.deleteBrand(Number(id))
             if (brand.logo) {
                 await this.uploadService.deleteBrand(brand.logo)

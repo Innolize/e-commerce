@@ -18,6 +18,7 @@ import { authorizationMiddleware } from "../../../authorization/util/authorizati
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToRam } from "../mapper/ramMapper";
 import { ProductService } from "../../../product/module";
+import { RamError } from "../error/RamError";
 
 export class RamController extends AbstractController {
     private ROUTE_BASE: string
@@ -118,10 +119,13 @@ export class RamController extends AbstractController {
     }
 
     delete = async (req: Request, res: Response, next: NextFunction) => {
+        const { id } = req.params
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
-            await this.ramService.deleteRam(validId)
+            const idNumber = Number(id)
+            if (!idNumber || idNumber <= 0) {
+                throw RamError.invalidId()
+            }
+            await this.ramService.deleteRam(idNumber)
             return res.status(StatusCodes.NO_CONTENT).send({ message: "Processor successfully deleted" })
         } catch (err) {
             next(err)

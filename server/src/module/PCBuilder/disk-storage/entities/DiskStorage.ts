@@ -6,11 +6,11 @@ export class DiskStorage {
     static readonly modelName = 'DiskStorage'
     constructor(
         public total_storage: number,
-        public type: typeof DISK_TYPE,
+        public type: typeof DISK_TYPE[number],
         public mbs: number,
         public watts: number,
+        public id_product: number,
         public id?: number,
-        public id_product?: number,
         public product?: Product
     ) { }
 }

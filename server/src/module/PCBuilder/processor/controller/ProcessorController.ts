@@ -10,7 +10,7 @@ import { Processor } from "../entities/Processor";
 import { validateProcessorAndProductDto, validateProcessorEditDto, validateProcessorQuerySchema } from "../helpers/dto-validator";
 import { IProcessor_Product } from "../interface/IProcessorCreate";
 import { IProcessorQuery } from "../interface/IProcessorQuery";
-import { IRamEdit } from '../interface/IProcessorEdit'
+import { IProcessorEdit } from '../interface/IProcessorEdit'
 import { ProcessorService } from "../service/ProcessorService";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
@@ -18,6 +18,7 @@ import { authorizationMiddleware } from "../../../authorization/util/authorizati
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToProcessor } from "../mapper/processorMapper";
 import { ProductService } from "../../../product/module";
+import { ProcessorError } from "../error/ProcessorError";
 
 export class ProcessorController extends AbstractController {
     private ROUTE_BASE: string
@@ -106,7 +107,7 @@ export class ProcessorController extends AbstractController {
         try {
             const { id } = req.params
             const validId = idNumberOrError(id) as number
-            const dto: IRamEdit = req.body
+            const dto: IProcessorEdit = req.body
             const validatedDto = await bodyValidator(validateProcessorEditDto, dto)
             processor = await this.processorService.modifyprocessors(validId, validatedDto) as Processor
             return res.status(StatusCodes.OK).send(processor)
@@ -116,10 +117,13 @@ export class ProcessorController extends AbstractController {
     }
 
     delete = async (req: Request, res: Response, next: NextFunction) => {
+        const { id } = req.params
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
-            await this.processorService.deleteprocessors(validId)
+            const idNumber = Number(id)
+            if (!idNumber || idNumber <= 0) {
+                throw ProcessorError.invalidId()
+            }
+            await this.processorService.deleteprocessors(idNumber)
             return res.status(StatusCodes.NO_CONTENT).send({ message: "Product successfully deleted" })
         } catch (err) {
             next(err)

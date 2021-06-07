@@ -31,6 +31,10 @@ export class VideoCardModel extends Model<VideoCard, IVideoCardCreate>{
                 type: DataTypes.ENUM(...VIDEO_CARD_VERSION),
                 allowNull: false
             },
+            id_product: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            }
         }, {
             sequelize: database,
             modelName: "VideoCard"

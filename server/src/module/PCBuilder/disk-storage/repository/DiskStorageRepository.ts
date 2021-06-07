@@ -55,7 +55,7 @@ export class DiskStorageRepository extends AbstractRepository {
         const transaction = await this.ORM.transaction()
         try {
             const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
-            const id_product = newProduct.getDataValue("id")
+            const id_product = newProduct.getDataValue("id") as number
             const newDiskStorage = fromRequestToDiskStorage({ ...diskStorage, id_product })
             const createdDiskStorage = await this.diskStorageModel.create(newDiskStorage, { transaction, isNewRecord: true })
             transaction.commit()

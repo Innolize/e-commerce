@@ -34,6 +34,10 @@ export class RamModel extends Model<Ram, IRamCreate>{
             memory: {
                 type: DataTypes.INTEGER(),
                 allowNull: false
+            },
+            id_product: {
+                type: DataTypes.INTEGER,
+                allowNull: false
             }
         }, {
             sequelize: database,

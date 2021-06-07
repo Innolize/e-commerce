@@ -93,7 +93,6 @@ export class CategoryController extends AbstractController {
     async deleteCategory(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params
         try {
-            console.log(id)
             const idNumber = Number(id)
             if (!idNumber || idNumber <= 0) {
                 throw CategoryError.invalidId()

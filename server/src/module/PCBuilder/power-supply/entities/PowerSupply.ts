@@ -6,8 +6,8 @@ export class PowerSupply {
     constructor(
         public watts: number,
         public certification: typeof PWS_CERTIFICATION[number],
+        public id_product: number,
         public id?: number,
-        public id_product?: number,
         public product?: Product
     ) { }
 }

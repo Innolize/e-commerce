@@ -5,10 +5,10 @@ export class Processor {
     constructor(
         public cores: number,
         public frecuency: number,
-        public socket: number,
+        public socket: string,
         public watts: number,
+        public id_product: number,
         public id?: number,
-        public id_product?: number,
         public product?: Product
-    ) {}
+    ) { }
 }

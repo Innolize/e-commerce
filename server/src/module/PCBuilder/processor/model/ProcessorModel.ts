@@ -29,6 +29,10 @@ export class ProcessorModel extends Model<Processor, IProcessorCreate>{
             socket: {
                 type: DataTypes.STRING,
                 allowNull: false
+            },
+            id_product: {
+                type: DataTypes.INTEGER,
+                allowNull: false
             }
         }, {
             sequelize: database,

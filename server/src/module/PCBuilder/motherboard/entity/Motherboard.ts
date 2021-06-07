@@ -12,8 +12,8 @@ export class Motherboard {
         public video_socket: typeof VIDEO_CARD_VERSION[number],
         public model_size: typeof SIZE[number],
         public watts: number,
+        public id_product: number,
         public id?: number,
-        public id_product?: number,
         public product?: Product
     ) { }
 }

@@ -54,7 +54,7 @@ export class ProcessorRepository extends AbstractRepository {
         const transaction = await this.ORM.transaction()
         try {
             const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
-            const id_product = newProduct.getDataValue("id")
+            const id_product = newProduct.getDataValue("id") as number
             const newProcessor = fromRequestToProcessor({ ...ram, id_product })
             const createdProcessor = await this.processorModel.create(newProcessor, { transaction, isNewRecord: true })
             transaction.commit()

@@ -13,5 +13,5 @@ export interface IMotherboardCreate {
     video_socket: typeof VIDEO_CARD_VERSION[number]
     model_size: typeof SIZE[number]
     watts: number
-    id_product?: number
+    id_product: number
 }

@@ -10,4 +10,7 @@ export class CabinetError extends BaseError {
     static notFound() {
         return new CabinetError(this.name, StatusCodes.NOT_FOUND, 'Cabinet not found')
     }
+    static invalidId(){
+        return new CabinetError(this.name, StatusCodes.UNPROCESSABLE_ENTITY, 'Invalid cabinet id')
+    }
 }

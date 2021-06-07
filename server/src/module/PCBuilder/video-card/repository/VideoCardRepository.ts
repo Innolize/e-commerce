@@ -54,7 +54,7 @@ export class VideoCardRepository extends AbstractRepository {
         const transaction = await this.ORM.transaction()
         try {
             const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
-            const id_product = newProduct.getDataValue("id")
+            const id_product = newProduct.getDataValue("id") as number
             const newVideoCard = fromRequestToVideoCard({ ...videoCard, id_product })
             const createdVideoCard = await this.videoCardModel.create(newVideoCard, { transaction, isNewRecord: true })
             transaction.commit()
