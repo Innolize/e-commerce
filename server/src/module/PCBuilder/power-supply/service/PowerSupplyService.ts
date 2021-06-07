@@ -2,7 +2,6 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
 import { Product } from "../../../product/entity/Product";
-import { FullPowerSupply } from "../entities/FullPowerSupply";
 import { PowerSupply } from "../entities/PowerSupply";
 import { IPowerSupplyQuery } from "../interface/IPowerSupplyQuery";
 import { PowerSupplyRepository } from "../repository/PowerSupplyRepository";
@@ -17,11 +16,11 @@ export class PowerSupplyService extends AbstractService {
         this.powerSupplyRepository = powerSupplyRepository
     }
 
-    async getPowerSupply(query?: IPowerSupplyQuery): Promise<FullPowerSupply[]> {
+    async getPowerSupply(query?: IPowerSupplyQuery): Promise<PowerSupply[]> {
         return await this.powerSupplyRepository.getPowerSupplies(query)
     }
 
-    async getSinglePowerSupply(id: number): Promise<FullPowerSupply | Error> {
+    async getSinglePowerSupply(id: number): Promise<PowerSupply | Error> {
         return await this.powerSupplyRepository.getSinglePowerSupply(id)
     }
 

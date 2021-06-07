@@ -45,9 +45,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     return res.status(err.httpCode).send({ error: err.message })
   }
   if (err instanceof MulterError) {
-    return res.status(404).send({ "errors": ["Unexpected image field"] })
+    return res.status(404).send({ error: err.message })
   }
-  return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({error: ReasonPhrases.INTERNAL_SERVER_ERROR})
+  return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({error: err.message})
 })
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -1,13 +1,11 @@
-import { ManagedUpload } from "aws-sdk/clients/s3";
-import { Application, Request, Response } from "express";
+import { Application, NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { inject } from "inversify";
 import { Multer } from "multer";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractController } from "../../../abstractClasses/abstractController";
-import { bodyValidator, mapperMessageError } from "../../../common/helpers/bodyValidator";
+import { bodyValidator } from "../../../common/helpers/bodyValidator";
 import { ImageUploadService } from "../../../imageUploader/module";
-import { Product } from "../../../product/entity/Product";
 import { Motherboard } from "../entity/Motherboard";
 import { validateMotherboardAndProductDto, validateMotherboardEditDto, validateQueryCpuBrand } from "../helpers/dto-validator";
 import { IMotherboard_Product } from "../interface/IMotherboardCreate";
@@ -16,6 +14,9 @@ import { IMotherboardEdit } from '../interface/IMotherboardEdit'
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
+import { fromRequestToMotherboard } from "../mapper/motherboardMapper";
+import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
+import { MotherboardError } from '../error/MotherboardError'
 
 export class MotherboardController extends AbstractController {
     private ROUTE_BASE: string
@@ -36,12 +37,13 @@ export class MotherboardController extends AbstractController {
     configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAll.bind(this))
+        app.get(`/api${ROUTE}/:id`, this.getSingleMotherboard.bind(this))
         app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Motherboard' })], this.uploadMiddleware.single("product_image"), this.create.bind(this))
         app.put(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Motherboard' })], this.uploadMiddleware.none(), this.edit.bind(this))
         app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Motherboard' })], this.delete.bind(this))
     }
 
-    getAll = async (req: Request, res: Response): Promise<Response> => {
+    getAll = async (req: Request, res: Response, next: NextFunction) => {
         const { cpu_brand } = req.query
         try {
             if (cpu_brand) {
@@ -50,41 +52,50 @@ export class MotherboardController extends AbstractController {
                 return res.status(StatusCodes.OK).send(motherboardWithQuery)
             }
             const response = await this.motherboardService.getMotherboards()
-            return res.status(200).send(response)
+            return res.status(StatusCodes.OK).send(response)
         } catch (err) {
-            return res.status(StatusCodes.NOT_FOUND).send({ error: err.message })
+            next(err)
         }
     }
 
-    create = async (req: Request, res: Response): Promise<Response> => {
-        let upload: ManagedUpload.SendData | undefined
+    getSingleMotherboard = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { id } = req.params
+            const validId = idNumberOrError(id) as number
+            const response = await this.motherboardService.getSingleMotherboards(validId) as Motherboard
+            return res.status(StatusCodes.OK).send(response)
+        } catch (err) {
+            next(err)
+            return
+        }
+    }
+
+    create = async (req: Request, res: Response, next: NextFunction) => {
+        let productImage: string | undefined
         try {
             const dto: IMotherboard_Product = req.body
-            await bodyValidator(validateMotherboardAndProductDto, dto)
-            const newMotherboard = new Motherboard(dto)
-            const newProduct = fromRequestToProduct(dto)
+            const validatedDto = await bodyValidator(validateMotherboardAndProductDto, dto)
+            const newMotherboard = fromRequestToMotherboard(validatedDto)
+            const newProduct = fromRequestToProduct(validatedDto)
             if (req.file) {
                 const { buffer, originalname } = req.file
-                upload = await this.uploadService.uploadProduct(buffer, originalname)
+                const upload = await this.uploadService.uploadProduct(buffer, originalname)
                 newProduct.image = upload.Location
+                productImage = upload.Location
             } else {
                 newProduct.image = null
             }
             const response = await this.motherboardService.createMotherboard(newProduct, newMotherboard)
-            return res.status(200).send(response)
+            return res.status(StatusCodes.CREATED).send(response)
         } catch (err) {
-            if (err.isJoi) {
-                const joiErrors = mapperMessageError(err)
-                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(joiErrors)
+            if (productImage) {
+                this.uploadService.deleteProduct(productImage)
             }
-            if (req.file && upload) {
-                this.uploadService.deleteProduct(upload.Location)
-            }
-            return res.status(200).send(err)
+            next(err)
         }
     }
 
-    edit = async (req: Request, res: Response): Promise<Response> => {
+    edit = async (req: Request, res: Response, next: NextFunction) => {
         let motherboard: Motherboard | undefined
         try {
             const dto: IMotherboardEdit = req.body
@@ -92,26 +103,20 @@ export class MotherboardController extends AbstractController {
             motherboard = await this.motherboardService.modifyMotherboard(validatedDto) as Motherboard
             return res.status(StatusCodes.OK).send(motherboard)
         } catch (err) {
-            if (err.isJoi === true) {
-                const errorArray = mapperMessageError(err)
-                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
-                    errors: errorArray
-                })
-            }
-            return res.status(StatusCodes.BAD_REQUEST).send({ message: err.message })
+            next(err)
         }
     }
 
-    delete = async (req: Request, res: Response): Promise<Response | Error> => {
+    delete = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { id } = req.params
             if (!id) {
-                throw new Error('id not defined')
+                throw MotherboardError.notFound()
             }
             await this.motherboardService.deleteMotherboard(Number(id))
-            return res.status(StatusCodes.OK).send({ message: "Motherboard deleted successfully" })
+            return res.status(StatusCodes.NO_CONTENT).send({ message: "Motherboard deleted successfully" })
         } catch (err) {
-            return res.status(StatusCodes.BAD_REQUEST).send({ message: err.message })
+            next(err)
         }
     }
 }

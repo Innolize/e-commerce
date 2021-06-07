@@ -2,12 +2,12 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractRepository } from "../../../abstractClasses/abstractRepository";
 import { MotherboardModel } from "../model/motherboardModel";
-import { fromDbToFullMotherboard, fromDbToMotherboard } from '../mapper/motherboardMapper'
-import { Sequelize } from "sequelize";
+import { fromDbToMotherboard, fromRequestToMotherboard } from '../mapper/motherboardMapper'
+import { Sequelize, WhereOptions } from "sequelize";
 import { ProductModel } from "../../../product/module";
 import { Motherboard } from "../entity/Motherboard";
 import { Product } from "../../../product/entity/Product";
-import { FullMotherboard } from "../entity/FullMotherboard";
+import { MotherboardError } from "../error/MotherboardError";
 
 @injectable()
 export class MotherboardRepository extends AbstractRepository {
@@ -27,25 +27,39 @@ export class MotherboardRepository extends AbstractRepository {
 
     }
 
-    async getAll(cpu_brand?: string): Promise<FullMotherboard[]> {
-        const findParams = cpu_brand ? { where: { cpu_brand }, include: "product" } : { include: "product" }
-        const response = await this.motherboardModel.findAll(findParams);
-        return response.map(fromDbToFullMotherboard)
+    async getAll(cpu_brand?: string): Promise<Motherboard[]> {
+        const findParams: WhereOptions<Motherboard> = {}
+        if (cpu_brand) {
+            findParams.cpu_brand = cpu_brand
+        }
+        const response = await this.motherboardModel.findAll({ where: findParams, include: MotherboardModel.associations.product });
+        return response.map(fromDbToMotherboard)
     }
 
-    async createMotherboard(product: Product, motherboard: Motherboard): Promise<FullMotherboard | Error> {
+    async getSingle(id: number): Promise<Motherboard> {
+        try {
+            const response = await this.motherboardModel.findOne({ where: { id }, include: MotherboardModel.associations.product })
+            if (!response) {
+                throw MotherboardError.notFound()
+            }
+            return fromDbToMotherboard(response)
+        } catch (err) {
+            throw err
+        }
+    }
+
+    async createMotherboard(product: Product, motherboard: Motherboard): Promise<Motherboard | Error> {
         const transaction = await this.ORM.transaction()
         try {
             const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
             const id_product = newProduct.getDataValue("id")
-            const myMotherboard = new Motherboard({ ...motherboard, id_product })
-            const createdMotherboard = await this.motherboardModel.create(myMotherboard, { transaction, isNewRecord: true, include: "product" })
+            const myMotherboard = fromRequestToMotherboard({ ...motherboard, id_product })
+            const createdMotherboard = await this.motherboardModel.create(myMotherboard, { transaction, isNewRecord: true })
             transaction.commit()
-            const response = fromDbToFullMotherboard(createdMotherboard)
+            const response = fromDbToMotherboard(createdMotherboard)
             return response
         } catch (err) {
-            console.log(err)
-            throw new Error(err.message)
+            throw err
         }
     }
 
@@ -56,13 +70,12 @@ export class MotherboardRepository extends AbstractRepository {
             // database. Second argument are the array of elements. Im updating by id so there is only 
             // one element in the array.
             if (!motherboardEdited) {
-                throw new Error('Motherboard not found')
+                throw MotherboardError.notFound()
             }
-            console.log(motherboardArray)
             const modifiedProduct = motherboardArray[0]
             return fromDbToMotherboard(modifiedProduct)
         } catch (err) {
-            throw new Error(err.message)
+            throw err
         }
     }
 
@@ -71,11 +84,11 @@ export class MotherboardRepository extends AbstractRepository {
         try {
             const response = await this.motherboardModel.destroy({ where: { id } })
             if (!response) {
-                throw new Error('motherboard not found')
+                throw MotherboardError.notFound()
             }
             return true
         } catch (err) {
-            throw new Error(err.message)
+            throw err
         }
     }
 }

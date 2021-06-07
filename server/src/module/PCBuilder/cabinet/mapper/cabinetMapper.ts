@@ -1,8 +1,6 @@
 import { Cabinet } from "../entities/Cabinet"
 import { CabinetModel } from "../model/CabinetModel"
 import { ICabinetCreate } from '../interface/ICabinetCreate'
-import { fromDbToUser } from "../../../user/mapper/userMapper"
-import { ICabinet } from "../interface/ICabinet"
 import { fromRequestToProduct } from "../../../product/mapper/productMapper"
 
 export const fromDbToCabinet = (model: CabinetModel): Cabinet => {

@@ -2,7 +2,6 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
 import { Product } from "../../../product/entity/Product";
-import { FullProcessor } from "../entities/FullProcessor";
 import { Processor } from "../entities/Processor";
 import { IProcessorQuery } from "../interface/IProcessorQuery";
 // import { IRamQuery } from "../interface/IRamQuery";
@@ -18,15 +17,15 @@ export class ProcessorService extends AbstractService {
         this.processorRepository = processorRepository
     }
 
-    async getprocessors(query?: IProcessorQuery): Promise<FullProcessor[]> {
+    async getprocessors(query?: IProcessorQuery): Promise<Processor[]> {
         return await this.processorRepository.getProcessor(query)
     }
 
-    async getSingleProcessor(id: number): Promise<FullProcessor | Error> {
+    async getSingleProcessor(id: number): Promise<Processor | Error> {
         return await this.processorRepository.getSingleProcessor(id)
     }
 
-    async createprocessors(product: Product, processor: Processor): Promise<FullProcessor | Error> {
+    async createprocessors(product: Product, processor: Processor): Promise<Processor | Error> {
         return await this.processorRepository.createProcessor(product, processor)
     }
 

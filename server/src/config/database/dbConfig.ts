@@ -78,8 +78,7 @@ async function configureDatabase() {
             await PermissionModel.create({ action: "delete", subject: "User", role_id: 2, conditions: JSON.stringify({ id: "${id}" }) })
             const adminPassword = await hash(<string>process.env.ADMIN_PASSWORD, Number(<string>process.env.BCRYPT_SALT_NUMBER))
             await UserModel.create({ mail: <string>process.env.ADMIN_MAIL, password: adminPassword, role_id: 1 })
-            await RamModel.create({ watts: 20, id_product: 2, max_frec: 1200, memory: 12, min_frec: 1300, ram_version: 'DDR4' })
-            // const final = products.map(fromDbToFullProduct)
+            await RamModel.create({ watts: 20, id_product: 2, max_frec: 1200, memory: 12, min_frec: 1300, ram_version: "DDR4" })
             console.log('exito!')
         } catch (err) {
 

@@ -24,9 +24,7 @@ export const validateRamCreateSchema = {
 export const validateRamEditSchema = {
     ...validateRamCreateSchema,
     id: Joi.number()
-        .required,
-    product_id: Joi.number()
-        .required,
+        .required
 }
 
 export const validateRamAndProductDto = Joi.object({ ...validateRamCreateSchema, ...validateCreateProductSchema })

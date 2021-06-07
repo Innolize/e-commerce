@@ -4,11 +4,11 @@ import { AbstractRepository } from "../../../abstractClasses/abstractRepository"
 import { Sequelize } from "sequelize";
 import { ProductModel } from "../../../product/module";
 import { Product } from "../../../product/entity/Product";
-import { FullVideoCard } from "../entities/FullVideoCard";
 import { VideoCardModel } from "../model/VideoCardModel";
-import { fromDbToFullVideoCard, fromDbToVideoCard } from "../mapper/videoCardMapper";
+import { fromDbToVideoCard, fromRequestToVideoCard } from "../mapper/videoCardMapper";
 import { IVideoCardQuery } from "../interface/IVideoCardQuery";
 import { VideoCard } from "../entities/VideoCard";
+import { VideoCardError } from "../error/VideoCardError";
 
 @injectable()
 export class VideoCardRepository extends AbstractRepository {
@@ -27,71 +27,69 @@ export class VideoCardRepository extends AbstractRepository {
         this.ORM = ORM
     }
 
-    async getRams(query?: IVideoCardQuery): Promise<FullVideoCard[]> {
+    async getVideoCards(query?: IVideoCardQuery): Promise<VideoCard[]> {
         const queryParams: IVideoCardQuery = {}
         if (query?.version) {
             queryParams.version = query.version
         }
-        const response = await this.videoCardModel.findAll({ where: queryParams, include: "product" });
-        return response.map(fromDbToFullVideoCard)
+        const response = await this.videoCardModel.findAll({ where: queryParams, include: VideoCardModel.associations.product });
+        return response.map(fromDbToVideoCard)
     }
 
-    async getSingleRam(id: number): Promise<FullVideoCard | Error> {
+    async getSingleVideoCard(id: number): Promise<VideoCard | Error> {
         try {
-            const response = await this.videoCardModel.findByPk(id, { include: 'product' })
+            const response = await this.videoCardModel.findByPk(id, { include: VideoCardModel.associations.product })
             if (!response) {
-                throw new Error('Video card not found')
+                throw VideoCardError.notFound()
             }
-            const ram = fromDbToFullVideoCard(response)
-            return ram
+            return fromDbToVideoCard(response)
         } catch (err) {
-            throw new Error(err.message)
+            throw err
         }
 
 
     }
 
-    async createRam(product: Product, videoCard: VideoCard): Promise<FullVideoCard | Error> {
+    async createVideoCard(product: Product, videoCard: VideoCard): Promise<VideoCard | Error> {
         const transaction = await this.ORM.transaction()
         try {
             const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
             const id_product = newProduct.getDataValue("id")
-            const newRam = new VideoCard({ ...videoCard, id_product })
-            const createdRam = await this.videoCardModel.create(newRam, { transaction, isNewRecord: true, include: "product" })
+            const newVideoCard = fromRequestToVideoCard({ ...videoCard, id_product })
+            const createdVideoCard = await this.videoCardModel.create(newVideoCard, { transaction, isNewRecord: true })
             transaction.commit()
-            const response = fromDbToFullVideoCard(createdRam)
+            const response = fromDbToVideoCard(createdVideoCard)
             return response
         } catch (err) {
-            throw new Error(err.message)
+            throw err
         }
     }
 
-    async modifyRam(id: number, videoCard: VideoCard): Promise<VideoCard | Error> {
+    async modifyVideoCard(id: number, videoCard: VideoCard): Promise<VideoCard | Error> {
         try {
             const [videoCardEdited, videoCardArray] = await this.videoCardModel.update(videoCard, { where: { id }, returning: true })
             // update returns an array, first argument is the number of elements updated in the
             // database. Second argument are the array of elements. Im updating by id so there is only 
             // one element in the array.
             if (!videoCardEdited) {
-                throw new Error('Video card not found')
+                throw VideoCardError.notFound()
             }
             const modifiedVideoCard = videoCardArray[0]
             return fromDbToVideoCard(modifiedVideoCard)
         } catch (err) {
-            throw new Error(err.message)
+            throw err
         }
     }
 
-    async deleteRam(id: number): Promise<true | Error> {
-
+    async deleteVideoCard(id: number): Promise<true | Error> {
         try {
             const response = await this.videoCardModel.destroy({ where: { id } })
             if (!response) {
-                throw new Error('Video card not found')
+                throw VideoCardError.notFound()
             }
             return true
         } catch (err) {
-            throw new Error(err.message)
+            throw err
         }
     }
 }

@@ -1,3 +1,5 @@
+import { VIDEO_CARD_VERSION } from "../../../../config/constants/pcbuilder";
+
 export interface IVideoCardQuery {
-    version?: 'DDR4' | 'DDR5' | 'DDR6'
+    version?: typeof VIDEO_CARD_VERSION[number]
 }

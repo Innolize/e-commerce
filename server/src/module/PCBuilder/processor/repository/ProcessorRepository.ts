@@ -1,14 +1,16 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractRepository } from "../../../abstractClasses/abstractRepository";
-import { Op, Sequelize } from "sequelize";
+import { Sequelize } from "sequelize";
 import { ProductModel } from "../../../product/module";
 import { Product } from "../../../product/entity/Product";
 import { ProcessorModel } from "../model/ProcessorModel";
-import { fromDbToFullProcessor, fromDbToProcessor } from "../mapper/processorMapper";
+import { fromDbToProcessor, fromRequestToProcessor } from "../mapper/processorMapper";
 import { Processor } from "../entities/Processor";
-import { FullProcessor } from '../entities/FullProcessor'
 import { IProcessorQuery } from "../interface/IProcessorQuery";
+import { WhereOptions } from "sequelize";
+import { ProcessorError } from "../error/ProcessorError";
+import { ForeignKeyConstraintError } from "sequelize";
 
 @injectable()
 export class ProcessorRepository extends AbstractRepository {
@@ -27,60 +29,55 @@ export class ProcessorRepository extends AbstractRepository {
         this.ORM = ORM
     }
 
-    async getProcessor(query?: IProcessorQuery): Promise<FullProcessor[]> {
-        const queryParams: {
-            socket?: unknown,
-        } = {}
-        if (query?.socket) {
-            queryParams.socket = query.socket
+    async getProcessor(query?: IProcessorQuery): Promise<Processor[]> {
+        const queryParams: WhereOptions<Processor> = {}
+        if (query) {
+            query.socket ? queryParams.socket = query.socket : ''
         }
-        const response = await this.processorModel.findAll({ where: queryParams, include: "product" });
-        return response.map(fromDbToFullProcessor)
+        const response = await this.processorModel.findAll({ where: queryParams, include: ProcessorModel.associations.product });
+        return response.map(fromDbToProcessor)
     }
 
-    async getSingleProcessor(id: number): Promise<FullProcessor | Error> {
+    async getSingleProcessor(id: number): Promise<Processor | Error> {
         try {
-            const response = await this.processorModel.findByPk(id, { include: 'product' })
+            const response = await this.processorModel.findByPk(id, { include: ProcessorModel.associations.product })
             if (!response) {
-                throw new Error('Processor not found')
+                throw ProcessorError.notFound()
             }
-            const ram = fromDbToFullProcessor(response)
-            return ram
+            return fromDbToProcessor(response)
         } catch (err) {
-            throw new Error(err.message)
+            throw err
         }
-
-
     }
 
-    async createProcessor(product: Product, ram: Processor): Promise<FullProcessor | Error> {
+    async createProcessor(product: Product, ram: Processor): Promise<Processor | Error> {
         const transaction = await this.ORM.transaction()
         try {
             const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
             const id_product = newProduct.getDataValue("id")
-            const newRam = new Processor({ ...ram, id_product })
-            const createdRam = await this.processorModel.create(newRam, { transaction, isNewRecord: true, include: "product" })
+            const newProcessor = fromRequestToProcessor({ ...ram, id_product })
+            const createdProcessor = await this.processorModel.create(newProcessor, { transaction, isNewRecord: true })
             transaction.commit()
-            const response = fromDbToFullProcessor(createdRam)
+            const response = fromDbToProcessor(createdProcessor)
             return response
         } catch (err) {
-            throw new Error(err.message)
+            throw err
         }
     }
 
     async modifyProcessor(id: number, ram: Processor): Promise<Processor | Error> {
         try {
-            const [ramEdited, ramArray] = await this.processorModel.update(ram, { where: { id }, returning: true })
+            const [processorEdited, processorArray] = await this.processorModel.update(ram, { where: { id }, returning: true })
             // update returns an array, first argument is the number of elements updated in the
             // database. Second argument are the array of elements. Im updating by id so there is only 
             // one element in the array.
-            if (!ramEdited) {
-                throw new Error('Ram not found')
+            if (!processorEdited) {
+                throw ProcessorError.notFound()
             }
-            const modifiedRam = ramArray[0]
-            return fromDbToProcessor(modifiedRam)
+            const modifiedProcessor = processorArray[0]
+            return fromDbToProcessor(modifiedProcessor)
         } catch (err) {
-            throw new Error(err.message)
+            throw err
         }
     }
 
@@ -89,11 +86,11 @@ export class ProcessorRepository extends AbstractRepository {
         try {
             const response = await this.processorModel.destroy({ where: { id } })
             if (!response) {
-                throw new Error('Processor not found')
+                throw ProcessorError.notFound()
             }
             return true
         } catch (err) {
-            throw new Error(err.message)
+            throw err
         }
     }
 }

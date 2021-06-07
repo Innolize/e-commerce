@@ -1,9 +1,9 @@
-import { DataTypes, Model, Sequelize } from 'sequelize'
+import { Association, DataTypes, Model, Sequelize } from 'sequelize'
 import { injectable } from "inversify";
 import { ProductModel } from "../../../product/module";
 import { Motherboard } from '../entity/Motherboard'
 import { IMotherboardCreate } from '../interface/IMotherboardCreate';
-import { RAM_VERSION, CPU_BRANDS, SIZE } from '../../../../config/constants/pcbuilder';
+import { RAM_VERSION, CPU_BRANDS, SIZE, VIDEO_CARD_VERSION } from '../../../../config/constants/pcbuilder';
 
 @injectable()
 export class MotherboardModel extends Model<Motherboard, IMotherboardCreate>{
@@ -36,7 +36,7 @@ export class MotherboardModel extends Model<Motherboard, IMotherboardCreate>{
                 allowNull: false
             },
             video_socket: {
-                type: DataTypes.STRING,
+                type: DataTypes.ENUM(...VIDEO_CARD_VERSION),
                 allowNull: false
             },
             model_size: {
@@ -62,5 +62,8 @@ export class MotherboardModel extends Model<Motherboard, IMotherboardCreate>{
                 allowNull: false,
             },
         })
+    }
+    static associations: {
+        product: Association<MotherboardModel, ProductModel>
     }
 }

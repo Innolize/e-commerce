@@ -9,6 +9,7 @@ import { fromDbToCabinet, fromRequestToCabinet } from "../mapper/cabinetMapper";
 import { ICabinetQuery } from "../interface/ICabinetQuery";
 import { Cabinet } from "../entities/Cabinet";
 import { ICabinetEdit } from "../interface/ICabinetEdit";
+import { CabinetError } from "../error/CabinetError";
 
 @injectable()
 export class CabinetRepository extends AbstractRepository {
@@ -28,24 +29,29 @@ export class CabinetRepository extends AbstractRepository {
     }
 
     async getCabinets(query?: ICabinetQuery): Promise<Cabinet[]> {
-        const queryParams: WhereOptions<Cabinet> = {}
-        if (query?.size) {
-            queryParams.size = query.size
+        try {
+            const queryParams: WhereOptions<Cabinet> = {}
+            if (query?.size) {
+                queryParams.size = query.size
+            }
+            const response = await this.cabinetModel.findAll({ where: queryParams, include: [CabinetModel.associations.product] });
+            return response.map(fromDbToCabinet)
+        } catch (err) {
+            throw err
         }
-        const response = await this.cabinetModel.findAll({ where: queryParams, include: [CabinetModel.associations.product] });
-        return response.map(fromDbToCabinet)
+
     }
 
     async getSingleCabinet(id: number): Promise<Cabinet | Error> {
         try {
             const response = await this.cabinetModel.findByPk(id, { include: [CabinetModel.associations.product] })
             if (!response) {
-                throw new Error('Cabinet not found')
+                throw CabinetError.notFound()
             }
             const ram = fromDbToCabinet(response)
             return ram
         } catch (err) {
-            throw new Error(err.message)
+            throw err
         }
 
 
@@ -62,8 +68,7 @@ export class CabinetRepository extends AbstractRepository {
             const response = fromDbToCabinet(createdCabinet)
             return response
         } catch (err) {
-            console.log("err: ", err)
-            throw new Error(err.message)
+            throw err
         }
     }
 
@@ -74,25 +79,23 @@ export class CabinetRepository extends AbstractRepository {
             // database. Second argument are the array of elements. Im updating by id so there is only 
             // one element in the array.
             if (!editedCabinet) {
-                throw new Error('Cabinet not found')
+                throw CabinetError.notFound()
             }
             const modifiedRam = ramArray[0]
             return fromDbToCabinet(modifiedRam)
         } catch (err) {
-            throw new Error(err.message)
+            throw err
         }
     }
 
     async deleteCabinet(id: number): Promise<true | Error> {
-
         try {
             const response = await this.cabinetModel.destroy({ where: { id } })
             if (!response) {
-                throw new Error('Cabinet not found')
+                throw CabinetError.notFound()
             }
             return true
         } catch (err) {
-            console.log(err)
             throw err
         }
     }
