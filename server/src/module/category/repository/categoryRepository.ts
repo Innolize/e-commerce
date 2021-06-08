@@ -6,9 +6,10 @@ import { Brand } from "../../brand/entity/Brand";
 import { Category } from "../entity/Category";
 import { CategoryError } from "../error/CategoryError";
 import { IEditableCategory } from "../interfaces/IEditableCategory";
-import { IGetAllCategoriesQueries } from "../interfaces/IGetAllCategoriesQueries";
 import { fromDbToCategory } from "../mapper/categoryMapper";
 import { CategoryModel } from "../model/categoryModel";
+import { GetCategoriesDto } from "../dto/getCategoriesDto";
+import { GetCategoriesReqDto } from "../dto/getCategoriesReqDto";
 
 @injectable()
 export class CategoryRepository extends AbstractRepository {
@@ -20,13 +21,14 @@ export class CategoryRepository extends AbstractRepository {
         this.categoryModel = categoryModel
     }
 
-    public async getAllCategories(queryParams?: IGetAllCategoriesQueries): Promise<Error | Category[]> {
-        const findQuery: WhereOptions<Brand> = {}
-        if (queryParams) {
-            queryParams.name ? findQuery.name = { [Op.substring]: queryParams.name } : ''
-        }
-        const response = await this.categoryModel.findAll({ where: findQuery })
-        return response.map(fromDbToCategory)
+    public async getAllCategories(queryParams: GetCategoriesReqDto): Promise<Error | GetCategoriesDto> {
+        const { name, limit, offset } = queryParams
+        const whereOptions: WhereOptions<Brand> = {}
+        name ? whereOptions.name = { [Op.substring]: name } : ''
+        const { count, rows } = await this.categoryModel.findAndCountAll({ where: whereOptions, limit, offset })
+        const categories = rows.map(fromDbToCategory)
+        const response = new GetCategoriesDto(count, categories)
+        return response
     }
 
     public async findCategoryById(id: number): Promise<Error | Category> {

@@ -6,10 +6,11 @@ import { ProductModel } from "../../../product/module";
 import { Product } from "../../../product/entity/Product";
 import { CabinetModel } from "../model/CabinetModel";
 import { fromDbToCabinet, fromRequestToCabinet } from "../mapper/cabinetMapper";
-import { ICabinetQuery } from "../interface/ICabinetQuery";
 import { Cabinet } from "../entities/Cabinet";
 import { ICabinetEdit } from "../interface/ICabinetEdit";
 import { CabinetError } from "../error/CabinetError";
+import { GetCabinetsDto } from "../dto/getCabinetsDto";
+import { GetCabinetsReqDto } from "../dto/getCabinetsReqDto";
 
 @injectable()
 export class CabinetRepository extends AbstractRepository {
@@ -28,14 +29,15 @@ export class CabinetRepository extends AbstractRepository {
         this.ORM = ORM
     }
 
-    async getCabinets(query?: ICabinetQuery): Promise<Cabinet[]> {
+    async getCabinets(queryParams: GetCabinetsReqDto): Promise<GetCabinetsDto> {
         try {
-            const queryParams: WhereOptions<Cabinet> = {}
-            if (query?.size) {
-                queryParams.size = query.size
-            }
-            const response = await this.cabinetModel.findAll({ where: queryParams, include: [CabinetModel.associations.product] });
-            return response.map(fromDbToCabinet)
+            const { size, offset, limit } = queryParams
+            const whereOptions: WhereOptions<Cabinet> = {}
+            size ? whereOptions.size = size : ''
+            const { count, rows } = await this.cabinetModel.findAndCountAll({ where: whereOptions, offset, limit, include: [CabinetModel.associations.product] });
+            const cabinets = rows.map(fromDbToCabinet)
+            const response = new GetCabinetsDto(count, cabinets)
+            return response
         } catch (err) {
             throw err
         }

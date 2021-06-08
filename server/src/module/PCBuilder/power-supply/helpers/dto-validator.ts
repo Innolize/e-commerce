@@ -4,6 +4,8 @@ import { validateCreateProductSchema } from "../../../product/helper/create_dto_
 
 
 export const validatePowerSupplyQuerySchema = Joi.object({
+    limit: Joi.number(),
+    offset: Joi.number(),
     watts: Joi.number()
 })
 

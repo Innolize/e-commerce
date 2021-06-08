@@ -2,8 +2,9 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
 import { Product } from "../../../product/entity/Product";
+import { GetRamsDto } from "../dto/getRamsDto";
+import { GetRamsReqDto } from "../dto/getRamsReqDto";
 import { Ram } from "../entities/Ram";
-import { IRamQuery } from "../interface/IRamQuery";
 import { RamRepository } from "../repository/RamRepository";
 
 @injectable()
@@ -16,8 +17,8 @@ export class RamService extends AbstractService {
         this.ramRepository = ramRepository
     }
 
-    async getRams(query?: IRamQuery): Promise<Ram[]> {
-        return await this.ramRepository.getRams(query)
+    async getRams(queryParams: GetRamsReqDto): Promise<GetRamsDto> {
+        return await this.ramRepository.getRams(queryParams)
     }
 
     async getSingleRam(id: number): Promise<Ram | Error> {

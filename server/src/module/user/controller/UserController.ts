@@ -8,9 +8,11 @@ import { jwtAuthentication } from "../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../authorization/util/authorizationMiddleware";
 import { bodyValidator, mapperMessageError } from "../../common/helpers/bodyValidator";
 import { idNumberOrError } from "../../common/helpers/idNumberOrError";
+import { GetUserReqDto } from "../dto/getUsersReqDto";
 import { UserError } from "../error/UserError";
 import { validateCreateUserDto } from "../helper/create_dto_validator";
 import { validateEditUserDto } from "../helper/edit_dto_validator";
+import { validateGetUsersDto } from "../helper/get_dto_validator";
 import { IUserCreate } from "../interfaces/IUserCreate";
 import { IUserEdit } from "../interfaces/IUserEdit";
 import { fromRequestToUser } from "../mapper/userMapper";
@@ -39,9 +41,16 @@ export class UserController extends AbstractController {
         app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'User' })], this.createUser.bind(this))
     }
 
-    async getUsers(req: Request, res: Response): Promise<Response> {
-        const response = await this.userService.getUsers()
-        return res.status(StatusCodes.OK).send(response)
+    async getUsers(req: Request, res: Response, next: NextFunction) {
+        const dto: IUserGetUsers = req.query
+        try {
+            const { limit, offset } = await bodyValidator(validateGetUsersDto, dto)
+            const searchParam = new GetUserReqDto(limit, offset)
+            const response = await this.userService.getUsers(searchParam)
+            return res.status(StatusCodes.OK).send(response)
+        } catch (err) {
+            next(err)
+        }
     }
 
     async getSingleUser(req: Request, res: Response, next: NextFunction) {

@@ -7,10 +7,10 @@ import { Product } from "../../../product/entity/Product";
 import { ProcessorModel } from "../model/ProcessorModel";
 import { fromDbToProcessor, fromRequestToProcessor } from "../mapper/processorMapper";
 import { Processor } from "../entities/Processor";
-import { IProcessorQuery } from "../interface/IProcessorQuery";
 import { WhereOptions } from "sequelize";
 import { ProcessorError } from "../error/ProcessorError";
-import { ForeignKeyConstraintError } from "sequelize";
+import { GetProcessorReqDto } from "../dto/getProcessorsReqDto";
+import { GetProcessorDto } from "../dto/getProcessorsDto";
 
 @injectable()
 export class ProcessorRepository extends AbstractRepository {
@@ -29,13 +29,14 @@ export class ProcessorRepository extends AbstractRepository {
         this.ORM = ORM
     }
 
-    async getProcessor(query?: IProcessorQuery): Promise<Processor[]> {
-        const queryParams: WhereOptions<Processor> = {}
-        if (query) {
-            query.socket ? queryParams.socket = query.socket : ''
-        }
-        const response = await this.processorModel.findAll({ where: queryParams, include: ProcessorModel.associations.product });
-        return response.map(fromDbToProcessor)
+    async getProcessor(queryParams: GetProcessorReqDto): Promise<GetProcessorDto> {
+        const { offset, limit, socket } = queryParams
+        const whereOptions: WhereOptions<Processor> = {}
+        socket ? whereOptions.socket = socket : ''
+        const { count, rows } = await this.processorModel.findAndCountAll({ where: whereOptions, offset, limit, include: ProcessorModel.associations.product });
+        const processors = rows.map(fromDbToProcessor)
+        const response = new GetProcessorDto(count, processors)
+        return response
     }
 
     async getSingleProcessor(id: number): Promise<Processor | Error> {

@@ -7,9 +7,9 @@ import { AbstractController } from "../../../abstractClasses/abstractController"
 import { bodyValidator } from "../../../common/helpers/bodyValidator";
 import { ImageUploadService } from "../../../imageUploader/module";
 import { DiskStorage } from "../entities/DiskStorage";
-import { validateRamAndProductDto, validateRamEditDto, validateRamQuerySchema } from "../helpers/dto-validator";
+import { validateDiskStorageAndProductDto, validateDiskStorageEditDto, validateDiskStorageQuerySchema } from "../helpers/dto-validator";
 import { IDiskStorage_Product } from "../interface/IDiskStorageCreate";
-import { IDiskStorageQuery } from "../interface/IDiskStorageQuery";
+import { IDiskStorageGetAllQuery } from "../interface/IDiskStorageGetAllQuery";
 import { IDiskStorageEdit } from '../interface/IDiskStorageEdit'
 import { DiskStorageService } from "../service/DiskStorageService";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
@@ -19,6 +19,7 @@ import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToDiskStorage } from "../mapper/diskStorageMapper";
 import { ProductService } from "../../../product/module";
 import { DiskStorageError } from "../error/DiskStorageError";
+import { GetDiskStorageReqDto } from '../dto/getDiskStorageReqDto'
 
 export class DiskStorageController extends AbstractController {
     private ROUTE_BASE: string
@@ -52,14 +53,10 @@ export class DiskStorageController extends AbstractController {
 
     getAll = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const queryDto = req.query
-            const hasQuery = Object.keys(queryDto).length
-            if (hasQuery) {
-                const validQueryDto = await bodyValidator(validateRamQuerySchema, queryDto as IDiskStorageQuery)
-                const diskWithQuery = await this.diskStorageService.getDisks(validQueryDto)
-                return res.status(StatusCodes.OK).send(diskWithQuery)
-            }
-            const response = await this.diskStorageService.getDisks()
+            const dto: IDiskStorageGetAllQuery = req.query
+            const { limit, offset, type } = await bodyValidator(validateDiskStorageQuerySchema, dto)
+            const queryParams = new GetDiskStorageReqDto(limit, offset, type)
+            const response = await this.diskStorageService.getDisks(queryParams)
             return res.status(200).send(response)
         } catch (err) {
             next(err)
@@ -84,9 +81,9 @@ export class DiskStorageController extends AbstractController {
         let productImage: string | undefined
         try {
             const dto: IDiskStorage_Product = req.body
-            const validatedDto = await bodyValidator(validateRamAndProductDto, dto)
+            const validatedDto = await bodyValidator(validateDiskStorageAndProductDto, dto)
             const newDiskStorage = fromRequestToDiskStorage(validatedDto)
-            const newProduct = fromRequestToProduct({...validatedDto, id_category: DISK_STORAGE_CATEGORY})
+            const newProduct = fromRequestToProduct({ ...validatedDto, id_category: DISK_STORAGE_CATEGORY })
             await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
                 const { buffer, originalname } = req.file
@@ -111,7 +108,7 @@ export class DiskStorageController extends AbstractController {
             const { id } = req.params
             const validId = idNumberOrError(id) as number
             const dto: IDiskStorageEdit = req.body
-            const validatedDto = await bodyValidator(validateRamEditDto, dto)
+            const validatedDto = await bodyValidator(validateDiskStorageEditDto, dto)
             const modifieddisk = await this.diskStorageService.modifyDisk(validId, validatedDto) as DiskStorage
             return res.status(StatusCodes.OK).send(modifieddisk)
         } catch (err) {

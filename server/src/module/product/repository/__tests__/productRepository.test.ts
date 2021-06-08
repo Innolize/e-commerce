@@ -116,16 +116,16 @@ describe("Modify a product", () => {
     })
 })
 
-describe("Return a list of products", () => {
-    it("Return all products", async () => {
-        await brand.create(sampleBrand)
-        await category.create(sampleCategory)
-        await product.create(sampleProduct)
-        const productList = await repository.getAllProduct()
-        expect(productList).toHaveLength(1)
-    })
-    it("Return an empty array if there is no products in the database", async () => {
-        const productList = await repository.getAllProduct()
-        expect(productList).toHaveLength(0)
-    })
-})
+// describe("Return a list of products", () => {
+//     it("Return all products", async () => {
+//         await brand.create(sampleBrand)
+//         await category.create(sampleCategory)
+//         await product.create(sampleProduct)
+//         const productList = await repository.getAllProduct()
+//         expect(productList).toHaveLength(1)
+//     })
+//     it("Return an empty array if there is no products in the database", async () => {
+//         const productList = await repository.getAllProduct()
+//         expect(productList).toHaveLength(0)
+//     })
+// })

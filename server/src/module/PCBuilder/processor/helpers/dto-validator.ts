@@ -3,8 +3,10 @@ import { validateCreateProductSchema } from "../../../product/helper/create_dto_
 
 
 export const validateProcessorQuerySchema = Joi.object({
+    limit: Joi.number(),
+    offset: Joi.number(),
     socket: Joi.string()
-    .required(),
+        .required(),
 })
 
 export const validateProcessorCreateSchema = {

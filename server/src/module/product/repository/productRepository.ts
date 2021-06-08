@@ -4,11 +4,12 @@ import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Product } from "../entity/Product";
 import { ProductError } from "../error/ProductError";
-import { IGetAllProductsQueries } from "../interfaces/IGetAllProductsQueries";
 import { IProductCreate } from "../interfaces/IProductCreate";
 import { IProductEdit } from "../interfaces/IProductEdit";
 import { fromDbToProduct } from "../mapper/productMapper";
 import { ProductModel } from "../model/productModel";
+import { GetProductsDto } from "../dto/getProductsDto";
+import { GetProductsReqDto } from "../dto/getProductsReqDto";
 
 
 
@@ -23,16 +24,17 @@ export class ProductRepository extends AbstractRepository {
         this.productModel = productModel
     }
 
-    public async getAllProduct(querieParams?: IGetAllProductsQueries): Promise<Error | Product[]> {
-        const findQuery: WhereOptions<Product> = {}
-        if (querieParams) {
-            querieParams.name ? findQuery.name = { [Op.substring]: querieParams.name } : ''
-            querieParams.category_id ? findQuery.id_category = querieParams.category_id : ''
-        }
-        const response = await this.productModel.findAll({ where: findQuery, include: [ProductModel.associations.brand, ProductModel.associations.category] })
-        return response.map(fromDbToProduct)
+    public async getAllProduct(querieParams: GetProductsReqDto): Promise<Error | GetProductsDto> {
+        const { limit, offset, category_id, name } = querieParams
 
+        const whereOptions: WhereOptions<Product> = {}
+        name ? whereOptions.name = { [Op.substring]: querieParams.name } : ''
+        category_id ? whereOptions.id_category = querieParams.category_id : ''
 
+        const { count, rows } = await this.productModel.findAndCountAll({ where: whereOptions, limit, offset, include: [ProductModel.associations.brand, ProductModel.associations.category] })
+        const products = rows.map(fromDbToProduct)
+        const response = new GetProductsDto(count, products)
+        return response
     }
 
     public async getById(id: number): Promise<Error | Product> {

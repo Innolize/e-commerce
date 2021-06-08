@@ -9,7 +9,6 @@ import { ImageUploadService } from "../../../imageUploader/module";
 import { Ram } from "../entities/Ram";
 import { validateRamAndProductDto, validateRamEditDto, validateRamQuerySchema } from "../helpers/dto-validator";
 import { IRam_Product } from "../interface/IRamCreate";
-import { IRamQuery } from "../interface/IRamQuery";
 import { IRamEdit } from '../interface/IRamEdit'
 import { RamService } from "../service/ramService";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
@@ -19,6 +18,8 @@ import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToRam } from "../mapper/ramMapper";
 import { ProductService } from "../../../product/module";
 import { RamError } from "../error/RamError";
+import { GetRamsReqDto } from "../dto/getRamsReqDto"
+import { IRamGetAllQuery } from "../interface/IRamGetAllQuery";
 
 export class RamController extends AbstractController {
     private ROUTE_BASE: string
@@ -52,14 +53,10 @@ export class RamController extends AbstractController {
 
     getAll = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const queryDto = req.query
-            const hasQuery = Object.keys(queryDto).length
-            if (hasQuery) {
-                const validQueryDto = await bodyValidator(validateRamQuerySchema, queryDto as IRamQuery)
-                const ramWithQuery = await this.ramService.getRams(validQueryDto)
-                return res.status(StatusCodes.OK).send(ramWithQuery)
-            }
-            const response = await this.ramService.getRams()
+            const dto: IRamGetAllQuery = req.query
+            const { limit, offset, max_frec, min_frec, ram_version } = await bodyValidator(validateRamQuerySchema, dto)
+            const queryParams = new GetRamsReqDto(limit, offset, ram_version, min_frec, max_frec)
+            const response = await this.ramService.getRams(queryParams)
             return res.status(200).send(response)
         } catch (err) {
             next(err)

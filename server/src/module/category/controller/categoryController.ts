@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify'
 import { TYPES } from '../../../config/inversify.types'
 import { AbstractController } from '../../abstractClasses/abstractController'
 import { Request, Response } from 'express'
-import { ReasonPhrases, StatusCodes } from 'http-status-codes'
+import { StatusCodes } from 'http-status-codes'
 import { Multer } from 'multer'
 import { CategoryService } from '../service/categoryService'
 import { ICategory } from '../interfaces/ICategory'
@@ -15,7 +15,9 @@ import { validateEditCategoryDto } from '../helper/edit_dto_validator'
 import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
 import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
 import { CategoryError } from '../error/CategoryError'
-import { IGetAllCategoriesQueries } from '../interfaces/IGetAllCategoriesQueries'
+import { ICategoryGetAllQueries } from '../interfaces/ICategoryGetAllQueries'
+import { validateGetCategoriesDto } from '../helper/get_dto_validator'
+import { GetCategoriesReqDto } from '../dto/getCategoriesReqDto'
 
 
 @injectable()
@@ -43,10 +45,10 @@ export class CategoryController extends AbstractController {
     }
 
     async getAllCategories(req: Request, res: Response, next: NextFunction) {
-        const { name } = req.query
-        const queryParams: IGetAllCategoriesQueries = {}
-        name ? queryParams.name = String(name) : ''
+        const dto: ICategoryGetAllQueries = req.query
         try {
+            const { limit, name, offset } = await bodyValidator(validateGetCategoriesDto, dto)
+            const queryParams = new GetCategoriesReqDto(limit, offset, name)
             const products = await this.categoryService.getAllCategories(queryParams)
             res.status(StatusCodes.OK).send(products)
         } catch (err) {

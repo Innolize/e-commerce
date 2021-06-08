@@ -6,9 +6,10 @@ import { ProductModel } from "../../../product/module";
 import { Product } from "../../../product/entity/Product";
 import { DiskStorageModel } from "../model/DiskStorageModel";
 import { fromDbToDiskStorage, fromRequestToDiskStorage } from "../mapper/diskStorageMapper";
-import { IDiskStorageQuery } from "../interface/IDiskStorageQuery";
 import { DiskStorage } from "../entities/DiskStorage";
 import { DiskStorageError } from "../error/DiskStorageError";
+import { GetDiskStorageReqDto } from "../dto/getDiskStorageReqDto"
+import { GetDiskStorageDto } from "../dto/getDiskStorageDto"
 
 @injectable()
 export class DiskStorageRepository extends AbstractRepository {
@@ -27,13 +28,14 @@ export class DiskStorageRepository extends AbstractRepository {
         this.ORM = ORM
     }
 
-    async getDisks(query?: IDiskStorageQuery): Promise<DiskStorage[]> {
-        const queryParams: WhereOptions<DiskStorage> = {}
-        if (query) {
-            query.type ? queryParams.type = query.type : ''
-        }
-        const response = await this.diskStorageModel.findAll({ where: queryParams, include: DiskStorageModel.associations.product });
-        return response.map(fromDbToDiskStorage)
+    async getDisks(queryParams: GetDiskStorageReqDto): Promise<GetDiskStorageDto> {
+        const { limit, offset, type } = queryParams
+        const whereOptions: WhereOptions<DiskStorage> = {}
+        type ? whereOptions.type = type : ''
+        const { rows, count } = await this.diskStorageModel.findAndCountAll({ where: whereOptions, limit, offset, include: DiskStorageModel.associations.product });
+        const disks = rows.map(fromDbToDiskStorage)
+        const response = new GetDiskStorageDto(count, disks)
+        return response
     }
 
     async getSingleDisk(id: number): Promise<DiskStorage | Error> {

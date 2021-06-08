@@ -4,6 +4,8 @@ import { validateCreateProductSchema } from "../../../product/helper/create_dto_
 
 
 export const validateRamQuerySchema = Joi.object({
+    offset: Joi.number(),
+    limit: Joi.number(),
     min_frec: Joi.number(),
     max_frec: Joi.number()
         .greater(Joi.ref('min_frec')),

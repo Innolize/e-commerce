@@ -3,6 +3,8 @@ import { WhereOptions } from "sequelize";
 import { Op } from "sequelize";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
+import { GetBrandsDto } from "../dto/getBrandsDto";
+import { GetBrandsReqDto } from "../dto/getBrandsReqDto";
 import { Brand } from "../entity/Brand";
 import { BrandError } from "../error/BrandError";
 import { IEditableBrand } from "../interfaces/IEditableBrand";
@@ -19,13 +21,14 @@ export class BrandRepository extends AbstractRepository {
         this.brandModel = brandModel
     }
 
-    public async getAllBrands(queryParams?: IGetAllBrandsQueries): Promise<Error | Brand[]> {
-        const findQuery: WhereOptions<Brand> = {}
-        if (queryParams) {
-            queryParams.name ? findQuery.name = { [Op.substring]: queryParams.name } : ''
-        }
-        const response = await this.brandModel.findAll({ where: findQuery })
-        return response.map(fromDbToBrand)
+    public async getAllBrands(queryParams: GetBrandsReqDto): Promise<Error | GetBrandsDto> {
+        const { name, offset, limit } = queryParams
+        const whereOptions: WhereOptions<Brand> = {}
+        name ? whereOptions.name = { [Op.substring]: name } : ''
+        const { rows, count } = await this.brandModel.findAndCountAll({ where: whereOptions, limit, offset })
+        const brands = rows.map(fromDbToBrand)
+        const response = new GetBrandsDto(count, brands)
+        return response
     }
 
     public async getById(id: number): Promise<Brand> {

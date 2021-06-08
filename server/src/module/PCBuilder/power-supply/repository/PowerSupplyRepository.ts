@@ -6,9 +6,10 @@ import { ProductModel } from "../../../product/module";
 import { Product } from "../../../product/entity/Product";
 import { PowerSupplyModel } from "../model/PowerSupplyModel";
 import { fromDbToPowerSupply, fromRequestToPowerSupply } from "../mapper/powerSupplyMapper";
-import { IPowerSupplyQuery } from "../interface/IPowerSupplyQuery";
 import { PowerSupply } from "../entities/PowerSupply";
 import { PowerSupplyError } from "../error/PowerSupplyError";
+import { GetPowerSuppliesReqDto } from "../dto/getPowerSuppliesReqDto";
+import { GetPowerSuppliesDto } from "../dto/getPowerSuppliesDto";
 
 @injectable()
 export class PowerSupplyRepository extends AbstractRepository {
@@ -27,13 +28,14 @@ export class PowerSupplyRepository extends AbstractRepository {
         this.ORM = ORM
     }
 
-    async getPowerSupplies(query?: IPowerSupplyQuery): Promise<PowerSupply[]> {
-        const queryParams: WhereOptions<PowerSupply> = {}
-        if (query) {
-            query.watts ? queryParams.watts = { [Op.lte]: query.watts } : ""
-        }
-        const response = await this.powerSupplyModel.findAll({ where: queryParams, include: PowerSupplyModel.associations.product });
-        return response.map(fromDbToPowerSupply)
+    async getPowerSupplies(queryParams: GetPowerSuppliesReqDto): Promise<GetPowerSuppliesDto> {
+        const { watts, limit, offset } = queryParams
+        const whereOptions: WhereOptions<PowerSupply> = {}
+        watts ? whereOptions.watts = { [Op.lte]: watts } : ""
+        const { rows, count } = await this.powerSupplyModel.findAndCountAll({ where: whereOptions, limit, offset, include: PowerSupplyModel.associations.product });
+        const powerSupplies = rows.map(fromDbToPowerSupply)
+        const response = new GetPowerSuppliesDto(count, powerSupplies)
+        return response
     }
 
     async getSinglePowerSupply(id: number): Promise<PowerSupply | Error> {

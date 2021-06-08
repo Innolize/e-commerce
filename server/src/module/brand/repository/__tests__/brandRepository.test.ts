@@ -30,16 +30,16 @@ beforeEach(async (done) => {
 const brandSample1 = new Brand("test-brand-1", "test-brand-logo-1")
 const brandSample2 = new Brand("test-brand-2", "test-brand-logo-2")
 
-describe("Get all brands from database", () => {
-    it("Returns an array of 2 brands", async () => {
-        await brand.create(brandSample1)
-        await brand.create(brandSample2)
-        await expect(repository.getAllBrands()).resolves.toHaveLength(2)
-    })
-    it("Returns an empty array", async () => {
-        await expect(repository.getAllBrands()).resolves.toHaveLength(0)
-    })
-})
+// describe("Get all brands from database", () => {
+//     it("Returns an array of 2 brands", async () => {
+//         await brand.create(brandSample1)
+//         await brand.create(brandSample2)
+//         await expect(repository.getAllBrands()).resolves.toHaveLength(2)
+//     })
+//     it("Returns an empty array", async () => {
+//         await expect(repository.getAllBrands()).resolves.toHaveLength(0)
+//     })
+// })
 
 describe("Find category by id", () => {
     it("Return category with id '1'", async () => {

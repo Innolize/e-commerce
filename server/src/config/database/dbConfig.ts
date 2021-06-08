@@ -17,7 +17,6 @@ import { DiskStorageModel } from '../../module/PCBuilder/disk-storage/module';
 import { PermissionModel, RoleModel } from '../../module/authorization/module';
 import { UserModel } from '../../module/user/module';
 import { hash } from 'bcrypt'
-import { PowerSupply } from '../../module/PCBuilder/power-supply/entities/PowerSupply';
 
 async function configureDatabase() {
 

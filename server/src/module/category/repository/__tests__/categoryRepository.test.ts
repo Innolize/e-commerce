@@ -31,16 +31,16 @@ beforeEach(async (done) => {
 const categorySample1 = new Category({ name: "test-category-1" })
 const categorySample2 = new Category({ name: "test-category-2" })
 
-describe("Get all categories from database", () => {
-    it("Returns an array of 2 categories", async () => {
-        await category.create(categorySample1)
-        await category.create(categorySample2)
-        await expect(repository.getAllCategories()).resolves.toHaveLength(2)
-    })
-    it("Returns an empty array", async () => {
-        await expect(repository.getAllCategories()).resolves.toHaveLength(0)
-    })
-})
+// describe("Get all categories from database", () => {
+//     it("Returns an array of 2 categories", async () => {
+//         await category.create(categorySample1)
+//         await category.create(categorySample2)
+//         await expect(repository.getAllCategories()).resolves.toHaveLength(2)
+//     })
+//     it("Returns an empty array", async () => {
+//         await expect(repository.getAllCategories()).resolves.toHaveLength(0)
+//     })
+// })
 
 describe("Find category by id", () => {
     it("Return category with id '1'", async () => {

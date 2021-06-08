@@ -2,9 +2,10 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
 import { Product } from "../../../product/entity/Product";
+import { GetCabinetsDto } from "../dto/getCabinetsDto";
+import { GetCabinetsReqDto } from "../dto/getCabinetsReqDto";
 import { Cabinet } from "../entities/Cabinet";
 import { ICabinetEdit } from "../interface/ICabinetEdit";
-import { ICabinetQuery } from "../interface/ICabinetQuery";
 import { CabinetRepository } from "../repository/CabinetRepository";
 
 @injectable()
@@ -17,7 +18,7 @@ export class CabinetService extends AbstractService {
         this.cabinetRepository = cabinetRepository
     }
 
-    async getCabinets(query?: ICabinetQuery): Promise<Cabinet[]> {
+    async getCabinets(query: GetCabinetsReqDto): Promise<GetCabinetsDto> {
         return await this.cabinetRepository.getCabinets(query)
     }
 
