@@ -11,16 +11,18 @@ import { init as initUserModule } from "./module/user/module"
 import { init as initPCBuilderModule } from "./module/PCBuilder/module"
 import { init as initAuth } from './module/auth/module'
 import { MulterError } from "multer";
-import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { StatusCodes } from "http-status-codes";
 import passport from "passport";
 import { configurePassportStrategies } from "./module/auth/strategies";
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import { BaseError } from "./module/common/error/BaseError";
 import { ValidationError } from "joi";
+import cors from "cors"
 
 const app = express()
 const port = process.env.PORT
+app.use(cors())
 app.use(morgan('dev'))
 app.use(cookieParser())
 app.use(express.json())
@@ -28,7 +30,6 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use(passport.initialize())
 configurePassportStrategies(container, passport)
-//
 initProductModule(app, container)
 initCategoryModule(app, container)
 initBrandModule(app, container)
