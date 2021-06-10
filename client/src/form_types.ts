@@ -1,4 +1,15 @@
-export interface IMotherboardForm {
+export interface IProductForm {
+  product_id?: string;
+  name: string;
+  description: string;
+  image: string;
+  price: string;
+  stock: string;
+  category: string;
+  brand: string;
+}
+
+export interface IMotherboardForm extends IProductForm {
   id?: string;
   cpu_socket: string;
   cpu_brand: string;
@@ -10,24 +21,13 @@ export interface IMotherboardForm {
   watts: string;
 }
 
-export interface IProductForm {
-  id?: string;
-  name: string;
-  description: string;
-  image: string;
-  price: string;
-  stock: string;
-  category: string;
-  brand: string;
-}
-
-export interface ICabinetForm {
+export interface ICabinetForm extends IProductForm {
   id?: string;
   size: string;
   generic_pws: string;
 }
 
-export interface IRamForm {
+export interface IRamForm extends IProductForm {
   id?: string;
   ram_version: string;
   memory: string;
@@ -36,7 +36,7 @@ export interface IRamForm {
   watts: string;
 }
 
-export interface IDiskStorageForm {
+export interface IDiskStorageForm extends IProductForm {
   id?: string;
   total_storage: string;
   type: string;
@@ -44,13 +44,13 @@ export interface IDiskStorageForm {
   watts: string;
 }
 
-export interface IPowerSupplyForm {
+export interface IPowerSupplyForm extends IProductForm {
   id?: string;
   watts: string;
   certification: string;
 }
 
-export interface IProcessorForm {
+export interface IProcessorForm extends IProductForm {
   id?: string;
   cores: string;
   frecuency: string;
@@ -58,7 +58,7 @@ export interface IProcessorForm {
   watts: string;
 }
 
-export interface IVideoCardForm {
+export interface IVideoCardForm extends IProductForm {
   id?: string;
   version: string;
   memory: string;

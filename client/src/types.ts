@@ -36,26 +36,26 @@ export interface IProduct {
 export interface IMotherboard {
   id: number;
   cpu_socket: string;
-  cpu_brand: typeof CPU_BRANDS;
-  ram_version: typeof RAM_VERSION;
+  cpu_brand: typeof CPU_BRANDS[number];
+  ram_version: typeof RAM_VERSION[number];
   min_frec: number;
   max_frec: number;
   video_socket: string;
-  model_size: typeof SIZE;
+  model_size: typeof SIZE[number];
   watts: number;
   product?: IProduct;
 }
 
 export interface ICabinet {
   id: number;
-  size: typeof SIZE;
-  generic_pws: boolean;
+  size: typeof SIZE[number];
+  generic_pws: boolean | string;
   product?: IProduct;
 }
 
 export interface IRam {
   id: number;
-  ram_version: typeof RAM_VERSION;
+  ram_version: typeof RAM_VERSION[number];
   memory: number;
   min_frec: number;
   max_frec: number;
@@ -66,7 +66,7 @@ export interface IRam {
 export interface IDiskStorage {
   id: number;
   total_storage: number;
-  type: typeof DISK_TYPE;
+  type: typeof DISK_TYPE[number];
   mbs: number;
   watts: number;
   product?: IProduct;
@@ -75,7 +75,7 @@ export interface IDiskStorage {
 export interface IPowerSupply {
   id: number;
   watts: number;
-  certification: typeof PWS_CERTIFICATION;
+  certification: typeof PWS_CERTIFICATION[number];
   product?: IProduct;
 }
 
@@ -90,7 +90,7 @@ export interface IProcessor {
 
 export interface IVideoCard {
   id: number;
-  version: typeof VIDEO_CARD_VERSION;
+  version: typeof VIDEO_CARD_VERSION[number];
   memory: number;
   clock_speed: number;
   watts: number;
