@@ -10,13 +10,15 @@ export default function useCreateCabinet() {
       api
         .post("/api/cabinet", values)
         .then((res: AxiosResponse<ICabinet>) => res.data)
-        .catch((error: AxiosError<ServerError>) => {
+        .catch((error: AxiosError<ServerError | string>) => {
           if (error.response) {
+            if (typeof error.response.data === "string") {
+              throw new Error(error.response.data);
+            }
             if (error.response.data.errors) {
               throw new Error(Object.values(error.response.data.errors[0])[0]);
-            } else {
-              throw new Error(error.response.data.message);
             }
+            throw error.response;
           } else {
             throw new Error(error.message);
           }

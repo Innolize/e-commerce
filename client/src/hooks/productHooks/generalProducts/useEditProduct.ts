@@ -1,34 +1,36 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQueryClient, useMutation } from "react-query";
 import api from "../../../services/api";
-import { IProduct } from "../../../types";
+import { IProduct, ServerError } from "../../../types";
 
-export default function useEditProduct(
-  successCallBack?: Function,
-  errorCallback?: Function
-) {
+export default function useEditProduct() {
   const queryClient = useQueryClient();
   return useMutation(
     (values: FormData) =>
       api
         .put(`/api/product/`, values)
         .then((res: AxiosResponse<IProduct>) => res.data)
-        .catch((error: AxiosError) => {
+        .catch((error: AxiosError<ServerError | string>) => {
           if (error.response) {
-            throw new Error(error.response.data.message);
+            if (typeof error.response.data === "string") {
+              throw new Error(error.response.data);
+            }
+            if (error.response.data.errors) {
+              throw new Error(Object.values(error.response.data.errors[0])[0]);
+            }
+            throw error.response;
           } else {
             throw new Error(error.message);
           }
         }),
     {
       retry: false,
-      onSuccess: (product: IProduct) => {
+      onSettled: () => {
         queryClient.invalidateQueries("products");
-        successCallBack && successCallBack();
       },
       onError: (e: AxiosError) => {
         console.log(e);
-        errorCallback && errorCallback();
+        queryClient.invalidateQueries("products");
       },
     }
   );
