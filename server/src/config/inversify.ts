@@ -22,6 +22,7 @@ import bcrypt from 'bcrypt'
 import { AuthController, AuthService } from "../module/auth/module"
 import { PermissionModel, RoleModel } from "../module/authorization/module"
 import { ImageUploadRepository } from "../module/imageUploader/repository/imageUploadRepository"
+import { CartItemModel, CartModel } from "../module/cart/module"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -151,6 +152,21 @@ function configureBrandContainer(container: Container): void {
     container.bind<BrandController>(TYPES.Brand.Controller).to(BrandController)
 }
 
+function configCartModels(container: Container): [typeof CartModel, typeof CartItemModel] {
+    const database = container.get<Sequelize>(TYPES.Common.Database)
+    const cartModel = CartModel.setup(database)
+    const cartItemModel = CartItemModel.setup(database)
+    CartModel.setupCartItemAssociation(cartItemModel)
+    CartItemModel.setupCartAssociation(cartModel)
+    return [cartModel, cartItemModel]
+}
+
+function configureCartContainer(container: Container): void {
+    const [cartModel, cartItemModel] = configCartModels(container)
+    container.bind<typeof CartModel>(TYPES.Cart.CartModel).toConstantValue(cartModel)
+    container.bind<typeof CartItemModel>(TYPES.Cart.CartItemModel).toConstantValue(cartItemModel)
+}
+
 function configureUserContainer(container: Container): void {
     container.bind<typeof UserModel>(TYPES.User.Model).toConstantValue(configUserModel(container))
     container.bind<UserRepository>(TYPES.User.Repository).to(UserRepository)
@@ -210,6 +226,7 @@ function configureDIC() {
     configureAuthContainer(dependencyContainer)
     configPermissionContainer(dependencyContainer)
     configureUserContainer(dependencyContainer)
+    configureCartContainer(dependencyContainer)
     return dependencyContainer
 }
 
