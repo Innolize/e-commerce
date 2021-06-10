@@ -27,7 +27,11 @@ const AdminNavbar = () => {
   return (
     <AppBar className={classes.navbar} position="static">
       <Tabs scrollButtons="on" value={false} variant="scrollable">
-        <Tab label="Dashboard" to="/admin" component={RouterLink} />
+        <Tab
+          label="pc build products"
+          to="/admin/build/ram"
+          component={RouterLink}
+        />
         <Tab label="Products" to="/admin/products" component={RouterLink} />
         <Tab label="Categories" to="/admin/categories" component={RouterLink} />
         <Tab label="Brands" to="/admin/brands" component={RouterLink} />
