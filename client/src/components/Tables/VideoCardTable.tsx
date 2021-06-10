@@ -1,5 +1,10 @@
-import { Box, Button } from "@material-ui/core";
-import { DataGrid, GridCellParams, GridColDef } from "@material-ui/data-grid";
+import { Box, Button, ButtonGroup } from "@material-ui/core";
+import {
+  DataGrid,
+  GridCellParams,
+  GridColDef,
+  ValueFormatterParams,
+} from "@material-ui/data-grid";
 import { IVideoCard } from "src/types";
 import CustomToolbar from "../CustomToolbar";
 import { Link as RouterLink } from "react-router-dom";
@@ -22,38 +27,57 @@ const VideoCardTable = ({ rows, handleDelete }: Props) => {
             { field: "description", width: 200, headerName: "Description" },
             {
               field: "price",
-              width: 120,
+              width: 140,
               headerName: "Price",
+              headerAlign: "left",
+              align: "center",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                currencyFormatter.format(Number(params.value)),
             },
-            { field: "stock", width: 100, headerName: "Stock" },
-            { field: "brand", width: 100, headerName: "Brand" },
-            { field: "memory", width: 150, headerName: "Memory" },
-            { field: "version", width: 150, headerName: "Version" },
-            { field: "clock_speed", width: 150, headerName: "Clock Speed" },
-            { field: "watts", width: 150, headerName: "Watts" },
+            { field: "stock", headerName: "Stock" },
+            { field: "brand", width: 120, headerName: "Brand" },
+            { field: "version", width: 120, headerName: "Version" },
+            {
+              field: "memory",
+              width: 110,
+              headerName: "Memory",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                params.value + " GB",
+            },
+            {
+              field: "clock_speed",
+              width: 140,
+              headerName: "Clock Speed",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                params.value + " MHz",
+            },
+            {
+              field: "watts",
+              headerName: "Watts",
+              headerAlign: "left",
+              align: "center",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                params.value + " W",
+            },
             {
               field: "edit",
+              headerName: "Edit options",
               sortable: false,
               filterable: false,
               width: 300,
               renderCell: (params: GridCellParams) => (
-                <div>
-                  <Button
-                    to={"edit/" + params.row.product_id}
-                    component={RouterLink}
-                  >
-                    General
-                  </Button>
-                  <Button
-                    to={"edit_details/" + params.row.id}
-                    component={RouterLink}
-                  >
-                    Details
+                <ButtonGroup>
+                  <Button to={"edit/" + params.row.id} component={RouterLink}>
+                    Edit video card
                   </Button>
                   <Button onClick={() => handleDelete(params.row.id as string)}>
                     Delete
                   </Button>
-                </div>
+                </ButtonGroup>
               ),
             },
           ] as GridColDef[]
@@ -64,7 +88,7 @@ const VideoCardTable = ({ rows, handleDelete }: Props) => {
           name: videoCard.product?.name,
           description: videoCard.product?.description,
           stock: videoCard.product?.stock ? "Yes" : "No",
-          price: currencyFormatter.format(videoCard.product!.price),
+          price: videoCard.product!.price,
           brand: videoCard.product?.brand || "Not found",
           memory: videoCard.memory,
           version: videoCard.version,

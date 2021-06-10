@@ -1,5 +1,10 @@
-import { Box, Button } from "@material-ui/core";
-import { DataGrid, GridCellParams, GridColDef } from "@material-ui/data-grid";
+import { Box, Button, ButtonGroup } from "@material-ui/core";
+import {
+  DataGrid,
+  GridCellParams,
+  GridColDef,
+  ValueFormatterParams,
+} from "@material-ui/data-grid";
 import { IRam } from "src/types";
 import CustomToolbar from "../CustomToolbar";
 import { Link as RouterLink } from "react-router-dom";
@@ -22,8 +27,13 @@ const RamTable = ({ rows, handleDelete }: Props) => {
             { field: "description", width: 200, headerName: "Description" },
             {
               field: "price",
-              width: 120,
+              width: 140,
               headerName: "Price",
+              headerAlign: "left",
+              align: "center",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                currencyFormatter.format(Number(params.value)),
             },
             { field: "stock", width: 100, headerName: "Stock" },
             { field: "brand", width: 100, headerName: "Brand" },
@@ -31,30 +41,30 @@ const RamTable = ({ rows, handleDelete }: Props) => {
             { field: "memory", width: 150, headerName: "Memory" },
             { field: "min_frec", width: 150, headerName: "Min Frec" },
             { field: "max_frec", width: 150, headerName: "Max Frec" },
-            { field: "watts", width: 150, headerName: "Watts" },
+            {
+              field: "watts",
+              headerName: "Watts",
+              headerAlign: "left",
+              align: "center",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                params.value + " W",
+            },
             {
               field: "edit",
+              headerName: "Edit options",
               sortable: false,
               filterable: false,
               width: 300,
               renderCell: (params: GridCellParams) => (
-                <div>
-                  <Button
-                    to={"edit/" + params.row.product_id}
-                    component={RouterLink}
-                  >
-                    General
-                  </Button>
-                  <Button
-                    to={"edit_details/" + params.row.id}
-                    component={RouterLink}
-                  >
-                    Details
+                <ButtonGroup>
+                  <Button to={"edit/" + params.row.id} component={RouterLink}>
+                    Edit ram
                   </Button>
                   <Button onClick={() => handleDelete(params.row.id as string)}>
                     Delete
                   </Button>
-                </div>
+                </ButtonGroup>
               ),
             },
           ] as GridColDef[]
@@ -65,7 +75,7 @@ const RamTable = ({ rows, handleDelete }: Props) => {
           name: ram.product?.name,
           description: ram.product?.description,
           stock: ram.product?.stock ? "Yes" : "No",
-          price: currencyFormatter.format(ram.product!.price),
+          price: ram.product!.price,
           brand: ram.product?.brand || "Not found",
           memory: ram.memory,
           ram_version: ram.ram_version,

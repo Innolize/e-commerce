@@ -1,5 +1,10 @@
-import { Box, Button } from "@material-ui/core";
-import { DataGrid, GridCellParams, GridColDef } from "@material-ui/data-grid";
+import { Box, Button, ButtonGroup } from "@material-ui/core";
+import {
+  DataGrid,
+  GridCellParams,
+  GridColDef,
+  ValueFormatterParams,
+} from "@material-ui/data-grid";
 import { ICabinet } from "src/types";
 import CustomToolbar from "../CustomToolbar";
 import { Link as RouterLink } from "react-router-dom";
@@ -16,42 +21,42 @@ const CabinetTable = ({ rows, handleDelete }: Props) => {
       <DataGrid
         columns={
           [
-            { field: "id", type: "number" },
+            { field: "id", type: "number", hide: true },
             { field: "product_id", type: "number", hide: true },
             { field: "name", width: 200, headerName: "Name" },
             { field: "description", width: 200, headerName: "Description" },
             {
               field: "price",
-              width: 120,
+              width: 140,
               headerName: "Price",
+              headerAlign: "left",
+              align: "center",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                currencyFormatter.format(Number(params.value)),
             },
-            { field: "stock", width: 100, headerName: "Stock" },
-            { field: "brand", width: 100, headerName: "Brand" },
-            { field: "size", width: 150, headerName: "Size" },
-            { field: "generic_pws", width: 150, headerName: "Generic PWS" },
+            { field: "stock", headerName: "Stock" },
+            { field: "brand", headerName: "Brand" },
+            { field: "size", headerName: "Size" },
+            { field: "generic_pws", width: 138, headerName: "Generic PWS" },
             {
               field: "edit",
+              headerName: "Edit options",
               sortable: false,
               filterable: false,
               width: 300,
               renderCell: (params: GridCellParams) => (
-                <div>
+                <ButtonGroup>
                   <Button
-                    to={"edit/" + params.row.product_id}
+                    to={"edit/cabinet/" + params.row.id}
                     component={RouterLink}
                   >
-                    General
-                  </Button>
-                  <Button
-                    to={"edit_details/" + params.row.id}
-                    component={RouterLink}
-                  >
-                    Details
+                    Edit Cabinet
                   </Button>
                   <Button onClick={() => handleDelete(params.row.id as string)}>
                     Delete
                   </Button>
-                </div>
+                </ButtonGroup>
               ),
             },
           ] as GridColDef[]
@@ -62,7 +67,7 @@ const CabinetTable = ({ rows, handleDelete }: Props) => {
           name: cabinet.product?.name,
           description: cabinet.product?.description,
           stock: cabinet.product?.stock ? "Yes" : "No",
-          price: currencyFormatter.format(cabinet.product!.price),
+          price: cabinet.product!.price,
           brand: cabinet.product?.brand || "Not found",
           size: cabinet.size,
           generic_pws: cabinet.generic_pws ? "Yes" : "No",

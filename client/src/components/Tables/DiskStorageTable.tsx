@@ -1,5 +1,10 @@
-import { Box, Button } from "@material-ui/core";
-import { DataGrid, GridCellParams, GridColDef } from "@material-ui/data-grid";
+import { Box, Button, ButtonGroup } from "@material-ui/core";
+import {
+  DataGrid,
+  GridCellParams,
+  GridColDef,
+  ValueFormatterParams,
+} from "@material-ui/data-grid";
 import { IDiskStorage } from "src/types";
 import CustomToolbar from "../CustomToolbar";
 import { Link as RouterLink } from "react-router-dom";
@@ -22,38 +27,71 @@ const DiskStorageTable = ({ rows, handleDelete }: Props) => {
             { field: "description", width: 200, headerName: "Description" },
             {
               field: "price",
-              width: 120,
+              width: 140,
               headerName: "Price",
+              headerAlign: "left",
+              align: "center",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                currencyFormatter.format(Number(params.value)),
             },
-            { field: "stock", width: 100, headerName: "Stock" },
-            { field: "brand", width: 100, headerName: "Brand" },
-            { field: "mbs", width: 150, headerName: "MBS" },
-            { field: "total_storage", width: 150, headerName: "Total Storage" },
-            { field: "type", width: 150, headerName: "Type" },
-            { field: "watts", width: 150, headerName: "Watts" },
+            {
+              field: "stock",
+              headerName: "Stock",
+            },
+            {
+              field: "brand",
+              headerName: "Brand",
+            },
+            {
+              field: "mbs",
+              width: 120,
+              headerName: "MB/S",
+              headerAlign: "left",
+              align: "center",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                params.value + " MB",
+            },
+            {
+              field: "total_storage",
+              width: 150,
+              headerName: "Total Storage",
+              headerAlign: "left",
+              align: "center",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                params.value + " GB",
+            },
+            {
+              field: "type",
+              headerName: "Type",
+            },
+            {
+              field: "watts",
+              width: 120,
+              headerName: "Watts",
+              headerAlign: "left",
+              align: "center",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                params.value + " W",
+            },
             {
               field: "edit",
+              headerName: "Edit options",
               sortable: false,
               filterable: false,
               width: 300,
               renderCell: (params: GridCellParams) => (
-                <div>
-                  <Button
-                    to={"edit/" + params.row.product_id}
-                    component={RouterLink}
-                  >
-                    General
-                  </Button>
-                  <Button
-                    to={"edit_details/" + params.row.id}
-                    component={RouterLink}
-                  >
-                    Details
+                <ButtonGroup>
+                  <Button to={"edit/" + params.row.id} component={RouterLink}>
+                    Edit disk storage
                   </Button>
                   <Button onClick={() => handleDelete(params.row.id as string)}>
                     Delete
                   </Button>
-                </div>
+                </ButtonGroup>
               ),
             },
           ] as GridColDef[]
@@ -64,7 +102,7 @@ const DiskStorageTable = ({ rows, handleDelete }: Props) => {
           name: diskStorage.product?.name,
           description: diskStorage.product?.description,
           stock: diskStorage.product?.stock ? "Yes" : "No",
-          price: currencyFormatter.format(diskStorage.product!.price),
+          price: diskStorage.product!.price,
           brand: diskStorage.product?.brand || "Not found",
           mbs: diskStorage.mbs,
           total_storage: diskStorage.total_storage,

@@ -1,5 +1,10 @@
-import { Box, Button } from "@material-ui/core";
-import { DataGrid, GridCellParams, GridColDef } from "@material-ui/data-grid";
+import { Box, Button, ButtonGroup } from "@material-ui/core";
+import {
+  DataGrid,
+  GridCellParams,
+  GridColDef,
+  ValueFormatterParams,
+} from "@material-ui/data-grid";
 import { IPowerSupply } from "src/types";
 import CustomToolbar from "../CustomToolbar";
 import { Link as RouterLink } from "react-router-dom";
@@ -22,36 +27,41 @@ const PowerSupplyTable = ({ rows, handleDelete }: Props) => {
             { field: "description", width: 200, headerName: "Description" },
             {
               field: "price",
-              width: 120,
+              width: 140,
               headerName: "Price",
+              headerAlign: "left",
+              align: "center",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                currencyFormatter.format(Number(params.value)),
             },
             { field: "stock", width: 100, headerName: "Stock" },
             { field: "brand", width: 100, headerName: "Brand" },
             { field: "certification", width: 150, headerName: "Certification" },
-            { field: "watts", width: 150, headerName: "Watts" },
+            {
+              field: "watts",
+              headerName: "Watts",
+              headerAlign: "left",
+              align: "center",
+              type: "number",
+              valueFormatter: (params: ValueFormatterParams) =>
+                params.value + " W",
+            },
             {
               field: "edit",
+              headerName: "Edit options",
               sortable: false,
               filterable: false,
               width: 300,
               renderCell: (params: GridCellParams) => (
-                <div>
-                  <Button
-                    to={"edit/" + params.row.product_id}
-                    component={RouterLink}
-                  >
-                    General
-                  </Button>
-                  <Button
-                    to={"edit_details/" + params.row.id}
-                    component={RouterLink}
-                  >
-                    Details
+                <ButtonGroup>
+                  <Button to={"edit/" + params.row.id} component={RouterLink}>
+                    Edit power supply
                   </Button>
                   <Button onClick={() => handleDelete(params.row.id as string)}>
                     Delete
                   </Button>
-                </div>
+                </ButtonGroup>
               ),
             },
           ] as GridColDef[]
@@ -62,7 +72,7 @@ const PowerSupplyTable = ({ rows, handleDelete }: Props) => {
           name: powerSupply.product?.name,
           description: powerSupply.product?.description,
           stock: powerSupply.product?.stock ? "Yes" : "No",
-          price: currencyFormatter.format(powerSupply.product!.price),
+          price: powerSupply.product!.price,
           brand: powerSupply.product?.brand || "Not found",
           certification: powerSupply.certification,
           watts: powerSupply.watts,
