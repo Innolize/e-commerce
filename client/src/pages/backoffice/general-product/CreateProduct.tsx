@@ -10,18 +10,18 @@ import {
 import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
+import { Redirect } from "react-router-dom";
+import InputField from "src/components/InputField";
+import LoadingButton from "src/components/LoadingButton";
+import SelectField from "src/components/SelectField";
+import SnackbarAlert from "src/components/SnackbarAlert";
+import { IProductForm } from "src/form_types";
 import useBrands from "src/hooks/brandHooks/useBrands";
+import useCategories from "src/hooks/categoryHooks/useCategories";
 import useCreateProduct from "src/hooks/productHooks/generalProducts/useCreateProduct";
 import { IBrand, ICategory } from "src/types";
 import { createProductSchema } from "src/utils/yup.validations";
-import InputField from "../../components/InputField";
-import SelectField from "../../components/SelectField";
 import { v4 as uuidv4 } from "uuid";
-import { Redirect } from "react-router-dom";
-import LoadingButton from "../../components/LoadingButton";
-import { IProductForm } from "src/form_types";
-import useCategories from "src/hooks/categoryHooks/useCategories";
-import SnackbarAlert from "src/components/SnackbarAlert";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {

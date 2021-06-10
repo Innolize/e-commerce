@@ -11,11 +11,11 @@ import { useState } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
-import useEditCategory from "../../hooks/categoryHooks/useEditCategory";
-import useGetCategoryById from "../../hooks/categoryHooks/useGetCategoryById";
-import { ICategory } from "../../types";
-import { editCategorySchema } from "../../utils/yup.validations";
 import SnackbarAlert from "src/components/SnackbarAlert";
+import useEditCategory from "src/hooks/categoryHooks/useEditCategory";
+import useGetCategoryById from "src/hooks/categoryHooks/useGetCategoryById";
+import { ICategory } from "src/types";
+import { editCategorySchema } from "src/utils/yup.validations";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -68,7 +68,7 @@ const EditCategory = () => {
       {queryCategory.isError && (
         <Box textAlign="center" mt={12}>
           <Typography variant="h3" color="error">
-            {queryCategory.error.message}
+            Error finding the category.
           </Typography>
         </Box>
       )}

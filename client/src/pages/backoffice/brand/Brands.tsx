@@ -1,10 +1,10 @@
 import { Box, Button, Typography } from "@material-ui/core";
-import useBrands from "../../hooks/brandHooks/useBrands";
+import useBrands from "../../../hooks/brandHooks/useBrands";
 import { Container } from "@material-ui/core";
 import { Link as RouterLink } from "react-router-dom";
 import { useState } from "react";
-import DeleteDialog from "../../components/DeleteDialogs/DeleteDialog";
-import useDeleteBrand from "../../hooks/brandHooks/useDeleteBrand";
+import DeleteDialog from "../../../components/DeleteDialogs/DeleteDialog";
+import useDeleteBrand from "../../../hooks/brandHooks/useDeleteBrand";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import TableLayout from "src/components/Tables/TableLayout";

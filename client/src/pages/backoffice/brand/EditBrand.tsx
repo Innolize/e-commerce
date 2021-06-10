@@ -15,10 +15,10 @@ import { Redirect, useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SnackbarAlert from "src/components/SnackbarAlert";
-import useEditBrand from "../../hooks/brandHooks/useEditBrand";
-import useGetBrandById from "../../hooks/brandHooks/useGetBrandById";
-import { IBrand } from "../../types";
-import { editBrandSchema } from "../../utils/yup.validations";
+import useEditBrand from "src/hooks/brandHooks/useEditBrand";
+import useGetBrandById from "src/hooks/brandHooks/useGetBrandById";
+import { IBrand } from "src/types";
+import { editBrandSchema } from "src/utils/yup.validations";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -71,7 +71,7 @@ const EditBrand = () => {
       {queryBrand.isError && (
         <Box textAlign="center" mt={12}>
           <Typography variant="h3" color="error">
-            {queryBrand.error.message}
+            Error finding the brand.
           </Typography>
         </Box>
       )}

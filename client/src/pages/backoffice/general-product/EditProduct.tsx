@@ -15,16 +15,16 @@ import Image from "material-ui-image";
 import React, { useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
+import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
+import SnackbarAlert from "src/components/SnackbarAlert";
 import useBrands from "src/hooks/brandHooks/useBrands";
 import useCategories from "src/hooks/categoryHooks/useCategories";
 import useEditProduct from "src/hooks/productHooks/generalProducts/useEditProduct";
 import useGetProductById from "src/hooks/productHooks/generalProducts/useGetProductById";
 import { IBrand, ICategory } from "src/types";
-import { editProductSchema } from "../../utils/yup.validations";
+import { editProductSchema } from "src/utils/yup.validations";
 import { v4 as uuidv4 } from "uuid";
-import LoadingButton from "src/components/LoadingButton";
-import SnackbarAlert from "src/components/SnackbarAlert";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -84,7 +84,7 @@ const EditProduct = () => {
       {queryProduct.isError && (
         <Box textAlign="center" mt={12}>
           <Typography variant="h3" color="error">
-            {queryProduct.error.message}
+            Error finding the product.
           </Typography>
         </Box>
       )}

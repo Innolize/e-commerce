@@ -1,13 +1,13 @@
 import { Box, Button, Container, Typography } from "@material-ui/core";
-import useCategories from "../../hooks/categoryHooks/useCategories";
-import useDeleteCategory from "../../hooks/categoryHooks/useDeleteCategory";
-import DeleteDialog from "../../components/DeleteDialogs/DeleteDialog";
-import { Link as RouterLink } from "react-router-dom";
-import { useState } from "react";
-import CategoryTable from "src/components/Tables/CategoryTable";
-import SnackbarAlert from "src/components/SnackbarAlert";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import DeleteDialog from "src/components/DeleteDialogs/DeleteDialog";
+import SnackbarAlert from "src/components/SnackbarAlert";
+import CategoryTable from "src/components/Tables/CategoryTable";
 import TableLayout from "src/components/Tables/TableLayout";
+import useCategories from "src/hooks/categoryHooks/useCategories";
+import useDeleteCategory from "src/hooks/categoryHooks/useDeleteCategory";
 
 const Categories = () => {
   const query = useCategories();
