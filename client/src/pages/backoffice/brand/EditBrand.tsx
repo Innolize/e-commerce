@@ -155,7 +155,9 @@ const EditBrand = () => {
                 </Box>
                 {editBrand.isError && (
                   <Box my={2}>
-                    <Alert severity="error">{editBrand.error?.message}</Alert>
+                    <Alert severity="error">
+                      {editBrand.error?.message || "Something went wrong."}
+                    </Alert>
                   </Box>
                 )}
                 <Box>

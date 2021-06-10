@@ -72,7 +72,7 @@ const CreateCategory = () => {
               {createCategory.isError && (
                 <Box my={2}>
                   <Alert severity="error">
-                    {createCategory.error?.message}
+                    {createCategory.error?.message || "Something went wrong."}
                   </Alert>
                 </Box>
               )}

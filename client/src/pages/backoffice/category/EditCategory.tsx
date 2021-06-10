@@ -114,7 +114,7 @@ const EditCategory = () => {
                 {editCategory.isError && (
                   <Box my={2}>
                     <Alert severity="error">
-                      {editCategory.error?.message}
+                      {editCategory.error?.message || "Something went wrong."}
                     </Alert>
                   </Box>
                 )}

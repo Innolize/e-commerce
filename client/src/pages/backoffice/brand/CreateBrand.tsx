@@ -92,7 +92,9 @@ const CreateBrand = () => {
 
               {createBrand.isError && (
                 <Box my={2}>
-                  <Alert severity="error">{createBrand.error?.message}</Alert>
+                  <Alert severity="error">
+                    {createBrand.error?.message || "Something went wrong."}
+                  </Alert>
                 </Box>
               )}
 

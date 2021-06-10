@@ -162,7 +162,9 @@ const CreateProduct = () => {
 
               {createProduct.isError && (
                 <Box my={2}>
-                  <Alert severity="error">{createProduct.error?.message}</Alert>
+                  <Alert severity="error">
+                    {createProduct.error?.message || "Something went wrong."}
+                  </Alert>
                 </Box>
               )}
 
