@@ -3,9 +3,9 @@ import { useQuery, useQueryClient } from "react-query";
 import api from "../../../services/api";
 import { IRam } from "../../../types";
 
-export default function useGetRamId(ramId: string) {
+export default function useGetRamById(ramId: string) {
   const queryClient = useQueryClient();
-  return useQuery(
+  return useQuery<IRam, AxiosError>(
     ["rams", ramId],
     () =>
       api
@@ -13,7 +13,7 @@ export default function useGetRamId(ramId: string) {
         .then((res: AxiosResponse<IRam>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            throw new Error(error.response.data.message);
+            throw new Error(error.response.data.error);
           } else {
             throw new Error(error.message);
           }
@@ -21,11 +21,11 @@ export default function useGetRamId(ramId: string) {
     {
       initialData: () => {
         return queryClient
-          .getQueryData<any>("rams")
-          ?.find((b: any) => b.id === parseInt(ramId));
+          .getQueryData<IRam[]>("rams")
+          ?.find((b: IRam) => b.id === parseInt(ramId));
       },
       onError: (e: AxiosError) => {
-        console.log(e.message);
+        console.log(e);
       },
     }
   );

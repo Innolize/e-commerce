@@ -1,15 +1,15 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { useQueryClient, useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import api from "../../../services/api";
-import { IProduct } from "../../../types";
+import { IMotherboard } from "../../../types";
 
-export default function useEditProduct() {
+export default function useEditMotherboard() {
   const queryClient = useQueryClient();
   return useMutation(
     (values: FormData) =>
       api
         .put(`/api/motherboard/`, values)
-        .then((res: AxiosResponse<IProduct>) => res.data)
+        .then((res: AxiosResponse<IMotherboard>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
             throw new Error(error.response.data.message);
@@ -19,7 +19,7 @@ export default function useEditProduct() {
         }),
     {
       retry: false,
-      onSuccess: (product: IProduct) => {
+      onSuccess: () => {
         queryClient.invalidateQueries("motherboards");
       },
       onError: (e: AxiosError) => {

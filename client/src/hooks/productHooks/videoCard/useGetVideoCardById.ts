@@ -5,7 +5,7 @@ import { IVideoCard } from "../../../types";
 
 export default function useGetVideoCardById(videoCardId: string) {
   const queryClient = useQueryClient();
-  return useQuery(
+  return useQuery<IVideoCard, AxiosError>(
     ["video_cards", videoCardId],
     () =>
       api
@@ -13,7 +13,7 @@ export default function useGetVideoCardById(videoCardId: string) {
         .then((res: AxiosResponse<IVideoCard>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            throw new Error(error.response.data.message);
+            throw new Error(error.response.data.error);
           } else {
             throw new Error(error.message);
           }
@@ -21,11 +21,11 @@ export default function useGetVideoCardById(videoCardId: string) {
     {
       initialData: () => {
         return queryClient
-          .getQueryData<any>("video_cards")
-          ?.find((b: any) => b.id === parseInt(videoCardId));
+          .getQueryData<IVideoCard[]>("video_cards")
+          ?.find((b: IVideoCard) => b.id === parseInt(videoCardId));
       },
       onError: (e: AxiosError) => {
-        console.log(e.message);
+        console.log(e);
       },
     }
   );

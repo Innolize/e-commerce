@@ -5,7 +5,7 @@ import { IPowerSupply } from "../../../types";
 
 export default function useGetPowerSupplyById(powerSupplyId: string) {
   const queryClient = useQueryClient();
-  return useQuery(
+  return useQuery<IPowerSupply, AxiosError>(
     ["power_supplies", powerSupplyId],
     () =>
       api
@@ -13,7 +13,7 @@ export default function useGetPowerSupplyById(powerSupplyId: string) {
         .then((res: AxiosResponse<IPowerSupply>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            throw new Error(error.response.data.message);
+            throw new Error(error.response.data.error);
           } else {
             throw new Error(error.message);
           }
@@ -21,11 +21,11 @@ export default function useGetPowerSupplyById(powerSupplyId: string) {
     {
       initialData: () => {
         return queryClient
-          .getQueryData<any>("power_supplies")
-          ?.find((b: any) => b.id === parseInt(powerSupplyId));
+          .getQueryData<IPowerSupply[]>("power_supplies")
+          ?.find((b: IPowerSupply) => b.id === parseInt(powerSupplyId));
       },
       onError: (e: AxiosError) => {
-        console.log(e.message);
+        console.log(e);
       },
     }
   );

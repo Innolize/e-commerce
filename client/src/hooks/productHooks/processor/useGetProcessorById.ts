@@ -5,7 +5,7 @@ import { IProcessor } from "../../../types";
 
 export default function useGetProcessorById(processorId: string) {
   const queryClient = useQueryClient();
-  return useQuery(
+  return useQuery<IProcessor, AxiosError>(
     ["processors", processorId],
     () =>
       api
@@ -13,7 +13,7 @@ export default function useGetProcessorById(processorId: string) {
         .then((res: AxiosResponse<IProcessor>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            throw new Error(error.response.data.message);
+            throw new Error(error.response.data.error);
           } else {
             throw new Error(error.message);
           }
@@ -21,11 +21,11 @@ export default function useGetProcessorById(processorId: string) {
     {
       initialData: () => {
         return queryClient
-          .getQueryData<any>("processors")
-          ?.find((b: any) => b.id === parseInt(processorId));
+          .getQueryData<IProcessor[]>("processors")
+          ?.find((b: IProcessor) => b.id === parseInt(processorId));
       },
       onError: (e: AxiosError) => {
-        console.log(e.message);
+        console.log(e);
       },
     }
   );

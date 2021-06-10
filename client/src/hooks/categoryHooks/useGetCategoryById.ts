@@ -13,20 +13,19 @@ export default function useGetCategoryById(categoryId: string) {
         .then((res: AxiosResponse<ICategory>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            throw new Error(error.response.data.message);
+            throw new Error(error.response.data.error);
           } else {
             throw new Error(error.message);
           }
         }),
     {
-      retry: false,
       initialData: () => {
         return queryClient
           .getQueryData<any>("categories")
           ?.find((b: any) => b.id === parseInt(categoryId));
       },
       onError: (e: AxiosError) => {
-        console.log(e.message);
+        console.log(e);
       },
     }
   );

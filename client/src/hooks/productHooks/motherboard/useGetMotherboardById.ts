@@ -3,17 +3,17 @@ import { useQuery, useQueryClient } from "react-query";
 import api from "../../../services/api";
 import { IMotherboard } from "../../../types";
 
-export default function useGetProductId(productId: string) {
+export default function useGetMotherboardById(motherboardId: string) {
   const queryClient = useQueryClient();
-  return useQuery(
-    ["motherboards", productId],
+  return useQuery<IMotherboard, AxiosError>(
+    ["motherboards", motherboardId],
     () =>
       api
-        .get(`/api/motherboard/${productId}`)
+        .get(`/api/motherboard/${motherboardId}`)
         .then((res: AxiosResponse<IMotherboard>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            throw new Error(error.response.data.message);
+            throw new Error(error.response.data.error);
           } else {
             throw new Error(error.message);
           }
@@ -21,11 +21,11 @@ export default function useGetProductId(productId: string) {
     {
       initialData: () => {
         return queryClient
-          .getQueryData<any>("motherboards")
-          ?.find((b: any) => b.id === parseInt(productId));
+          .getQueryData<IMotherboard[]>("motherboards")
+          ?.find((b: IMotherboard) => b.id === parseInt(motherboardId));
       },
       onError: (e: AxiosError) => {
-        console.log(e.message);
+        console.log(e);
       },
     }
   );

@@ -13,7 +13,7 @@ export default function useGetProductById(productId: string) {
         .then((res: AxiosResponse<IProduct>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            throw new Error(error.response.data.message);
+            throw new Error(error.response.data.error);
           } else {
             throw new Error(error.message);
           }
@@ -25,7 +25,7 @@ export default function useGetProductById(productId: string) {
           ?.find((b: any) => b.id === parseInt(productId));
       },
       onError: (e: AxiosError) => {
-        console.log(e.message);
+        console.log(e);
       },
     }
   );

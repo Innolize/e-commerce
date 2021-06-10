@@ -5,7 +5,7 @@ import { IDiskStorage } from "../../../types";
 
 export default function useGetDiskStorageById(diskStorageId: string) {
   const queryClient = useQueryClient();
-  return useQuery(
+  return useQuery<IDiskStorage, AxiosError>(
     ["disk_storage", diskStorageId],
     () =>
       api
@@ -13,7 +13,7 @@ export default function useGetDiskStorageById(diskStorageId: string) {
         .then((res: AxiosResponse<IDiskStorage>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
-            throw new Error(error.response.data.message);
+            throw new Error(error.response.data.error);
           } else {
             throw new Error(error.message);
           }
@@ -21,11 +21,11 @@ export default function useGetDiskStorageById(diskStorageId: string) {
     {
       initialData: () => {
         return queryClient
-          .getQueryData<any>("disk_storage")
-          ?.find((b: any) => b.id === parseInt(diskStorageId));
+          .getQueryData<IDiskStorage[]>("disk_storage")
+          ?.find((b: IDiskStorage) => b.id === parseInt(diskStorageId));
       },
       onError: (e: AxiosError) => {
-        console.log(e.message);
+        console.log(e);
       },
     }
   );

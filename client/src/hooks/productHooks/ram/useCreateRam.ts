@@ -1,7 +1,7 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQueryClient, useMutation } from "react-query";
 import api from "../../../services/api";
-import { IRam } from "../../../types";
+import { IRam, ServerError } from "../../../types";
 
 export default function useCreateRam() {
   const queryClient = useQueryClient();
@@ -10,9 +10,13 @@ export default function useCreateRam() {
       api
         .post("/api/ram", values)
         .then((res: AxiosResponse<IRam>) => res.data)
-        .catch((error: AxiosError) => {
+        .catch((error: AxiosError<ServerError>) => {
           if (error.response) {
-            throw new Error(error.response.data.message);
+            if (error.response.data.errors) {
+              throw new Error(Object.values(error.response.data.errors[0])[0]);
+            } else {
+              throw new Error(error.response.data.message);
+            }
           } else {
             throw new Error(error.message);
           }
