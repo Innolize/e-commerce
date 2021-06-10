@@ -2,7 +2,7 @@ import { Box, Container, Input, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import { ErrorMessage, Form, Formik } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
@@ -33,10 +33,15 @@ const CreateBrand = () => {
   const classes = useStyles();
   const [redirect, setRedirect] = useState(false);
 
-  createBrand.isSuccess &&
-    setTimeout(() => {
-      setRedirect(true);
-    }, 2500);
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (createBrand.isSuccess) {
+      timer = setTimeout(() => {
+        setRedirect(true);
+      }, 2000);
+    }
+    return () => clearTimeout(timer);
+  }, [createBrand.isSuccess]);
 
   return (
     <Container>
@@ -48,6 +53,7 @@ const CreateBrand = () => {
       )}
 
       {redirect && <Redirect to="/admin/brands" />}
+
       <Box className={classes.formContainer}>
         <Formik
           initialValues={{ name: "", logo: "" }}

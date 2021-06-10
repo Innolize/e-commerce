@@ -71,7 +71,10 @@ const VideoCardTable = ({ rows, handleDelete }: Props) => {
               width: 300,
               renderCell: (params: GridCellParams) => (
                 <ButtonGroup>
-                  <Button to={"edit/" + params.row.id} component={RouterLink}>
+                  <Button
+                    to={"edit/video-card/" + params.row.id}
+                    component={RouterLink}
+                  >
                     Edit video card
                   </Button>
                   <Button onClick={() => handleDelete(params.row.id as string)}>

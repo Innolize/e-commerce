@@ -72,7 +72,10 @@ const ProcessorTable = ({ rows, handleDelete }: Props) => {
               width: 300,
               renderCell: (params: GridCellParams) => (
                 <ButtonGroup>
-                  <Button to={"edit/" + params.row.id} component={RouterLink}>
+                  <Button
+                    to={"edit/processor/" + params.row.id}
+                    component={RouterLink}
+                  >
                     Edit processor
                   </Button>
                   <Button onClick={() => handleDelete(params.row.id as string)}>

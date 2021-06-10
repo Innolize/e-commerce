@@ -55,7 +55,10 @@ const PowerSupplyTable = ({ rows, handleDelete }: Props) => {
               width: 300,
               renderCell: (params: GridCellParams) => (
                 <ButtonGroup>
-                  <Button to={"edit/" + params.row.id} component={RouterLink}>
+                  <Button
+                    to={"edit/power-supply/" + params.row.id}
+                    component={RouterLink}
+                  >
                     Edit power supply
                   </Button>
                   <Button onClick={() => handleDelete(params.row.id as string)}>
