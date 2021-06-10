@@ -11,15 +11,17 @@ import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
-import { IProcessorForm, IProductForm } from "src/form_types";
+import InputField from "src/components/InputField";
+import LoadingButton from "src/components/LoadingButton";
+import SelectField from "src/components/SelectField";
+import SnackbarAlert from "src/components/SnackbarAlert";
+import { IProductForm, IRamForm } from "src/form_types";
 import useBrands from "src/hooks/brandHooks/useBrands";
-import useCreateProcessor from "src/hooks/productHooks/processor/useCreateProcessor";
-import { IBrand, ICategory } from "src/types";
-import { processorSchema } from "src/utils/yup.pcPickerValidations";
+import useCreateRam from "src/hooks/productHooks/ram/useCreateRam";
+import { IBrand } from "src/types";
+import { RAM_ID } from "src/utils/categoriesIds";
+import { ramSchema } from "src/utils/yup.pcPickerValidations";
 import { v4 as uuidv4 } from "uuid";
-import InputField from "../InputField";
-import LoadingButton from "../LoadingButton";
-import SelectField from "../SelectField";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -39,34 +41,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  category: ICategory;
-}
-
-const ProcessorForm = ({ category }: Props) => {
+const RamForm = () => {
   const classes = useStyles();
-  const createProcessor = useCreateProcessor();
+  const createRam = useCreateRam();
   const queryBrands = useBrands();
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (createProcessor.isSuccess) {
+    if (createRam.isSuccess) {
       timer = setTimeout(() => {
         setRedirect(true);
       }, 2000);
     }
     return () => clearTimeout(timer);
-  }, [createProcessor.isSuccess]);
+  }, [createRam.isSuccess]);
 
   return (
     <Container>
-      {createProcessor.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">
-            Product created successfully. You will be redirected soon...
-          </Alert>
-        </Box>
+      {createRam.isSuccess && (
+        <SnackbarAlert
+          severity="success"
+          text="Ram created successfully. You will be redirected soon..."
+        ></SnackbarAlert>
       )}
 
       <Box className={classes.formContainer}>
@@ -77,14 +74,15 @@ const ProcessorForm = ({ category }: Props) => {
             description: "",
             price: "",
             stock: "",
-            category: category.id.toString(),
+            category: RAM_ID.toString(),
             brand: "",
-            socket: "",
-            frecuency: "",
-            cores: "",
+            ram_version: "",
+            memory: "",
+            min_frec: "",
+            max_frec: "",
             watts: "",
           }}
-          onSubmit={(data: IProductForm & IProcessorForm) => {
+          onSubmit={(data: IProductForm & IRamForm) => {
             const formData = new FormData();
             formData.append("name", data.name);
             formData.append("description", data.description);
@@ -93,17 +91,18 @@ const ProcessorForm = ({ category }: Props) => {
             formData.append("id_brand", data.brand);
             formData.append("id_category", data.category);
             formData.append("product_image", data.image);
-            formData.append("socket", data.socket);
-            formData.append("cores", data.cores);
-            formData.append("frecuency", data.frecuency);
+            formData.append("memory", data.memory);
+            formData.append("ram_version", data.ram_version);
+            formData.append("min_frec", data.min_frec);
+            formData.append("max_frec", data.max_frec);
             formData.append("watts", data.watts);
-            createProcessor.mutate(formData);
+            createRam.mutate(formData);
           }}
-          validationSchema={processorSchema}
+          validationSchema={ramSchema}
         >
           {({ setFieldValue }) => (
             <Form className={classes.form} encType="multipart/form-data">
-              <Typography variant="h4">Create a: {category.name}</Typography>
+              <Typography variant="h4">Create a ram</Typography>
               <Box>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
@@ -136,19 +135,36 @@ const ProcessorForm = ({ category }: Props) => {
               <Field hidden name="category" label="Category"></Field>
 
               <Box>
+                <SelectField
+                  label="RAM Version"
+                  placeholder="RAM Version"
+                  name="ram_version"
+                >
+                  <MenuItem value="DDR1">DDR1</MenuItem>
+                  <MenuItem value="DDR2">DDR2</MenuItem>
+                  <MenuItem value="DDR3">DDR3</MenuItem>
+                  <MenuItem value="DDR4">DDR4</MenuItem>
+                </SelectField>
+              </Box>
+
+              <Box>
                 <InputField
-                  label="Frequency"
-                  placeholder="Frequency"
-                  name="frecuency"
+                  label="Max Frequency"
+                  placeholder="Max Frequency"
+                  name="max_frec"
                 />
               </Box>
 
               <Box>
-                <InputField label="Socket" placeholder="Socket" name="socket" />
+                <InputField
+                  label="Min Frequency"
+                  placeholder="Min Frequency"
+                  name="min_frec"
+                />
               </Box>
 
               <Box>
-                <InputField label="Cores" placeholder="Cores" name="cores" />
+                <InputField label="Memory" placeholder="Memory" name="memory" />
               </Box>
 
               <Box>
@@ -182,20 +198,18 @@ const ProcessorForm = ({ category }: Props) => {
                 />
               </Box>
 
-              {createProcessor.isError && (
+              {createRam.isError && (
                 <Box my={2}>
-                  <Alert severity="error">
-                    {createProcessor.error?.message}
-                  </Alert>
+                  <Alert severity="error">{createRam.error?.message}</Alert>
                 </Box>
               )}
 
-              {redirect && <Redirect to={`/admin/products/${category.id}`} />}
+              {redirect && <Redirect to={`/admin/build/ram`} />}
 
               <Box my={3}>
-                {createProcessor.isLoading ? (
+                {createRam.isLoading ? (
                   <LoadingButton isSubmitting name="Submiting..." />
-                ) : createProcessor.isSuccess ? (
+                ) : createRam.isSuccess ? (
                   <LoadingButton isSuccess name="Submited" />
                 ) : (
                   <LoadingButton name="Submit" />
@@ -209,4 +223,4 @@ const ProcessorForm = ({ category }: Props) => {
   );
 };
 
-export default ProcessorForm;
+export default RamForm;

@@ -11,15 +11,17 @@ import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
-import { IPowerSupplyForm, IProductForm } from "src/form_types";
+import InputField from "src/components/InputField";
+import LoadingButton from "src/components/LoadingButton";
+import SelectField from "src/components/SelectField";
+import SnackbarAlert from "src/components/SnackbarAlert";
+import { IDiskStorageForm, IProductForm } from "src/form_types";
 import useBrands from "src/hooks/brandHooks/useBrands";
-import useCreatePowerSupply from "src/hooks/productHooks/powerSupply/useCreatePowerSupply";
-import { IBrand, ICategory, PWS_CERTIFICATION } from "src/types";
-import { powerSupplySchema } from "src/utils/yup.pcPickerValidations";
+import useCreateDiskStorage from "src/hooks/productHooks/diskStorage/useCreateDiskStorage";
+import { DISK_TYPE, IBrand } from "src/types";
+import { DISK_STORAGE_ID } from "src/utils/categoriesIds";
+import { diskStorageSchema } from "src/utils/yup.pcPickerValidations";
 import { v4 as uuidv4 } from "uuid";
-import InputField from "../InputField";
-import LoadingButton from "../LoadingButton";
-import SelectField from "../SelectField";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -39,34 +41,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  category: ICategory;
-}
-
-const PowerSupplyForm = ({ category }: Props) => {
+const DiskStorageForm = () => {
   const classes = useStyles();
-  const createPowerSupply = useCreatePowerSupply();
+  const createDiskStorage = useCreateDiskStorage();
   const queryBrands = useBrands();
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (createPowerSupply.isSuccess) {
+    if (createDiskStorage.isSuccess) {
       timer = setTimeout(() => {
         setRedirect(true);
       }, 2000);
     }
     return () => clearTimeout(timer);
-  }, [createPowerSupply.isSuccess]);
+  }, [createDiskStorage.isSuccess]);
 
   return (
     <Container>
-      {createPowerSupply.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">
-            Product created successfully. You will be redirected soon...
-          </Alert>
-        </Box>
+      {createDiskStorage.isSuccess && (
+        <SnackbarAlert
+          severity="success"
+          text="Disk storage created successfully. You will be redirected soon..."
+        ></SnackbarAlert>
       )}
 
       <Box className={classes.formContainer}>
@@ -76,13 +73,15 @@ const PowerSupplyForm = ({ category }: Props) => {
             image: "",
             description: "",
             price: "",
-            stock: "",
-            category: category.id.toString(),
+            stock: "true",
+            category: DISK_STORAGE_ID.toString(),
             brand: "",
-            certification: "",
+            mbs: "",
+            type: "",
+            total_storage: "",
             watts: "",
           }}
-          onSubmit={(data: IProductForm & IPowerSupplyForm) => {
+          onSubmit={(data: IProductForm & IDiskStorageForm) => {
             const formData = new FormData();
             formData.append("name", data.name);
             formData.append("description", data.description);
@@ -91,18 +90,22 @@ const PowerSupplyForm = ({ category }: Props) => {
             formData.append("id_brand", data.brand);
             formData.append("id_category", data.category);
             formData.append("product_image", data.image);
-            formData.append("certification", data.certification);
+            formData.append("type", data.type);
+            formData.append("mbs", data.mbs);
+            formData.append("total_storage", data.total_storage);
             formData.append("watts", data.watts);
-            createPowerSupply.mutate(formData);
+            createDiskStorage.mutate(formData);
           }}
-          validationSchema={powerSupplySchema}
+          validationSchema={diskStorageSchema}
         >
           {({ setFieldValue }) => (
             <Form className={classes.form} encType="multipart/form-data">
-              <Typography variant="h4">Create a: {category.name}</Typography>
+              <Typography variant="h4">Create a disk storage</Typography>
+
               <Box>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
+
               <Box>
                 <InputField
                   label="Description"
@@ -110,6 +113,7 @@ const PowerSupplyForm = ({ category }: Props) => {
                   name="description"
                 />
               </Box>
+
               <Box>
                 <InputField
                   type="number"
@@ -132,15 +136,40 @@ const PowerSupplyForm = ({ category }: Props) => {
               <Field hidden name="category" label="Category"></Field>
 
               <Box>
-                <SelectField label="Certification" name="certification">
-                  {PWS_CERTIFICATION.map((certification: string) => (
-                    <MenuItem value={certification}>{certification}</MenuItem>
+                <InputField
+                  label="Total Storage (GB)"
+                  placeholder="Total Storage (GB)"
+                  name="total_storage"
+                  type="number"
+                />
+              </Box>
+
+              <Box>
+                <InputField
+                  type="number"
+                  label="MB/S"
+                  placeholder="MB/S"
+                  name="mbs"
+                />
+              </Box>
+
+              <Box>
+                <SelectField label="Type" name="type">
+                  {DISK_TYPE.map((disk: string) => (
+                    <MenuItem key={uuidv4()} value={disk}>
+                      {disk}
+                    </MenuItem>
                   ))}
                 </SelectField>
               </Box>
 
               <Box>
-                <InputField label="Watts" placeholder="Watts" name="watts" />
+                <InputField
+                  type="number"
+                  label="Watts"
+                  placeholder="Watts"
+                  name="watts"
+                />
               </Box>
 
               <Box display="flex" alignItems="center">
@@ -170,20 +199,20 @@ const PowerSupplyForm = ({ category }: Props) => {
                 />
               </Box>
 
-              {createPowerSupply.isError && (
+              {createDiskStorage.isError && (
                 <Box my={2}>
                   <Alert severity="error">
-                    {createPowerSupply.error?.message}
+                    {createDiskStorage.error?.message}
                   </Alert>
                 </Box>
               )}
 
-              {redirect && <Redirect to={`/admin/products/${category.id}`} />}
+              {redirect && <Redirect to={`/admin/build/disk-storage`} />}
 
               <Box my={3}>
-                {createPowerSupply.isLoading ? (
+                {createDiskStorage.isLoading ? (
                   <LoadingButton isSubmitting name="Submiting..." />
-                ) : createPowerSupply.isSuccess ? (
+                ) : createDiskStorage.isSuccess ? (
                   <LoadingButton isSuccess name="Submited" />
                 ) : (
                   <LoadingButton name="Submit" />
@@ -197,4 +226,4 @@ const PowerSupplyForm = ({ category }: Props) => {
   );
 };
 
-export default PowerSupplyForm;
+export default DiskStorageForm;

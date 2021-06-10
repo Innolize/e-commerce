@@ -10,16 +10,18 @@ import {
 import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
-import useBrands from "src/hooks/brandHooks/useBrands";
-import { IBrand, ICategory } from "src/types";
-import InputField from "../InputField";
-import SelectField from "../SelectField";
-import { v4 as uuidv4 } from "uuid";
 import { Redirect } from "react-router-dom";
-import LoadingButton from "../LoadingButton";
-import useCreateRam from "src/hooks/productHooks/ram/useCreateRam";
-import { IProductForm, IRamForm } from "src/form_types";
-import { ramSchema } from "src/utils/yup.pcPickerValidations";
+import InputField from "src/components/InputField";
+import LoadingButton from "src/components/LoadingButton";
+import SelectField from "src/components/SelectField";
+import SnackbarAlert from "src/components/SnackbarAlert";
+import { IMotherboardForm, IProductForm } from "src/form_types";
+import useBrands from "src/hooks/brandHooks/useBrands";
+import useCreateMotherboard from "src/hooks/productHooks/motherboard/useCreateMotherboard";
+import { IBrand, RAM_VERSION, SIZE } from "src/types";
+import { MOTHERBOARD_ID } from "src/utils/categoriesIds";
+import { motherboardSchema } from "src/utils/yup.pcPickerValidations";
+import { v4 as uuidv4 } from "uuid";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -39,34 +41,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  category: ICategory;
-}
-
-const RamForm = ({ category }: Props) => {
+const MotherboardForm = () => {
   const classes = useStyles();
-  const createRam = useCreateRam();
+  const createMotherboard = useCreateMotherboard();
   const queryBrands = useBrands();
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (createRam.isSuccess) {
+    if (createMotherboard.isSuccess) {
       timer = setTimeout(() => {
         setRedirect(true);
       }, 2000);
     }
     return () => clearTimeout(timer);
-  }, [createRam.isSuccess]);
+  }, [createMotherboard.isSuccess]);
 
   return (
     <Container>
-      {createRam.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">
-            Product created successfully. You will be redirected soon...
-          </Alert>
-        </Box>
+      {createMotherboard.isSuccess && (
+        <SnackbarAlert
+          severity="success"
+          text="Motherboard created successfully. You will be redirected soon..."
+        ></SnackbarAlert>
       )}
 
       <Box className={classes.formContainer}>
@@ -76,16 +73,19 @@ const RamForm = ({ category }: Props) => {
             image: "",
             description: "",
             price: "",
-            stock: "",
-            category: category.id.toString(),
+            stock: "true",
+            category: MOTHERBOARD_ID.toString(),
             brand: "",
+            cpu_socket: "",
+            cpu_brand: "",
             ram_version: "",
-            memory: "",
             min_frec: "",
             max_frec: "",
+            video_socket: "",
+            model_size: "",
             watts: "",
           }}
-          onSubmit={(data: IProductForm & IRamForm) => {
+          onSubmit={(data: IProductForm & IMotherboardForm) => {
             const formData = new FormData();
             formData.append("name", data.name);
             formData.append("description", data.description);
@@ -94,18 +94,21 @@ const RamForm = ({ category }: Props) => {
             formData.append("id_brand", data.brand);
             formData.append("id_category", data.category);
             formData.append("product_image", data.image);
-            formData.append("memory", data.memory);
+            formData.append("cpu_socket", data.cpu_socket);
+            formData.append("cpu_brand", data.cpu_brand);
             formData.append("ram_version", data.ram_version);
             formData.append("min_frec", data.min_frec);
             formData.append("max_frec", data.max_frec);
+            formData.append("video_socket", data.video_socket);
+            formData.append("model_size", data.model_size);
             formData.append("watts", data.watts);
-            createRam.mutate(formData);
+            createMotherboard.mutate(formData);
           }}
-          validationSchema={ramSchema}
+          validationSchema={motherboardSchema}
         >
           {({ setFieldValue }) => (
             <Form className={classes.form} encType="multipart/form-data">
-              <Typography variant="h4">Create a: {category.name}</Typography>
+              <Typography variant="h4">Create a Motherboard</Typography>
               <Box>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
@@ -138,20 +141,41 @@ const RamForm = ({ category }: Props) => {
               <Field hidden name="category" label="Category"></Field>
 
               <Box>
+                <InputField
+                  label="CPU Socket"
+                  placeholder="CPU Socket"
+                  name="cpu_socket"
+                />
+              </Box>
+
+              <Box>
+                <SelectField
+                  label="CPU Brand"
+                  placeholder="CPU Brand"
+                  name="cpu_brand"
+                >
+                  <MenuItem value="INTEL">INTEL</MenuItem>
+                  <MenuItem value="AMD">AMD</MenuItem>
+                </SelectField>
+              </Box>
+
+              <Box>
                 <SelectField
                   label="RAM Version"
                   placeholder="RAM Version"
                   name="ram_version"
                 >
-                  <MenuItem value="DDR1">DDR1</MenuItem>
-                  <MenuItem value="DDR2">DDR2</MenuItem>
-                  <MenuItem value="DDR3">DDR3</MenuItem>
-                  <MenuItem value="DDR4">DDR4</MenuItem>
+                  {RAM_VERSION.map((ram: string) => (
+                    <MenuItem key={uuidv4()} value={ram}>
+                      {ram}
+                    </MenuItem>
+                  ))}
                 </SelectField>
               </Box>
 
               <Box>
                 <InputField
+                  type="number"
                   label="Max Frequency"
                   placeholder="Max Frequency"
                   name="max_frec"
@@ -160,6 +184,7 @@ const RamForm = ({ category }: Props) => {
 
               <Box>
                 <InputField
+                  type="number"
                   label="Min Frequency"
                   placeholder="Min Frequency"
                   name="min_frec"
@@ -167,11 +192,34 @@ const RamForm = ({ category }: Props) => {
               </Box>
 
               <Box>
-                <InputField label="Memory" placeholder="Memory" name="memory" />
+                <InputField
+                  label="Video Socket"
+                  placeholder="Video Socket"
+                  name="video_socket"
+                />
               </Box>
 
               <Box>
-                <InputField label="Watts" placeholder="Watts" name="watts" />
+                <SelectField
+                  label="Model Size"
+                  placeholder="Model Size"
+                  name="model_size"
+                >
+                  {SIZE.map((size: string) => (
+                    <MenuItem key={uuidv4()} value={size}>
+                      {size}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Box>
+
+              <Box>
+                <InputField
+                  type="number"
+                  label="Watts"
+                  placeholder="Watts"
+                  name="watts"
+                />
               </Box>
 
               <Box display="flex" alignItems="center">
@@ -201,18 +249,20 @@ const RamForm = ({ category }: Props) => {
                 />
               </Box>
 
-              {createRam.isError && (
+              {createMotherboard.isError && (
                 <Box my={2}>
-                  <Alert severity="error">{createRam.error?.message}</Alert>
+                  <Alert severity="error">
+                    {createMotherboard.error?.message}
+                  </Alert>
                 </Box>
               )}
 
-              {redirect && <Redirect to={`/admin/products/${category.id}`} />}
+              {redirect && <Redirect to={`/admin/build/motherboard`} />}
 
               <Box my={3}>
-                {createRam.isLoading ? (
+                {createMotherboard.isLoading ? (
                   <LoadingButton isSubmitting name="Submiting..." />
-                ) : createRam.isSuccess ? (
+                ) : createMotherboard.isSuccess ? (
                   <LoadingButton isSuccess name="Submited" />
                 ) : (
                   <LoadingButton name="Submit" />
@@ -226,4 +276,4 @@ const RamForm = ({ category }: Props) => {
   );
 };
 
-export default RamForm;
+export default MotherboardForm;

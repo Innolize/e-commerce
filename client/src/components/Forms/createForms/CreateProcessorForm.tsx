@@ -11,15 +11,17 @@ import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
-import { ICabinetForm, IProductForm } from "src/form_types";
+import InputField from "src/components/InputField";
+import LoadingButton from "src/components/LoadingButton";
+import SelectField from "src/components/SelectField";
+import SnackbarAlert from "src/components/SnackbarAlert";
+import { IProcessorForm, IProductForm } from "src/form_types";
 import useBrands from "src/hooks/brandHooks/useBrands";
-import useCreateCabinet from "src/hooks/productHooks/cabinet/useCreateCabinet";
-import { IBrand, ICategory, SIZE } from "src/types";
-import { cabinetSchema } from "src/utils/yup.pcPickerValidations";
+import useCreateProcessor from "src/hooks/productHooks/processor/useCreateProcessor";
+import { IBrand } from "src/types";
+import { PROCESSOR_ID } from "src/utils/categoriesIds";
+import { processorSchema } from "src/utils/yup.pcPickerValidations";
 import { v4 as uuidv4 } from "uuid";
-import InputField from "../InputField";
-import LoadingButton from "../LoadingButton";
-import SelectField from "../SelectField";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -39,36 +41,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  category: ICategory;
-}
-
-const CabinetForm = ({ category }: Props) => {
+const ProcessorForm = () => {
   const classes = useStyles();
-  const createCabinet = useCreateCabinet();
+  const createProcessor = useCreateProcessor();
   const queryBrands = useBrands();
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (createCabinet.isSuccess) {
+    if (createProcessor.isSuccess) {
       timer = setTimeout(() => {
         setRedirect(true);
       }, 2000);
     }
     return () => clearTimeout(timer);
-  }, [createCabinet.isSuccess]);
+  }, [createProcessor.isSuccess]);
 
   return (
     <Container>
-      {createCabinet.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">
-            Product created successfully. You will be redirected soon...
-          </Alert>
-        </Box>
+      {createProcessor.isSuccess && (
+        <SnackbarAlert
+          severity="success"
+          text="Processor created successfully. You will be redirected soon..."
+        ></SnackbarAlert>
       )}
-
       <Box className={classes.formContainer}>
         <Formik
           initialValues={{
@@ -76,13 +72,15 @@ const CabinetForm = ({ category }: Props) => {
             image: "",
             description: "",
             price: "",
-            stock: "",
-            category: category.id.toString(),
+            stock: "true",
+            category: PROCESSOR_ID.toString(),
             brand: "",
-            size: "",
-            generic_pws: "",
+            socket: "",
+            frecuency: "",
+            cores: "",
+            watts: "",
           }}
-          onSubmit={(data: IProductForm & ICabinetForm) => {
+          onSubmit={(data: IProductForm & IProcessorForm) => {
             const formData = new FormData();
             formData.append("name", data.name);
             formData.append("description", data.description);
@@ -91,15 +89,17 @@ const CabinetForm = ({ category }: Props) => {
             formData.append("id_brand", data.brand);
             formData.append("id_category", data.category);
             formData.append("product_image", data.image);
-            formData.append("size", data.size);
-            formData.append("generic_pws", data.generic_pws);
-            createCabinet.mutate(formData);
+            formData.append("socket", data.socket);
+            formData.append("cores", data.cores);
+            formData.append("frecuency", data.frecuency);
+            formData.append("watts", data.watts);
+            createProcessor.mutate(formData);
           }}
-          validationSchema={cabinetSchema}
+          validationSchema={processorSchema}
         >
           {({ setFieldValue }) => (
             <Form className={classes.form} encType="multipart/form-data">
-              <Typography variant="h4">Create a: {category.name}</Typography>
+              <Typography variant="h4">Create a processor</Typography>
               <Box>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
@@ -132,20 +132,33 @@ const CabinetForm = ({ category }: Props) => {
               <Field hidden name="category" label="Category"></Field>
 
               <Box>
-                <SelectField label="Size" name="size">
-                  {SIZE.map((size: string) => (
-                    <MenuItem value={size}>{size}</MenuItem>
-                  ))}
-                </SelectField>
+                <InputField
+                  type="number"
+                  label="Frequency GHz"
+                  placeholder="Frequency GHz"
+                  name="frecuency"
+                />
               </Box>
 
-              <Box display="flex" alignItems="center">
-                <Typography>Generic PWS:</Typography>
-                <Field type="checkbox" name="generic_pws" as={Checkbox} />
-                <ErrorMessage
-                  component={Typography}
-                  className={classes.errorMsg}
-                  name="generic_pws"
+              <Box>
+                <InputField label="Socket" placeholder="Socket" name="socket" />
+              </Box>
+
+              <Box>
+                <InputField
+                  type="number"
+                  label="Cores"
+                  placeholder="Cores"
+                  name="cores"
+                />
+              </Box>
+
+              <Box>
+                <InputField
+                  type="number"
+                  label="Watts"
+                  placeholder="Watts"
+                  name="watts"
                 />
               </Box>
 
@@ -176,18 +189,20 @@ const CabinetForm = ({ category }: Props) => {
                 />
               </Box>
 
-              {createCabinet.isError && (
+              {createProcessor.isError && (
                 <Box my={2}>
-                  <Alert severity="error">{createCabinet.error?.message}</Alert>
+                  <Alert severity="error">
+                    {createProcessor.error?.message}
+                  </Alert>
                 </Box>
               )}
 
-              {redirect && <Redirect to={`/admin/products/${category.id}`} />}
+              {redirect && <Redirect to={`/admin/build/processor`} />}
 
               <Box my={3}>
-                {createCabinet.isLoading ? (
+                {createProcessor.isLoading ? (
                   <LoadingButton isSubmitting name="Submiting..." />
-                ) : createCabinet.isSuccess ? (
+                ) : createProcessor.isSuccess ? (
                   <LoadingButton isSuccess name="Submited" />
                 ) : (
                   <LoadingButton name="Submit" />
@@ -201,4 +216,4 @@ const CabinetForm = ({ category }: Props) => {
   );
 };
 
-export default CabinetForm;
+export default ProcessorForm;

@@ -11,15 +11,17 @@ import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
-import { IProductForm, IVideoCardForm } from "src/form_types";
+import InputField from "src/components/InputField";
+import LoadingButton from "src/components/LoadingButton";
+import SelectField from "src/components/SelectField";
+import SnackbarAlert from "src/components/SnackbarAlert";
+import { IPowerSupplyForm, IProductForm } from "src/form_types";
 import useBrands from "src/hooks/brandHooks/useBrands";
-import useCreateVideoCard from "src/hooks/productHooks/videoCard/useCreateVideoCard";
-import { IBrand, ICategory, VIDEO_CARD_VERSION } from "src/types";
-import { videoCardSchema } from "src/utils/yup.pcPickerValidations";
+import useCreatePowerSupply from "src/hooks/productHooks/powerSupply/useCreatePowerSupply";
+import { IBrand, PWS_CERTIFICATION } from "src/types";
+import { POWER_SUPPLY_ID } from "src/utils/categoriesIds";
+import { powerSupplySchema } from "src/utils/yup.pcPickerValidations";
 import { v4 as uuidv4 } from "uuid";
-import InputField from "../InputField";
-import LoadingButton from "../LoadingButton";
-import SelectField from "../SelectField";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -39,34 +41,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  category: ICategory;
-}
-
-const VideoCardForm = ({ category }: Props) => {
+const PowerSupplyForm = () => {
   const classes = useStyles();
-  const createVideoCard = useCreateVideoCard();
+  const createPowerSupply = useCreatePowerSupply();
   const queryBrands = useBrands();
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (createVideoCard.isSuccess) {
+    if (createPowerSupply.isSuccess) {
       timer = setTimeout(() => {
         setRedirect(true);
       }, 2000);
     }
     return () => clearTimeout(timer);
-  }, [createVideoCard.isSuccess]);
+  }, [createPowerSupply.isSuccess]);
 
   return (
     <Container>
-      {createVideoCard.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">
-            Product created successfully. You will be redirected soon...
-          </Alert>
-        </Box>
+      {createPowerSupply.isSuccess && (
+        <SnackbarAlert
+          severity="success"
+          text="Power supply created successfully. You will be redirected soon..."
+        ></SnackbarAlert>
       )}
 
       <Box className={classes.formContainer}>
@@ -76,15 +73,13 @@ const VideoCardForm = ({ category }: Props) => {
             image: "",
             description: "",
             price: "",
-            stock: "",
-            category: category.id.toString(),
+            stock: "true",
+            category: POWER_SUPPLY_ID.toString(),
             brand: "",
-            version: "",
-            clock_speed: "",
-            memory: "",
+            certification: "",
             watts: "",
           }}
-          onSubmit={(data: IProductForm & IVideoCardForm) => {
+          onSubmit={(data: IProductForm & IPowerSupplyForm) => {
             const formData = new FormData();
             formData.append("name", data.name);
             formData.append("description", data.description);
@@ -93,17 +88,15 @@ const VideoCardForm = ({ category }: Props) => {
             formData.append("id_brand", data.brand);
             formData.append("id_category", data.category);
             formData.append("product_image", data.image);
-            formData.append("memory", data.memory);
-            formData.append("clock_speed", data.clock_speed);
-            formData.append("version", data.version);
+            formData.append("certification", data.certification);
             formData.append("watts", data.watts);
-            createVideoCard.mutate(formData);
+            createPowerSupply.mutate(formData);
           }}
-          validationSchema={videoCardSchema}
+          validationSchema={powerSupplySchema}
         >
           {({ setFieldValue }) => (
             <Form className={classes.form} encType="multipart/form-data">
-              <Typography variant="h4">Create a: {category.name}</Typography>
+              <Typography variant="h4">Create a power supply</Typography>
               <Box>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
@@ -136,35 +129,20 @@ const VideoCardForm = ({ category }: Props) => {
               <Field hidden name="category" label="Category"></Field>
 
               <Box>
-                <InputField
-                  label="Frequency"
-                  placeholder="Frequency"
-                  name="frecuency"
-                />
-              </Box>
-
-              <Box>
-                <InputField
-                  label="Clock Speed"
-                  placeholder="Clock Speed"
-                  name="clock_speed"
-                />
-              </Box>
-
-              <Box>
-                <InputField label="Memory" placeholder="Memory" name="memory" />
-              </Box>
-
-              <Box>
-                <SelectField label="Version" name="version">
-                  {VIDEO_CARD_VERSION.map((version: string) => (
-                    <MenuItem value={version}>{version}</MenuItem>
+                <SelectField label="Certification" name="certification">
+                  {PWS_CERTIFICATION.map((certification: string) => (
+                    <MenuItem value={certification}>{certification}</MenuItem>
                   ))}
                 </SelectField>
               </Box>
 
               <Box>
-                <InputField label="Watts" placeholder="Watts" name="watts" />
+                <InputField
+                  type="number"
+                  label="Watts"
+                  placeholder="Watts"
+                  name="watts"
+                />
               </Box>
 
               <Box display="flex" alignItems="center">
@@ -194,20 +172,20 @@ const VideoCardForm = ({ category }: Props) => {
                 />
               </Box>
 
-              {createVideoCard.isError && (
+              {createPowerSupply.isError && (
                 <Box my={2}>
                   <Alert severity="error">
-                    {createVideoCard.error?.message}
+                    {createPowerSupply.error?.message}
                   </Alert>
                 </Box>
               )}
 
-              {redirect && <Redirect to={`/admin/products/${category.id}`} />}
+              {redirect && <Redirect to={`/admin/build/power-supply`} />}
 
               <Box my={3}>
-                {createVideoCard.isLoading ? (
+                {createPowerSupply.isLoading ? (
                   <LoadingButton isSubmitting name="Submiting..." />
-                ) : createVideoCard.isSuccess ? (
+                ) : createPowerSupply.isSuccess ? (
                   <LoadingButton isSuccess name="Submited" />
                 ) : (
                   <LoadingButton name="Submit" />
@@ -221,4 +199,4 @@ const VideoCardForm = ({ category }: Props) => {
   );
 };
 
-export default VideoCardForm;
+export default PowerSupplyForm;

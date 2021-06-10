@@ -11,15 +11,17 @@ import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
-import { IDiskStorageForm, IProductForm } from "src/form_types";
+import InputField from "src/components/InputField";
+import LoadingButton from "src/components/LoadingButton";
+import SelectField from "src/components/SelectField";
+import SnackbarAlert from "src/components/SnackbarAlert";
+import { IProductForm, IVideoCardForm } from "src/form_types";
 import useBrands from "src/hooks/brandHooks/useBrands";
-import useCreateDiskStorage from "src/hooks/productHooks/diskStorage/useCreateDiskStorage";
-import { DISK_TYPE, IBrand, ICategory } from "src/types";
-import { diskStorageSchema } from "src/utils/yup.pcPickerValidations";
+import useCreateVideoCard from "src/hooks/productHooks/videoCard/useCreateVideoCard";
+import { IBrand, VIDEO_CARD_VERSION } from "src/types";
+import { VIDEO_CARD_ID } from "src/utils/categoriesIds";
+import { videoCardSchema } from "src/utils/yup.pcPickerValidations";
 import { v4 as uuidv4 } from "uuid";
-import InputField from "../InputField";
-import LoadingButton from "../LoadingButton";
-import SelectField from "../SelectField";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -39,34 +41,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  category: ICategory;
-}
-
-const DiskStorageForm = ({ category }: Props) => {
+const VideoCardForm = () => {
   const classes = useStyles();
-  const createDiskStorage = useCreateDiskStorage();
+  const createVideoCard = useCreateVideoCard();
   const queryBrands = useBrands();
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (createDiskStorage.isSuccess) {
+    if (createVideoCard.isSuccess) {
       timer = setTimeout(() => {
         setRedirect(true);
       }, 2000);
     }
     return () => clearTimeout(timer);
-  }, [createDiskStorage.isSuccess]);
+  }, [createVideoCard.isSuccess]);
 
   return (
     <Container>
-      {createDiskStorage.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">
-            Product created successfully. You will be redirected soon...
-          </Alert>
-        </Box>
+      {createVideoCard.isSuccess && (
+        <SnackbarAlert
+          severity="success"
+          text="Video card created successfully. You will be redirected soon..."
+        ></SnackbarAlert>
       )}
 
       <Box className={classes.formContainer}>
@@ -76,15 +73,15 @@ const DiskStorageForm = ({ category }: Props) => {
             image: "",
             description: "",
             price: "",
-            stock: "",
-            category: category.id.toString(),
+            stock: "true",
+            category: VIDEO_CARD_ID.toString(),
             brand: "",
-            mbs: "",
-            type: "",
-            total_storage: "",
+            version: "",
+            clock_speed: "",
+            memory: "",
             watts: "",
           }}
-          onSubmit={(data: IProductForm & IDiskStorageForm) => {
+          onSubmit={(data: IProductForm & IVideoCardForm) => {
             const formData = new FormData();
             formData.append("name", data.name);
             formData.append("description", data.description);
@@ -93,22 +90,20 @@ const DiskStorageForm = ({ category }: Props) => {
             formData.append("id_brand", data.brand);
             formData.append("id_category", data.category);
             formData.append("product_image", data.image);
-            formData.append("type", data.type);
-            formData.append("mbs", data.mbs);
-            formData.append("total_storage", data.total_storage);
+            formData.append("memory", data.memory);
+            formData.append("clock_speed", data.clock_speed);
+            formData.append("version", data.version);
             formData.append("watts", data.watts);
-            createDiskStorage.mutate(formData);
+            createVideoCard.mutate(formData);
           }}
-          validationSchema={diskStorageSchema}
+          validationSchema={videoCardSchema}
         >
           {({ setFieldValue }) => (
             <Form className={classes.form} encType="multipart/form-data">
-              <Typography variant="h4">Create a: {category.name}</Typography>
-
+              <Typography variant="h4">Create a video card</Typography>
               <Box>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
-
               <Box>
                 <InputField
                   label="Description"
@@ -116,7 +111,6 @@ const DiskStorageForm = ({ category }: Props) => {
                   name="description"
                 />
               </Box>
-
               <Box>
                 <InputField
                   type="number"
@@ -140,26 +134,28 @@ const DiskStorageForm = ({ category }: Props) => {
 
               <Box>
                 <InputField
-                  label="Total Storage"
-                  placeholder="Total Storage"
-                  name="total_storage"
                   type="number"
+                  label="Clock Speed (MHz)"
+                  placeholder="Clock Speed (MHz)"
+                  name="clock_speed"
                 />
               </Box>
 
               <Box>
                 <InputField
                   type="number"
-                  label="MB/S"
-                  placeholder="MB/S"
-                  name="mbs"
+                  label="Memory (GB)"
+                  placeholder="Memory (GB)"
+                  name="memory"
                 />
               </Box>
 
               <Box>
-                <SelectField label="Type" name="type">
-                  {DISK_TYPE.map((disk: string) => (
-                    <MenuItem value={disk}>{disk}</MenuItem>
+                <SelectField label="Version" name="version">
+                  {VIDEO_CARD_VERSION.map((version: string) => (
+                    <MenuItem key={uuidv4()} value={version}>
+                      {version}
+                    </MenuItem>
                   ))}
                 </SelectField>
               </Box>
@@ -200,20 +196,20 @@ const DiskStorageForm = ({ category }: Props) => {
                 />
               </Box>
 
-              {createDiskStorage.isError && (
+              {createVideoCard.isError && (
                 <Box my={2}>
                   <Alert severity="error">
-                    {createDiskStorage.error?.message}
+                    {createVideoCard.error?.message}
                   </Alert>
                 </Box>
               )}
 
-              {redirect && <Redirect to={`/admin/products/${category.id}`} />}
+              {redirect && <Redirect to={`/admin/build/video-card`} />}
 
               <Box my={3}>
-                {createDiskStorage.isLoading ? (
+                {createVideoCard.isLoading ? (
                   <LoadingButton isSubmitting name="Submiting..." />
-                ) : createDiskStorage.isSuccess ? (
+                ) : createVideoCard.isSuccess ? (
                   <LoadingButton isSuccess name="Submited" />
                 ) : (
                   <LoadingButton name="Submit" />
@@ -227,4 +223,4 @@ const DiskStorageForm = ({ category }: Props) => {
   );
 };
 
-export default DiskStorageForm;
+export default VideoCardForm;

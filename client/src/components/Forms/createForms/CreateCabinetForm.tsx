@@ -11,15 +11,17 @@ import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
-import { IMotherboardForm, IProductForm } from "src/form_types";
+import InputField from "src/components/InputField";
+import LoadingButton from "src/components/LoadingButton";
+import SelectField from "src/components/SelectField";
+import SnackbarAlert from "src/components/SnackbarAlert";
+import { ICabinetForm, IProductForm } from "src/form_types";
 import useBrands from "src/hooks/brandHooks/useBrands";
-import useCreateMotherboard from "src/hooks/productHooks/motherboard/useCreateMotherboard";
-import { IBrand, ICategory } from "src/types";
-import { motherboardSchema } from "src/utils/yup.pcPickerValidations";
+import useCreateCabinet from "src/hooks/productHooks/cabinet/useCreateCabinet";
+import { IBrand, SIZE } from "src/types";
+import { CABINET_ID } from "src/utils/categoriesIds";
+import { cabinetSchema } from "src/utils/yup.pcPickerValidations";
 import { v4 as uuidv4 } from "uuid";
-import InputField from "../InputField";
-import LoadingButton from "../LoadingButton";
-import SelectField from "../SelectField";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -39,34 +41,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  category: ICategory;
-}
-
-const MotherboardForm = ({ category }: Props) => {
+const CabinetForm = () => {
   const classes = useStyles();
-  const createMotherboard = useCreateMotherboard();
+  const createCabinet = useCreateCabinet();
   const queryBrands = useBrands();
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (createMotherboard.isSuccess) {
+    if (createCabinet.isSuccess) {
       timer = setTimeout(() => {
         setRedirect(true);
       }, 2000);
     }
     return () => clearTimeout(timer);
-  }, [createMotherboard.isSuccess]);
+  }, [createCabinet.isSuccess]);
 
   return (
     <Container>
-      {createMotherboard.isSuccess && (
-        <Box my={2}>
-          <Alert severity="success">
-            Product created successfully. You will be redirected soon...
-          </Alert>
-        </Box>
+      {createCabinet.isSuccess && (
+        <SnackbarAlert
+          severity="success"
+          text="Cabinet created successfully. You will be redirected soon..."
+        ></SnackbarAlert>
       )}
 
       <Box className={classes.formContainer}>
@@ -76,19 +73,13 @@ const MotherboardForm = ({ category }: Props) => {
             image: "",
             description: "",
             price: "",
-            stock: "",
-            category: category.id.toString(),
+            stock: "true",
+            category: CABINET_ID.toString(),
             brand: "",
-            cpu_socket: "",
-            cpu_brand: "",
-            ram_version: "",
-            min_frec: "",
-            max_frec: "",
-            video_socket: "",
-            model_size: "",
-            watts: "",
+            size: "",
+            generic_pws: "true",
           }}
-          onSubmit={(data: IProductForm & IMotherboardForm) => {
+          onSubmit={(data: IProductForm & ICabinetForm) => {
             const formData = new FormData();
             formData.append("name", data.name);
             formData.append("description", data.description);
@@ -97,21 +88,15 @@ const MotherboardForm = ({ category }: Props) => {
             formData.append("id_brand", data.brand);
             formData.append("id_category", data.category);
             formData.append("product_image", data.image);
-            formData.append("cpu_socket", data.cpu_socket);
-            formData.append("cpu_brand", data.cpu_brand);
-            formData.append("ram_version", data.ram_version);
-            formData.append("min_frec", data.min_frec);
-            formData.append("max_frec", data.max_frec);
-            formData.append("video_socket", data.video_socket);
-            formData.append("model_size", data.model_size);
-            formData.append("watts", data.watts);
-            createMotherboard.mutate(formData);
+            formData.append("size", data.size);
+            formData.append("generic_pws", data.generic_pws);
+            createCabinet.mutate(formData);
           }}
-          validationSchema={motherboardSchema}
+          validationSchema={cabinetSchema}
         >
           {({ setFieldValue }) => (
             <Form className={classes.form} encType="multipart/form-data">
-              <Typography variant="h4">Create a: {category.name}</Typography>
+              <Typography variant="h4">Create a cabinet</Typography>
               <Box>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
@@ -144,75 +129,23 @@ const MotherboardForm = ({ category }: Props) => {
               <Field hidden name="category" label="Category"></Field>
 
               <Box>
-                <InputField
-                  label="CPU Socket"
-                  placeholder="CPU Socket"
-                  name="cpu_socket"
-                />
-              </Box>
-
-              <Box>
-                <SelectField
-                  label="CPU Brand"
-                  placeholder="CPU Brand"
-                  name="cpu_brand"
-                >
-                  <MenuItem value="INTEL">INTEL</MenuItem>
-                  <MenuItem value="AMD">AMD</MenuItem>
+                <SelectField label="Size" name="size">
+                  {SIZE.map((size: string) => (
+                    <MenuItem key={uuidv4()} value={size}>
+                      {size}
+                    </MenuItem>
+                  ))}
                 </SelectField>
               </Box>
 
-              <Box>
-                <SelectField
-                  label="RAM Version"
-                  placeholder="RAM Version"
-                  name="ram_version"
-                >
-                  <MenuItem value="DDR1">DDR1</MenuItem>
-                  <MenuItem value="DDR2">DDR2</MenuItem>
-                  <MenuItem value="DDR3">DDR3</MenuItem>
-                  <MenuItem value="DDR4">DDR4</MenuItem>
-                </SelectField>
-              </Box>
-
-              <Box>
-                <InputField
-                  label="Max Frequency"
-                  placeholder="Max Frequency"
-                  name="max_frec"
+              <Box display="flex" alignItems="center">
+                <Typography>Generic PWS:</Typography>
+                <Field type="checkbox" name="generic_pws" as={Checkbox} />
+                <ErrorMessage
+                  component={Typography}
+                  className={classes.errorMsg}
+                  name="generic_pws"
                 />
-              </Box>
-
-              <Box>
-                <InputField
-                  label="Min Frequency"
-                  placeholder="Min Frequency"
-                  name="min_frec"
-                />
-              </Box>
-
-              <Box>
-                <InputField
-                  label="Video Socket"
-                  placeholder="Video Socket"
-                  name="video_socket"
-                />
-              </Box>
-
-              <Box>
-                <SelectField
-                  label="Model Size"
-                  placeholder="Model Size"
-                  name="model_size"
-                >
-                  <MenuItem value="ATX">ATX</MenuItem>
-                  <MenuItem value="Micro-ATX">Micro-ATX</MenuItem>
-                  <MenuItem value="Mini-ATX">Mini-ATX</MenuItem>
-                </SelectField>
-              </Box>
-
-              <Box>
-                <InputField label="Watts" placeholder="Watts" name="watts" />
               </Box>
 
               <Box display="flex" alignItems="center">
@@ -242,20 +175,18 @@ const MotherboardForm = ({ category }: Props) => {
                 />
               </Box>
 
-              {createMotherboard.isError && (
+              {createCabinet.isError && (
                 <Box my={2}>
-                  <Alert severity="error">
-                    {createMotherboard.error?.message}
-                  </Alert>
+                  <Alert severity="error">{createCabinet.error?.message}</Alert>
                 </Box>
               )}
 
-              {redirect && <Redirect to={`/admin/products/${category.id}`} />}
+              {redirect && <Redirect to={`/admin/build/cabinet`} />}
 
               <Box my={3}>
-                {createMotherboard.isLoading ? (
+                {createCabinet.isLoading ? (
                   <LoadingButton isSubmitting name="Submiting..." />
-                ) : createMotherboard.isSuccess ? (
+                ) : createCabinet.isSuccess ? (
                   <LoadingButton isSuccess name="Submited" />
                 ) : (
                   <LoadingButton name="Submit" />
@@ -269,4 +200,4 @@ const MotherboardForm = ({ category }: Props) => {
   );
 };
 
-export default MotherboardForm;
+export default CabinetForm;
