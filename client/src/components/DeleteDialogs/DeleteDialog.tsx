@@ -22,7 +22,7 @@ interface Props {
   closeDialog: () => void;
   handleDelete: () => void;
   open: boolean;
-  toDelete: "brand" | "category" | "product";
+  toDelete: string;
 }
 
 const DeleteDialog = ({ open, closeDialog, handleDelete, toDelete }: Props) => {
