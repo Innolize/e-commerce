@@ -35,7 +35,7 @@ const productSchema = yup.object({
     .required("Description is required.")
     .max(20, "Description length cannot have more than 30 characters"),
   price: yup.number().required("Price is required."),
-  stock: yup.string().required("Stock is required."),
+  stock: yup.boolean().required("Stock is required."),
   brand: yup.string().required("Brand is required."),
 });
 
@@ -54,7 +54,7 @@ export const videoCardSchema = yup
 export const cabinetSchema = yup
   .object({
     size: yup.string().oneOf(SIZE, "Wrong size provided.").required(),
-    generic_pws: yup.boolean(),
+    generic_pws: yup.boolean().required("Generic PWS is required"),
   })
   .concat(productSchema);
 
