@@ -1,4 +1,4 @@
-import useProducts from "src/hooks/productHooks/useProducts";
+import useProducts from "src/hooks/productHooks/generalProducts/useProducts";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";

@@ -60,6 +60,7 @@ export const createProductSchema = yup.object({
   name: yup
     .string()
     .required("Name is required.")
+    .min(3, "Name length cannot be less than 3 characters.")
     .max(20, "Name length cannot have more than 20 characters"),
   image: yup
     .mixed()
@@ -77,9 +78,10 @@ export const createProductSchema = yup.object({
   description: yup
     .string()
     .required("Description is required.")
+    .min(3, "Name length cannot be less than 3 characters.")
     .max(20, "Description length cannot have more than 30 characters"),
   price: yup.number().required("Price is required."),
-  stock: yup.string().required("Stock is required."),
+  stock: yup.bool().required("Stock is required."),
   brand: yup.string().required("Brand is required."),
   category: yup.string().required("Category is required."),
 });
@@ -88,6 +90,7 @@ export const editProductSchema = yup.object({
   name: yup
     .string()
     .required("Name is required.")
+    .min(3, "Name length cannot be less than 3 characters.")
     .max(20, "Name length cannot be more than 20 characters"),
   image: yup
     .mixed()
