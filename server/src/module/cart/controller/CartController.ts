@@ -63,7 +63,16 @@ export class CartController extends AbstractController {
     }
 
     async removeCartItem(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const { cartId, itemId } = req.params
         try {
+            const cartIdNumber = Number(cartId)
+            if (!cartIdNumber || cartIdNumber <= 0) {
+                throw CartError.invalidId()
+            }
+            const itemIdNumber = Number(itemId)
+            if (!itemIdNumber || itemIdNumber <= 0) {
+                throw CartError.invalidId()
+            }
             res.sendStatus(501)
         } catch (err) {
             next(err)

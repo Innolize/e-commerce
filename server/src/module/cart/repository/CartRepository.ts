@@ -1,11 +1,11 @@
 import { inject, injectable } from "inversify";
-import { Association } from "sequelize/types";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Cart } from "../entities/Cart";
 import { CartItem } from "../entities/CartItem";
 import { CartError } from "../error/CartError";
 import { ICartItemCreateFromCartModel } from "../interface/ICartItemCreateFromCart";
+import { fromDbToCartItem } from "../mapper/cartMapper";
 import { CartItemModel } from "../model/CartItemModel";
 import { CartModel } from "../model/CartModel";
 
@@ -31,7 +31,8 @@ export class CartRepository extends AbstractRepository {
             throw CartError.notFound()
         }
         await cart.createCartItem(newCartItem)
-        const finalCartItems = await cart.getCartItems({ include: { association: CartItemModel.associations.product } })
-        return finalCartItems.map(x => x.toJSON()) as CartItem[]
+        const cartItems = await cart.getCartItems({ include: { association: CartItemModel.associations.product } })
+        const response = cartItems.map(fromDbToCartItem)
+        return response
     }
 }
