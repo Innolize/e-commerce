@@ -5,10 +5,19 @@ export class CartError extends BaseError {
     constructor(name: string, httpCode: number, message: string) {
         super(name, httpCode, message)
     }
-    static notFound(): CartError {
+    static cartNotFound(): CartError {
         return new CartError(this.name, StatusCodes.NOT_FOUND, 'Cart not found')
     }
-    static invalidId(): CartError {
+
+    static cartItemNotFound(): CartError {
+        return new CartError(this.name, StatusCodes.NOT_FOUND, 'Cart item not found')
+    }
+
+    static invalidCartId(): CartError {
         return new CartError(this.name, StatusCodes.UNPROCESSABLE_ENTITY, 'Invalid cart id')
+    }
+
+    static invalidCartItemId(): CartError {
+        return new CartError(this.name, StatusCodes.UNPROCESSABLE_ENTITY, 'Invalid cart item id')
     }
 }

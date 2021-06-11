@@ -1,4 +1,4 @@
-import { HasManyCreateAssociationMixin, HasManyGetAssociationsMixin } from "sequelize";
+import { HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasManySetAssociationsMixin } from "sequelize";
 import { Association, DataTypes, Model, Sequelize } from "sequelize";
 import { Cart } from "../entities/Cart";
 import { ICartCreate } from "../interface/ICartCreate";

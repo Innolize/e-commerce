@@ -23,13 +23,13 @@ export class CartService extends AbstractService {
         return await this.cartRepository.addCartItem(cartId, newCartItem)
     }
 
-    // function removeCartItem(): Cart {
-    //     return
-    // }
+    async removeCartItem(cartId: number, cartItemId: number): Promise<boolean> {
+        return await this.cartRepository.removeCartItem(cartId, cartItemId)
+    }
 
-    // function modifyCartItem(): Cart {
-    //     return
-    // }
+    async modifyCartItemQuantity(cartId: number, cartItemId: number, quantity: number): Promise<CartItem> {
+        return await this.cartRepository.modifyCartItemQuantity(cartId, cartItemId, quantity)
+    }
 }
 
 

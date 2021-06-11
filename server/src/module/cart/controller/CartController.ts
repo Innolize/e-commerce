@@ -1,12 +1,15 @@
 import { Application, NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import { inject, injectable } from "inversify";
 import { Multer } from "multer";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
 import { bodyValidator } from "../../common/helpers/bodyValidator";
 import { CartError } from "../error/CartError";
-import { validateCreateCartItemDto, validateCreateCartItemSchema } from "../helpers/create_cart_item_dto";
+import { validateCreateCartItemDto } from "../helpers/create_cart_item_dto";
+import { validateEditCartItemDto, validateEditCartItemSchema } from "../helpers/edit_cart_item_dto";
 import { ICartItemCreateFromCartModel } from "../interface/ICartItemCreateFromCart";
+import { ICartItemEdit } from "../interface/ICartItemEdit";
 import { CartService } from "../service/CartService";
 
 @injectable()
@@ -26,7 +29,7 @@ export class CartController extends AbstractController {
         app.get(`/api${ROUTE}/:id`, this.getSingleCart.bind(this))
         app.post(`/api${ROUTE}/:cartId/item`, this.uploadMiddleware.none(), this.addCartItem.bind(this))
         app.delete(`/api${ROUTE}/:cartId/item/:itemId`, this.removeCartItem.bind(this))
-        app.put(`/api${ROUTE}/:cartId/item/:itemId`, this.modifyCartItemQuantity.bind(this))
+        app.put(`/api${ROUTE}/:cartId/item/:itemId`, this.uploadMiddleware.none(), this.modifyCartItemQuantity.bind(this))
     }
 
     async getAllCarts(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -52,7 +55,7 @@ export class CartController extends AbstractController {
         try {
             const cartIdNumber = Number(cartId)
             if (!cartIdNumber || cartIdNumber <= 0) {
-                throw CartError.invalidId()
+                throw CartError.invalidCartId()
             }
             const validatedDto = await bodyValidator(validateCreateCartItemDto, dto)
             const response = await this.cartService.addCartItem(cartIdNumber, validatedDto)
@@ -67,21 +70,34 @@ export class CartController extends AbstractController {
         try {
             const cartIdNumber = Number(cartId)
             if (!cartIdNumber || cartIdNumber <= 0) {
-                throw CartError.invalidId()
+                throw CartError.invalidCartId()
             }
             const itemIdNumber = Number(itemId)
             if (!itemIdNumber || itemIdNumber <= 0) {
-                throw CartError.invalidId()
+                throw CartError.invalidCartItemId()
             }
-            res.sendStatus(501)
+            await this.cartService.removeCartItem(cartIdNumber, itemIdNumber)
+            res.status(StatusCodes.OK).send('Cart item removed successfully!')
         } catch (err) {
             next(err)
         }
     }
 
     async modifyCartItemQuantity(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const { cartId, itemId } = req.params
+        const dto: ICartItemEdit = req.body
         try {
-            res.sendStatus(501)
+            const cartIdNumber = Number(cartId)
+            if (!cartIdNumber || cartIdNumber <= 0) {
+                throw CartError.invalidCartId()
+            }
+            const itemIdNumber = Number(itemId)
+            if (!itemIdNumber || itemIdNumber <= 0) {
+                throw CartError.invalidCartItemId()
+            }
+            const { quantity } = await bodyValidator(validateEditCartItemDto, dto)
+            const response = await this.cartService.modifyCartItemQuantity(cartIdNumber, itemIdNumber, quantity)
+            res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
         }
