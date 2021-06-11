@@ -19,23 +19,8 @@ export class CartRepository extends AbstractRepository {
     }
 
     async getAll(): Promise<Cart[]> {
-        const test = await this.cartModel.findByPk(2)
-        if (!test) {
-            const errorCart = [{
-                "id": 1,
-                "active": true,
-                "userId": 15
-            }] as Cart[]
-            return errorCart
-        }
-        const itemToCreate: ICartItemCreateFromCartModel = { product_id: 2, quantity: 2 }
-        await test.createCartItem(itemToCreate)
-        const response = await this.cartModel.findAll({ include: CartModel.associations.cartItems })
-
-
-        const carts = response.map(x => x.toJSON()) as Cart[]
-
-
+        const cartModelArray = await this.cartModel.findAll()
+        const carts = cartModelArray.map(x => x.toJSON()) as Cart[]
         return carts
     }
 
@@ -45,9 +30,7 @@ export class CartRepository extends AbstractRepository {
             throw new Error('Cart does not exist!')
         }
         await cart.createCartItem(newCartItem)
-        const finalCartItems = await cart.getCartItems()
-
-
+        const finalCartItems = await cart.getCartItems({ include: { association: CartItemModel.associations.product } })
         return finalCartItems.map(x => x.toJSON()) as CartItem[]
     }
 }

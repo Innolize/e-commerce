@@ -159,6 +159,8 @@ function configCartModels(container: Container): [typeof CartModel, typeof CartI
     const cartModel = CartModel.setup(database)
     const cartItemModel = CartItemModel.setup(database)
     CartModel.setupCartItemAssociation(cartItemModel)
+    CartItemModel.setupCartAssociation(CartModel)
+    CartItemModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
     return [cartModel, cartItemModel]
 }
 

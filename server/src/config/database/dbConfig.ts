@@ -53,7 +53,8 @@ async function configureDatabase() {
             RoleModel.setupPermissionAssociation(container.get<typeof PermissionModel>(TYPES.Authorization.Permission.Model));
             UserModel.setupRoleAssociation(container.get<typeof RoleModel>(TYPES.Authorization.Role.Model))
             CartModel.setupCartItemAssociation(CartItemModel)
-            // CartItemModel.setupCartAssociation(CartModel)
+            CartItemModel.setupProductAssociation(ProductModel)
+            CartItemModel.setupCartAssociation(CartModel)
         } catch (err) {
             console.log('config')
             console.log(err.message)
@@ -76,7 +77,14 @@ async function configureDatabase() {
             await seedRole()
             await seedPermission()
             await seedUser()
-            console.log('exito!')
+            await CartModel.create({ userId: 1 })
+            await CartItemModel.bulkCreate([
+                { cart_id: 1, product_id: 2, quantity: 3 },
+                { cart_id: 1, product_id: 4, quantity: 2 },
+                { cart_id: 1, product_id: 6, quantity: 3 }
+            ])
+            const products = await CartItemModel.findAll({ include: CartItemModel.associations.product })
+            console.log(products.map(x => x.toJSON()))
         } catch (err) {
 
             console.log(err)
