@@ -4,6 +4,7 @@ import { Multer } from "multer";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
 import { bodyValidator } from "../../common/helpers/bodyValidator";
+import { CartError } from "../error/CartError";
 import { validateCreateCartItemDto, validateCreateCartItemSchema } from "../helpers/create_cart_item_dto";
 import { ICartItemCreateFromCartModel } from "../interface/ICartItemCreateFromCart";
 import { CartService } from "../service/CartService";
@@ -51,7 +52,7 @@ export class CartController extends AbstractController {
         try {
             const cartIdNumber = Number(cartId)
             if (!cartIdNumber || cartIdNumber <= 0) {
-                throw new Error('Invalid Cart Id')
+                throw CartError.invalidId()
             }
             const validatedDto = await bodyValidator(validateCreateCartItemDto, dto)
             const response = await this.cartService.addCartItem(cartIdNumber, validatedDto)
