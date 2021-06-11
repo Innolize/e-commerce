@@ -22,7 +22,9 @@ import bcrypt from 'bcrypt'
 import { AuthController, AuthService } from "../module/auth/module"
 import { PermissionModel, RoleModel } from "../module/authorization/module"
 import { ImageUploadRepository } from "../module/imageUploader/repository/imageUploadRepository"
-import { CartItemModel, CartModel } from "../module/cart/module"
+import { CartController, CartItemModel, CartModel } from "../module/cart/module"
+import { CartRepository } from "../module/cart/repository/CartRepository"
+import { CartService } from "../module/cart/service/CartService"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -157,7 +159,6 @@ function configCartModels(container: Container): [typeof CartModel, typeof CartI
     const cartModel = CartModel.setup(database)
     const cartItemModel = CartItemModel.setup(database)
     CartModel.setupCartItemAssociation(cartItemModel)
-    CartItemModel.setupCartAssociation(cartModel)
     return [cartModel, cartItemModel]
 }
 
@@ -165,6 +166,9 @@ function configureCartContainer(container: Container): void {
     const [cartModel, cartItemModel] = configCartModels(container)
     container.bind<typeof CartModel>(TYPES.Cart.CartModel).toConstantValue(cartModel)
     container.bind<typeof CartItemModel>(TYPES.Cart.CartItemModel).toConstantValue(cartItemModel)
+    container.bind<CartRepository>(TYPES.Cart.Repository).to(CartRepository)
+    container.bind<CartService>(TYPES.Cart.Service).to(CartService)
+    container.bind<CartController>(TYPES.Cart.Controller).to(CartController)
 }
 
 function configureUserContainer(container: Container): void {
