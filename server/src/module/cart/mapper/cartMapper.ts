@@ -14,9 +14,9 @@ export const fromDbToCartItem = (model: CartItemModel): CartItem => {
 
 export const fromDbToCart = (model: CartModel): Cart => {
     const cartItem = model.toJSON() as Cart
-    const { active, cartItems, id, userId } = cartItem
+    const { active, cartItems, id, user_id } = cartItem
     const cartItemsArray = cartItems ? cartItems.map(item => fromRequestToCartItem(item)) : undefined
-    return new Cart(userId, active, cartItemsArray, id)
+    return new Cart(user_id, active, cartItemsArray, id)
 }
 
 export const fromRequestToCartItem = (request: ICartItemCreate): CartItem => {

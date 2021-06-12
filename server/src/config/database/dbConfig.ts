@@ -55,6 +55,8 @@ async function configureDatabase() {
             CartModel.setupCartItemAssociation(CartItemModel)
             CartItemModel.setupProductAssociation(ProductModel)
             CartItemModel.setupCartAssociation(CartModel)
+            UserModel.setupCartAssociation(CartModel)
+            CartModel.setupUserAssociation(UserModel)
         } catch (err) {
             console.log('config')
             console.log(err.message)
@@ -77,14 +79,17 @@ async function configureDatabase() {
             await seedRole()
             await seedPermission()
             await seedUser()
-            await CartModel.create({ userId: 1 })
+            await CartModel.create({ user_id: 1 })
             await CartItemModel.bulkCreate([
                 { cart_id: 1, product_id: 2, quantity: 3 },
                 { cart_id: 1, product_id: 4, quantity: 2 },
                 { cart_id: 1, product_id: 6, quantity: 3 }
+
             ])
-            const products = await CartItemModel.findAll({ include: CartItemModel.associations.product })
-            console.log(products.map(x => x.toJSON()))
+            const test = await UserModel.findByPk(1, { include: 'cart' })
+            console.log(test?.toJSON())
+            const test2 = await CartModel.findByPk(1, { include: 'user' })
+            console.log(test2?.toJSON())
         } catch (err) {
 
             console.log(err)

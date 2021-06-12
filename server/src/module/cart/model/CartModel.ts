@@ -1,9 +1,12 @@
-import { HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasManySetAssociationsMixin } from "sequelize";
+import { injectable } from "inversify";
+import { HasManyCreateAssociationMixin, HasManyGetAssociationsMixin } from "sequelize";
 import { Association, DataTypes, Model, Sequelize } from "sequelize";
+import { UserModel } from "../../user/module";
 import { Cart } from "../entities/Cart";
 import { ICartCreate } from "../interface/ICartCreate";
 import { CartItemModel } from "./CartItemModel";
 
+@injectable()
 export class CartModel extends Model<Cart, ICartCreate>{
     static setup(database: Sequelize): typeof CartModel {
         CartModel.init({
@@ -12,7 +15,7 @@ export class CartModel extends Model<Cart, ICartCreate>{
                 allowNull: false,
                 defaultValue: true
             },
-            userId: {
+            user_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false
             }
@@ -35,7 +38,15 @@ export class CartModel extends Model<Cart, ICartCreate>{
         })
     }
 
+    static setupUserAssociation(model: typeof UserModel): void {
+        CartModel.belongsTo(model, {
+            as: 'user',
+            foreignKey: "user_id"
+        })
+    }
+
     static associations: {
-        cartItems: Association<CartItemModel, CartModel>
+        cartItems: Association<CartItemModel, CartModel>,
+        user: Association<UserModel, CartModel>
     }
 }

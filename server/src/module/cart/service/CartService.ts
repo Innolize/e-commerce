@@ -13,7 +13,6 @@ export class CartService extends AbstractService {
         @inject(TYPES.Cart.Repository) private cartRepository: CartRepository
     ) {
         super()
-        this.test = 'pepito'
     }
 
     async getCarts(): Promise<Cart[]> {

@@ -1,3 +1,3 @@
 export interface ICartCreate {
-    userId: number
+    user_id: number
 }
