@@ -1,9 +1,12 @@
 import { inject, injectable } from "inversify";
+import { WhereOptions } from "sequelize/types";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
+import { GetCartsDto } from "../dto/getCartsDto";
 import { Cart } from "../entities/Cart";
 import { CartItem } from "../entities/CartItem";
 import { CartError } from "../error/CartError";
+import { ICartGetAllQuery } from "../interface/ICartGetAllQuery";
 import { ICartItemCreateFromCartModel } from "../interface/ICartItemCreateFromCart";
 import { fromDbToCart, fromDbToCartItem } from "../mapper/cartMapper";
 import { CartItemModel } from "../model/CartItemModel";
@@ -19,9 +22,22 @@ export class CartRepository extends AbstractRepository {
         this.cartModel = cartModel
     }
 
-    async getAll(): Promise<Cart[]> {
-        const cartModelArray = await this.cartModel.findAll()
-        const carts = cartModelArray.map(fromDbToCart)
+    async getAll({ limit = 20, offset = 0, userId }: ICartGetAllQuery): Promise<GetCartsDto> {
+        const whereOptions: WhereOptions<Cart> = {}
+        userId ? whereOptions.user_id = userId : ''
+        const { count, rows } = await this.cartModel.findAndCountAll({ where: whereOptions, limit, offset })
+        const carts = rows.map(fromDbToCart)
+        return new GetCartsDto(count, carts)
+    }
+
+    async getCart(id: number, userId: number): Promise<Cart> {
+        const user_id = userId
+        const cartModel = await this.cartModel.findOne({ where: { id, user_id }, include: [{ association: CartModel.associations.cartItems, include: [{ association: CartItemModel.associations.product }] }] })
+        console.log(cartModel)
+        if (!cartModel) {
+            throw CartError.cartNotFound()
+        }
+        const carts = fromDbToCart(cartModel)
         return carts
     }
 

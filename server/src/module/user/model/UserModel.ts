@@ -53,12 +53,13 @@ export class UserModel extends Model<User, IUserCreate>{
             foreignKey: {
                 name: "user_id"
             },
-            as: 'cart'
+            as: 'carts'
         })
         return UserModel
     }
 
     public static associations: {
         role: Association<UserModel, RoleModel>;
+        carts: Association<UserModel, CartModel>;
     };
 }

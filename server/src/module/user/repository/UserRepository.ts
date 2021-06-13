@@ -30,7 +30,7 @@ export class UserRepository extends AbstractRepository {
     }
 
     async getSingleUser(id: number): Promise<User | Error> {
-        const user = await this.userModel.findByPk(id, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }] })
+        const user = await this.userModel.findByPk(id, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }, { association: UserModel.associations.carts }] })
         if (!user) {
             throw UserError.notFound()
         }
@@ -60,19 +60,17 @@ export class UserRepository extends AbstractRepository {
     }
 
     async modifyUser(user: IUserEdit): Promise<User | Error> {
-        try {
-            const [userEdited, userArray] = await this.userModel.update(user, { where: { id: user.id }, returning: true })
-            // update returns an array, first argument is the number of elements updated in the
-            // database. Second argument are the array of elements. Im updating by id so there is only 
-            // one element in the array.
-            if (!userEdited) {
-                throw UserError.notFound()
-            }
-            const editedUser = fromDbToUser(userArray[0])
-            return editedUser
-        } catch (err) {
-            throw err
+
+        const [userEdited, userArray] = await this.userModel.update(user, { where: { id: user.id }, returning: true })
+        // update returns an array, first argument is the number of elements updated in the
+        // database. Second argument are the array of elements. Im updating by id so there is only 
+        // one element in the array.
+        if (!userEdited) {
+            throw UserError.notFound()
         }
+        const editedUser = fromDbToUser(userArray[0])
+        return editedUser
+
     }
 
     async deleteUser(id: number): Promise<true | Error> {

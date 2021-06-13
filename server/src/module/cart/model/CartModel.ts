@@ -3,11 +3,17 @@ import { HasManyCreateAssociationMixin, HasManyGetAssociationsMixin } from "sequ
 import { Association, DataTypes, Model, Sequelize } from "sequelize";
 import { UserModel } from "../../user/module";
 import { Cart } from "../entities/Cart";
+import { CartItem } from "../entities/CartItem";
+import { ICart } from "../interface/ICart";
 import { ICartCreate } from "../interface/ICartCreate";
 import { CartItemModel } from "./CartItemModel";
 
 @injectable()
-export class CartModel extends Model<Cart, ICartCreate>{
+export class CartModel extends Model<Cart, ICartCreate> implements ICart {
+    user_id: number;
+    active: boolean;
+    cartItems?: CartItem[] | undefined;
+    id?: number | undefined;
     static setup(database: Sequelize): typeof CartModel {
         CartModel.init({
             active: {

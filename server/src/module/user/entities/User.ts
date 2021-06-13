@@ -9,6 +9,7 @@ export class User {
         public role_id: number,
         public id?: number,
         public role?: Role,
-        public cart?: Cart
+        public activeCart?: Cart,
+        public carts?: Cart[]
     ) { }
 }
