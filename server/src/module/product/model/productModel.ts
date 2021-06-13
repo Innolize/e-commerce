@@ -6,11 +6,24 @@ import { IProduct } from "../interfaces/IProduct";
 import { BrandModel } from "../../brand/module";
 import { IProductCreate } from "../interfaces/IProductCreate";
 import { Product } from "../entity/Product";
+import { Category } from "../../category/entity/Category";
+import { Brand } from "../../brand/entity/Brand";
 
 decorate(injectable(), (Model))
 
 @injectable()
-export class ProductModel extends Model<Product, IProductCreate>{
+export class ProductModel extends Model<Product, IProductCreate> implements IProduct {
+
+    id?: number | undefined;
+    name: string;
+    image: string | null;
+    description: string | null;
+    price: number;
+    stock: boolean;
+    id_category: number;
+    id_brand: number;
+    category?: Category | undefined;
+    brand?: Brand | undefined;
 
     static setup(database: Sequelize): typeof ProductModel {
         ProductModel.init({

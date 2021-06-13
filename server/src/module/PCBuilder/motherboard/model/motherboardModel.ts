@@ -4,9 +4,23 @@ import { ProductModel } from "../../../product/module";
 import { Motherboard } from '../entity/Motherboard'
 import { IMotherboardCreate } from '../interface/IMotherboardCreate';
 import { RAM_VERSION, CPU_BRANDS, SIZE, VIDEO_CARD_VERSION } from '../../../../config/constants/pcbuilder';
+import { IMotherboard } from '../interface/IMotherboard';
+import { Product } from '../../../product/entity/Product';
 
 @injectable()
-export class MotherboardModel extends Model<Motherboard, IMotherboardCreate>{
+export class MotherboardModel extends Model<Motherboard, IMotherboardCreate> implements IMotherboard{
+    public cpu_socket!: string
+    public cpu_brand!: typeof CPU_BRANDS[number]
+    public ram_version!: typeof RAM_VERSION[number]
+    public min_frec!: number
+    public max_frec!: number
+    public video_socket!: typeof VIDEO_CARD_VERSION[number]
+    public model_size!: typeof SIZE[number]
+    public watts!: number
+    public id_product!: number
+    public id!: number
+    public product?: Product
+    
     static setup(database: Sequelize): typeof MotherboardModel {
         MotherboardModel.init({
             id: {

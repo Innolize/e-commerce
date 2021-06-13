@@ -1,11 +1,13 @@
+import { DISK_TYPE } from "../../../../config/constants/pcbuilder";
 import { Product } from "../../../product/entity/Product";
 
 export interface IDiskStorage {
-    id: number,
     total_storage: number,
-    type: "SSD" | "HDD",
+    type: typeof DISK_TYPE[number],
     mbs: number,
     watts: number,
+    id_product: number,
+    id?: number,
     product?: Product
 }
 

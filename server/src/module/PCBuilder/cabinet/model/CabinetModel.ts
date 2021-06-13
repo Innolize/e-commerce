@@ -4,9 +4,18 @@ import { ProductModel } from "../../../product/module";
 import { Cabinet } from '../entities/Cabinet'
 import { ICabinetCreate } from '../interface/ICabinetCreate'
 import { SIZE } from '../../../../config/constants/pcbuilder';
+import { ICabinet } from '../interface/ICabinet';
+import { Product } from '../../../product/entity/Product';
 
 @injectable()
-export class CabinetModel extends Model<Cabinet, ICabinetCreate>{
+export class CabinetModel extends Model<Cabinet, ICabinetCreate> implements ICabinet {
+
+    size: typeof SIZE[number]
+    generic_pws: boolean;
+    id_product: number;
+    id?: number | undefined;
+    product?: Product | undefined;
+
     static setup(database: Sequelize): typeof CabinetModel {
         CabinetModel.init({
             id: {

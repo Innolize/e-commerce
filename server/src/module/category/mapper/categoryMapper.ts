@@ -1,6 +1,7 @@
 import { Category } from "../entity/Category"
-import { CategoryModel } from "../model/categoryModel"
+import { ICategory } from "../interfaces/ICategory"
 
-export const fromDbToCategory = (model: CategoryModel): Category => {
-    return new Category(model.toJSON() as Category)
+export const fromDbToCategory = (model: ICategory): Category => {
+    const { name, id } = model
+    return new Category(name, id)
 }

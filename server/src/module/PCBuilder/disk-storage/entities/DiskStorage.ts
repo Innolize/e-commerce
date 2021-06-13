@@ -1,8 +1,8 @@
 import { DISK_TYPE } from '../../../../config/constants/pcbuilder'
 import { Product } from '../../../product/entity/Product'
-import { IDiskStorageCreate } from '../interface/IDiskStorageCreate'
+import { IDiskStorage } from '../interface/IDiskStorage'
 
-export class DiskStorage {
+export class DiskStorage implements IDiskStorage {
     static readonly modelName = 'DiskStorage'
     constructor(
         public total_storage: number,

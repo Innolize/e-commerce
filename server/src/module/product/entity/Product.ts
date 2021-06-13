@@ -1,9 +1,11 @@
 import { Brand } from "../../brand/entity/Brand";
 import { Category } from "../../category/entity/Category";
+import { IProduct } from "../interfaces/IProduct";
 
-export class Product {
+export class Product implements IProduct {
     static readonly modelName: 'Product';
-    constructor(public name: string,
+    constructor(
+        public name: string,
         public image: string | null,
         public description: string | null,
         public price: number,
@@ -13,5 +15,6 @@ export class Product {
         public id?: number,
         public category?: Category,
         public brand?: Brand
-        ) { }
+    ) { }
+
 }

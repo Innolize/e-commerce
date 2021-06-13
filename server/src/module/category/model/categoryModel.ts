@@ -6,7 +6,9 @@ import { ICategory } from "../interfaces/ICategory";
 // decorate(injectable(), (Model))
 
 @injectable()
-export class CategoryModel extends Model<ICategory>{
+export class CategoryModel extends Model<ICategory> implements ICategory {
+    id?: number | undefined;
+    name: string;
 
     static setup(database: Sequelize): typeof CategoryModel {
         CategoryModel.init({

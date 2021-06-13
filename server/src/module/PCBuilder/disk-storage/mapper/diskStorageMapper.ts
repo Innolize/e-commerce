@@ -1,12 +1,11 @@
 import { DiskStorage } from "../entities/DiskStorage"
-import { DiskStorageModel } from "../model/DiskStorageModel"
 import { IDiskStorageCreate } from '../interface/IDiskStorageCreate'
-import { fromRequestToProduct } from "../../../product/mapper/productMapper"
+import { fromDbToProduct } from "../../../product/mapper/productMapper"
+import { IDiskStorage } from "../interface/IDiskStorage"
 
-export const fromDbToDiskStorage = (model: DiskStorageModel): DiskStorage => {
-    const diskStorage = model.toJSON() as DiskStorage
-    const { mbs, total_storage, type, watts, id, id_product, product } = diskStorage
-    const diskStorageProduct = product ? fromRequestToProduct(product) : undefined
+export const fromDbToDiskStorage = (model: IDiskStorage): DiskStorage => {
+    const { mbs, total_storage, type, watts, id, id_product, product } = model
+    const diskStorageProduct = product ? fromDbToProduct(product) : undefined
     return new DiskStorage(total_storage, type, mbs, watts, id_product, id, diskStorageProduct)
 }
 

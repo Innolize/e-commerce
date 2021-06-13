@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { WhereOptions } from "sequelize/types";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
+import { ProductModel } from "../../product/module";
 import { GetCartsDto } from "../dto/getCartsDto";
 import { Cart } from "../entities/Cart";
 import { CartItem } from "../entities/CartItem";
@@ -32,8 +33,7 @@ export class CartRepository extends AbstractRepository {
 
     async getCart(id: number, userId: number): Promise<Cart> {
         const user_id = userId
-        const cartModel = await this.cartModel.findOne({ where: { id, user_id }, include: [{ association: CartModel.associations.cartItems, include: [{ association: CartItemModel.associations.product }] }] })
-        console.log(cartModel)
+        const cartModel = await this.cartModel.findOne({ where: { id, user_id, active: true }, include: [{ association: CartModel.associations.cartItems, include: [{ association: CartItemModel.associations.product, include: [{ association: ProductModel.associations.brand }, { association: ProductModel.associations.category }] }] }] })
         if (!cartModel) {
             throw CartError.cartNotFound()
         }

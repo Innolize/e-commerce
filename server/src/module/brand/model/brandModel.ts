@@ -1,11 +1,15 @@
 import { injectable } from "inversify";
 import { DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
+import { IBrand } from "../interfaces/IBrand";
 import { IBrandCreateModelAttributes } from "../interfaces/IBrandCreateModelAttributes";
 import { IBrandModelAttributes } from "../interfaces/IBrandModelAttributes";
 
 @injectable()
-export class BrandModel extends Model<IBrandModelAttributes, IBrandCreateModelAttributes>{
+export class BrandModel extends Model<IBrandModelAttributes, IBrandCreateModelAttributes> implements IBrand {
+    name: string;
+    logo: string | null;
+    id?: number | undefined;
 
     static setup(database: Sequelize): typeof BrandModel {
         BrandModel.init({

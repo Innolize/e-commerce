@@ -1,10 +1,9 @@
 import { Brand } from "../entity/Brand"
+import { IBrand } from "../interfaces/IBrand"
 import { IBrandCreate } from "../interfaces/IBrandCreate"
-import { BrandModel } from "../model/brandModel"
 
-export const fromDbToBrand = (model: BrandModel): Brand => {
-    const brand = model.toJSON() as Brand
-    const { logo, name, id } = brand
+export const fromDbToBrand = (model: IBrand): Brand => {
+    const { logo, name, id } = model
     return new Brand(name, logo, id)
 }
 

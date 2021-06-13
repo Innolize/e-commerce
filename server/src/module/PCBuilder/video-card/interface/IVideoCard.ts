@@ -1,11 +1,13 @@
+import { VIDEO_CARD_VERSION } from "../../../../config/constants/pcbuilder";
 import { Product } from "../../../product/entity/Product";
 
 export interface IVideoCard {
-    id: number,
-    version: "DDR4" | "DDR5" | "DDR6"
-    memory: number
-    clock_speed: number
-    watts: number
+    version: typeof VIDEO_CARD_VERSION[number],
+    memory: number,
+    clock_speed: number,
+    watts: number,
+    id_product: number,
+    id?: number,
     product?: Product
 }
 

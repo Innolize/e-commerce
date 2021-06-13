@@ -4,9 +4,20 @@ import { ProductModel } from "../../../product/module";
 import { VideoCard } from '../entities/VideoCard'
 import { IVideoCardCreate } from '../interface/IVideoCardCreate'
 import { VIDEO_CARD_VERSION } from '../../../../config/constants/pcbuilder';
+import { IVideoCard } from '../interface/IVideoCard';
+import { Product } from '../../../product/entity/Product';
+
 
 @injectable()
-export class VideoCardModel extends Model<VideoCard, IVideoCardCreate>{
+export class VideoCardModel extends Model<VideoCard, IVideoCardCreate> implements IVideoCard {
+    public version!: typeof VIDEO_CARD_VERSION[number]
+    public memory!: number
+    public clock_speed!: number
+    public watts!: number
+    public id_product!: number
+    public id!: number
+    public product?: Product
+
     static setup(database: Sequelize): typeof VideoCardModel {
         VideoCardModel.init({
             id: {

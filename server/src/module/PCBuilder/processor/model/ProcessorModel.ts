@@ -3,9 +3,20 @@ import { injectable } from "inversify";
 import { ProductModel } from "../../../product/module";
 import { IProcessorCreate } from '../interface/IProcessorCreate'
 import { Processor } from '../entities/Processor';
+import { IProcessor } from '../interface/IProcessor';
+import { Product } from '../../../product/entity/Product';
 
 @injectable()
-export class ProcessorModel extends Model<Processor, IProcessorCreate>{
+export class ProcessorModel extends Model<Processor, IProcessorCreate> implements IProcessor {
+
+    public cores!: number;
+    public frecuency!: number;
+    public socket!: string;
+    public watts!: number;
+    public id_product!: number;
+    public id!: number;
+    public product?: Product;
+
     static setup(database: Sequelize): typeof ProcessorModel {
         ProcessorModel.init({
             id: {

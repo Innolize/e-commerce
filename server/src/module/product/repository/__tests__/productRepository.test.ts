@@ -57,9 +57,9 @@ const sampleBrand = new Brand(
     "test-brand-logo"
 )
 
-const sampleCategory = new Category({
-    name: "test-category"
-})
+const sampleCategory = new Category(
+    "test-category"
+)
 
 test('Creates a product with id 1', async () => {
     await brand.create(sampleBrand)

@@ -59,8 +59,8 @@ export class CategoryController extends AbstractController {
     async createCategory(req: Request, res: Response, next: NextFunction) {
         try {
             const dto: ICategory = req.body
-            const validatedDto = await bodyValidator(validateCreateCategoryDto, dto)
-            const product = new Category(validatedDto)
+            const { name, id } = await bodyValidator(validateCreateCategoryDto, dto)
+            const product = new Category(name, id)
             const response = await this.categoryService.createCategory(product)
             return res.status(StatusCodes.CREATED).send(response)
         } catch (err) {

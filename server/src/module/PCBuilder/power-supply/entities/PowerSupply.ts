@@ -1,7 +1,8 @@
 import { PWS_CERTIFICATION } from '../../../../config/constants/pcbuilder'
 import { Product } from '../../../product/entity/Product'
+import { IPowerSupply } from '../interface/IPowerSupply'
 
-export class PowerSupply {
+export class PowerSupply implements IPowerSupply {
     static readonly modelName = 'PowerSupply'
     constructor(
         public watts: number,
