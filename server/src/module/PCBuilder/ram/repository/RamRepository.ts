@@ -6,9 +6,10 @@ import { ProductModel } from "../../../product/module";
 import { Product } from "../../../product/entity/Product";
 import { RamModel } from "../model/ramModel";
 import { fromDbToRam, fromRequestToRam } from "../mapper/ramMapper";
-import { IRamQuery } from "../interface/IRamQuery";
 import { Ram } from "../entities/Ram";
 import { RamError } from "../error/RamError";
+import { GetRamsReqDto } from "../dto/getRamsReqDto";
+import { GetRamsDto } from "../dto/getRamsDto";
 
 @injectable()
 export class RamRepository extends AbstractRepository {
@@ -27,15 +28,16 @@ export class RamRepository extends AbstractRepository {
         this.ORM = ORM
     }
 
-    async getRams(query?: IRamQuery): Promise<Ram[]> {
-        const queryParams: WhereOptions<Ram> = {}
-        if (query) {
-            query.min_frec ? queryParams.min_frec = { [Op.gte]: query.min_frec } : ''
-            query.max_frec ? queryParams.max_frec = { [Op.lte]: query.max_frec } : ''
-            query.ram_version ? queryParams.ram_version = query.ram_version : ''
-        }
-        const response = await this.ramModel.findAll({ where: queryParams, include: RamModel.associations.product });
-        return response.map(fromDbToRam)
+    async getRams(queryParams: GetRamsReqDto): Promise<GetRamsDto> {
+        const { ram_version, min_frec, max_frec, offset, limit } = queryParams
+        const whereOptions: WhereOptions<Ram> = {}
+        min_frec ? whereOptions.min_frec = { [Op.gte]: min_frec } : ''
+        max_frec ? whereOptions.max_frec = { [Op.lte]: max_frec } : ''
+        ram_version ? whereOptions.ram_version = ram_version : ''
+        const { rows, count } = await this.ramModel.findAndCountAll({ where: whereOptions, limit, offset, include: RamModel.associations.product });
+        const rams = rows.map(fromDbToRam)
+        const response = new GetRamsDto(count, rams)
+        return response
     }
 
     async getSingleRam(id: number): Promise<Ram | Error> {

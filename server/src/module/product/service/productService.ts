@@ -6,10 +6,11 @@ import { BrandService } from "../../brand/module";
 import { Category } from "../../category/entity/Category";
 import { CategoryService } from "../../category/module";
 import { Product } from "../entity/Product";
-import { IGetAllProductsQueries } from "../interfaces/IGetAllProductsQueries";
 import { IProductCreate } from "../interfaces/IProductCreate";
 import { IProductEdit } from "../interfaces/IProductEdit";
 import { ProductRepository } from "../repository/productRepository";
+import { GetProductsDto } from "../dto/getProductsDto";
+import { GetProductsReqDto } from "../dto/getProductsReqDto";
 
 @injectable()
 export class ProductService extends AbstractService {
@@ -30,7 +31,7 @@ export class ProductService extends AbstractService {
         return await this.productRepository.deleteProduct(id)
     }
 
-    async getAllProducts(queryParams?: IGetAllProductsQueries): Promise<Error | Product[]> {
+    async getAllProducts(queryParams: GetProductsReqDto): Promise<Error | GetProductsDto> {
         return await this.productRepository.getAllProduct(queryParams)
     }
 

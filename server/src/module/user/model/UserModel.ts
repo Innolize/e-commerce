@@ -1,6 +1,7 @@
 import { injectable } from "inversify"
 import { Association, DataTypes, Model, Sequelize } from "sequelize"
 import { RoleModel } from "../../authorization/module"
+import { CartModel } from "../../cart/module"
 import { User } from "../entities/User"
 import { IUserCreate } from "../interfaces/IUserCreate"
 
@@ -24,7 +25,7 @@ export class UserModel extends Model<User, IUserCreate>{
             },
             role_id: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
+                allowNull: false
             }
         },
             {
@@ -47,7 +48,18 @@ export class UserModel extends Model<User, IUserCreate>{
         return UserModel
     }
 
+    static setupCartAssociation(model: typeof CartModel): typeof UserModel {
+        UserModel.hasMany(model, {
+            foreignKey: {
+                name: "user_id"
+            },
+            as: 'carts'
+        })
+        return UserModel
+    }
+
     public static associations: {
         role: Association<UserModel, RoleModel>;
+        carts: Association<UserModel, CartModel>;
     };
 }

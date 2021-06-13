@@ -62,9 +62,12 @@ export const validateMotherboardEditSchema = {
         required(),
 }
 
-export const validateQueryCpuBrand = (cpu_brand: string): string => {
-    return Joi.attempt(cpu_brand, Joi.string().valid(...CPU_BRANDS), 'cpu_brand')
-}
+export const validateMotherboardQuerySchema = Joi.object({
+    limit: Joi.number(),
+    offset: Joi.number(),
+    cpu_brand: Joi.string()
+        .valid(...CPU_BRANDS)
+})
 
 export const validateMotherboardAndProductDto = Joi.object({ ...validateMotherboardCreateSchema, ...validateCreateProductSchema })
 export const validateMotherboardCreateDto = Joi.object(validateMotherboardCreateSchema)

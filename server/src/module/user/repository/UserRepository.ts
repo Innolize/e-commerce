@@ -8,6 +8,8 @@ import { UserError } from "../error/UserError";
 import { IUserEdit } from "../interfaces/IUserEdit";
 import { fromDbToUser } from "../mapper/userMapper";
 import { UserModel } from "../model/UserModel";
+import { GetUsersDto } from '../dto/getUsersDto'
+import { GetUserReqDto } from "../dto/getUsersReqDto";
 
 @injectable()
 export class UserRepository extends AbstractRepository {
@@ -19,19 +21,22 @@ export class UserRepository extends AbstractRepository {
         this.userModel = userModel
     }
 
-    async getUsers(): Promise<User[]> {
-        const users = await this.userModel.findAll()
-        return users.map(fromDbToUser)
+    async getUsers(queryParams: GetUserReqDto): Promise<GetUsersDto> {
+        const { offset, limit } = queryParams
+        const { count, rows } = await this.userModel.findAndCountAll({ limit, offset })
+        const usersList = rows.map(fromDbToUser)
+        const response = new GetUsersDto(count, usersList)
+        return response
     }
 
     async getSingleUser(id: number): Promise<User | Error> {
-            const user = await this.userModel.findByPk(id, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }] })
-            if (!user) {
-                throw UserError.notFound()
-            }
-            
-            const response = fromDbToUser(user)
-            return response
+        const user = await this.userModel.findByPk(id, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }, { association: UserModel.associations.carts }] })
+        if (!user) {
+            throw UserError.notFound()
+        }
+
+        const response = fromDbToUser(user)
+        return response
     }
 
     async createUser(user: User): Promise<User | Error> {
@@ -55,19 +60,17 @@ export class UserRepository extends AbstractRepository {
     }
 
     async modifyUser(user: IUserEdit): Promise<User | Error> {
-        try {
-            const [userEdited, userArray] = await this.userModel.update(user, { where: { id: user.id }, returning: true })
-            // update returns an array, first argument is the number of elements updated in the
-            // database. Second argument are the array of elements. Im updating by id so there is only 
-            // one element in the array.
-            if (!userEdited) {
-                throw UserError.notFound()
-            }
-            const editedUser = fromDbToUser(userArray[0])
-            return editedUser
-        } catch (err) {
-            throw err
+
+        const [userEdited, userArray] = await this.userModel.update(user, { where: { id: user.id }, returning: true })
+        // update returns an array, first argument is the number of elements updated in the
+        // database. Second argument are the array of elements. Im updating by id so there is only 
+        // one element in the array.
+        if (!userEdited) {
+            throw UserError.notFound()
         }
+        const editedUser = fromDbToUser(userArray[0])
+        return editedUser
+
     }
 
     async deleteUser(id: number): Promise<true | Error> {

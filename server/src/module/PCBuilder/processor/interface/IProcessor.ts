@@ -1,11 +1,12 @@
 import { Product } from "../../../product/entity/Product";
 
 export interface IProcessor {
-    id: number,
-    cores: number,
-    socket: string,
-    frecuency: number,
-    watts: number,
+    cores: number
+    frecuency: number
+    socket: string
+    watts: number
+    id_product: number
+    id?: number
     product?: Product
 }
 

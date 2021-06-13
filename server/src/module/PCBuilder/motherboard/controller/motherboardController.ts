@@ -7,7 +7,7 @@ import { AbstractController } from "../../../abstractClasses/abstractController"
 import { bodyValidator } from "../../../common/helpers/bodyValidator";
 import { ImageUploadService } from "../../../imageUploader/module";
 import { Motherboard } from "../entity/Motherboard";
-import { validateMotherboardAndProductDto, validateMotherboardEditDto, validateQueryCpuBrand } from "../helpers/dto-validator";
+import { validateMotherboardAndProductDto, validateMotherboardEditDto, validateMotherboardQuerySchema } from "../helpers/dto-validator";
 import { IMotherboard_Product } from "../interface/IMotherboardCreate";
 import { MotherboardService } from "../service/motherboardService";
 import { IMotherboardEdit } from '../interface/IMotherboardEdit'
@@ -18,6 +18,8 @@ import { fromRequestToMotherboard } from "../mapper/motherboardMapper";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
 import { MotherboardError } from '../error/MotherboardError'
 import { ProductService } from "../../../product/module";
+import { IMotherboardGetAllQueries } from "../interface/IMotherboardGetAllQueries";
+import { GetMotherboardReqDto } from '../dto/getMotherboardsReqDto'
 
 export class MotherboardController extends AbstractController {
     private ROUTE_BASE: string
@@ -49,14 +51,12 @@ export class MotherboardController extends AbstractController {
     }
 
     getAll = async (req: Request, res: Response, next: NextFunction) => {
-        const { cpu_brand } = req.query
+
         try {
-            if (cpu_brand) {
-                const valid_cpu_brand = validateQueryCpuBrand(cpu_brand.toString())
-                const motherboardWithQuery = await this.motherboardService.getMotherboards(valid_cpu_brand)
-                return res.status(StatusCodes.OK).send(motherboardWithQuery)
-            }
-            const response = await this.motherboardService.getMotherboards()
+            const dto: IMotherboardGetAllQueries = req.query
+            const { limit, offset, cpu_brand } = await bodyValidator(validateMotherboardQuerySchema, dto)
+            const queryParam = new GetMotherboardReqDto(limit, offset, cpu_brand)
+            const response = await this.motherboardService.getMotherboards(queryParam)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)

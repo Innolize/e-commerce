@@ -2,6 +2,8 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
 import { Product } from "../../../product/entity/Product";
+import { GetMotherboardDto } from "../dto/getMotherboardsDto";
+import { GetMotherboardReqDto } from "../dto/getMotherboardsReqDto";
 import { Motherboard } from "../entity/Motherboard";
 import { MotherboardRepository } from "../repository/motherboardRepository";
 
@@ -15,8 +17,8 @@ export class MotherboardService extends AbstractService {
         this.motherboardRepository = motherboardRepository
     }
 
-    getMotherboards(cpu_brand?: string): Promise<Motherboard[]> {
-        return this.motherboardRepository.getAll(cpu_brand)
+    getMotherboards(queryParams: GetMotherboardReqDto): Promise<GetMotherboardDto> {
+        return this.motherboardRepository.getAll(queryParams)
     }
 
     getSingleMotherboards(id: number): Promise<Motherboard> {

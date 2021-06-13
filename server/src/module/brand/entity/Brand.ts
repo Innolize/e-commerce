@@ -1,6 +1,6 @@
-import { IBrandCreate } from "../interfaces/IBrandCreate";
+import { IBrand } from "../interfaces/IBrand";
 
-export class Brand {
+export class Brand implements IBrand {
     static readonly modelName = 'Brand'
     constructor(
         public name: string,

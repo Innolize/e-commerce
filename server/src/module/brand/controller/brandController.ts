@@ -17,6 +17,8 @@ import { authorizationMiddleware } from '../../authorization/util/authorizationM
 import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
 import { BrandError } from '../error/BrandError'
 import { fromRequestToBrand } from '../mapper/brandMapper'
+import { validateGetBrandsDto } from '../helper/get_dto_validator'
+import { GetBrandsReqDto } from '../dto/getBrandsReqDto'
 
 
 @injectable()
@@ -48,10 +50,10 @@ export class BrandController extends AbstractController {
     }
 
     async getAllBrands(req: Request, res: Response, next: NextFunction) {
-        const { name } = req.query
-        let queryParams: IGetAllBrandsQueries = {}
-        name ? queryParams.name = String(name) : ''
+        const dto: IBrandGetAllQueries = req.query
         try {
+            const { limit, offset, name } = await bodyValidator(validateGetBrandsDto, dto)
+            const queryParams = new GetBrandsReqDto(limit, offset, name)
             const products = await this.brandService.getAllCategories(queryParams)
             res.status(StatusCodes.OK).send(products)
         } catch (err) {

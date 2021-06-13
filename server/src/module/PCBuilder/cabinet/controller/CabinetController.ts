@@ -9,7 +9,7 @@ import { ImageUploadService } from "../../../imageUploader/module";
 import { Cabinet } from "../entities/Cabinet";
 import { validateCabinetAndProductDto, validateCabinetEditDto, validateCabinetQuerySchema } from "../helpers/dto-validator";
 import { ICabinet_Product } from "../interface/ICabinetCreate";
-import { ICabinetQuery } from "../interface/ICabinetQuery";
+import { ICabinetGetCabinets } from "../interface/ICabinetGetCabinets";
 import { ICabinetEdit } from '../interface/ICabinetEdit'
 import { CabinetService } from "../service/CabinetService";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
@@ -19,6 +19,7 @@ import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToCabinet } from "../mapper/cabinetMapper";
 import { ProductService } from "../../../product/module";
 import { CabinetError } from "../error/CabinetError";
+import { GetCabinetsReqDto } from "../dto/getCabinetsReqDto";
 
 export class CabinetController extends AbstractController {
     private ROUTE_BASE: string
@@ -50,14 +51,10 @@ export class CabinetController extends AbstractController {
 
     getAll = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const queryDto = req.query
-            const hasQuery = Object.keys(queryDto).length
-            if (hasQuery) {
-                const validQueryDto = await bodyValidator(validateCabinetQuerySchema, queryDto as ICabinetQuery)
-                const cabinetWithQuery = await this.cabinetService.getCabinets(validQueryDto)
-                return res.status(StatusCodes.OK).send(cabinetWithQuery)
-            }
-            const response = await this.cabinetService.getCabinets()
+            const dto: ICabinetGetCabinets = req.query
+            const { limit, offset, size } = await bodyValidator(validateCabinetQuerySchema, dto)
+            const queryParam = new GetCabinetsReqDto(limit, offset, size)
+            const response = await this.cabinetService.getCabinets(queryParam)
             return res.status(200).send(response)
         } catch (err) {
             next(err)

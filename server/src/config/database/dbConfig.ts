@@ -17,7 +17,7 @@ import { DiskStorageModel } from '../../module/PCBuilder/disk-storage/module';
 import { PermissionModel, RoleModel } from '../../module/authorization/module';
 import { UserModel } from '../../module/user/module';
 import { hash } from 'bcrypt'
-import { PowerSupply } from '../../module/PCBuilder/power-supply/entities/PowerSupply';
+import { CartItemModel, CartModel } from '../../module/cart/module';
 
 async function configureDatabase() {
 
@@ -38,7 +38,9 @@ async function configureDatabase() {
             DiskStorageModel.setup(database);
             PermissionModel.setup(database);
             RoleModel.setup(database);
-            UserModel.setup(database)
+            UserModel.setup(database);
+            CartModel.setup(database);
+            CartItemModel.setup(database);
             ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.Category.Model));
             ProductModel.setupBrandAssociation(container.get<typeof BrandModel>(TYPES.Brand.Model));
             MotherboardModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
@@ -50,8 +52,11 @@ async function configureDatabase() {
             DiskStorageModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
             RoleModel.setupPermissionAssociation(container.get<typeof PermissionModel>(TYPES.Authorization.Permission.Model));
             UserModel.setupRoleAssociation(container.get<typeof RoleModel>(TYPES.Authorization.Role.Model))
-            // RoleModel.setupUserAssociation(container.get<typeof UserModel>(TYPES.User.Model))
-            // PermissionModel.setupRoleAssociation(container.get<typeof RoleModel>(TYPES.Authorization.Role.Model));
+            CartModel.setupCartItemAssociation(CartItemModel)
+            CartItemModel.setupProductAssociation(ProductModel)
+            CartItemModel.setupCartAssociation(CartModel)
+            UserModel.setupCartAssociation(CartModel)
+            CartModel.setupUserAssociation(UserModel)
         } catch (err) {
             console.log('config')
             console.log(err.message)
@@ -74,7 +79,17 @@ async function configureDatabase() {
             await seedRole()
             await seedPermission()
             await seedUser()
-            console.log('exito!')
+            await CartModel.create({ user_id: 1 })
+            await CartItemModel.bulkCreate([
+                { cart_id: 1, product_id: 2, quantity: 3 },
+                { cart_id: 1, product_id: 4, quantity: 2 },
+                { cart_id: 1, product_id: 6, quantity: 3 }
+
+            ])
+            const test = await UserModel.findByPk(1, { include: 'cart' })
+            console.log(test?.toJSON())
+            const test2 = await CartModel.findByPk(1, { include: 'user' })
+            console.log(test2?.toJSON())
         } catch (err) {
 
             console.log(err)
@@ -154,8 +169,9 @@ const seedProcessor = async (): Promise<void> => {
 }
 
 const seedRam = async (): Promise<void> => {
-    await RamModel.create({ ram_version: 'DDR3', watts: 20, min_frec: 800, max_frec: 1400, memory: 4, id_product: 13 })
-    await RamModel.create({ ram_version: 'DDR4', watts: 25, min_frec: 1200, max_frec: 1800, memory: 8, id_product: 14 })
+    await RamModel.bulkCreate(
+        [{ ram_version: 'DDR3', watts: 20, min_frec: 800, max_frec: 1400, memory: 4, id_product: 13 },
+        { ram_version: 'DDR4', watts: 25, min_frec: 1200, max_frec: 1800, memory: 8, id_product: 14 }])
     console.log('Ram seeded')
 }
 

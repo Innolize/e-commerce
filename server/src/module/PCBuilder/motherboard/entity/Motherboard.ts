@@ -1,7 +1,8 @@
 import { CPU_BRANDS, RAM_VERSION, SIZE, VIDEO_CARD_VERSION } from '../../../../config/constants/pcbuilder'
 import { Product } from '../../../product/entity/Product'
+import { IMotherboard } from '../interface/IMotherboard'
 
-export class Motherboard {
+export class Motherboard implements IMotherboard {
     static readonly modelName = 'Motherboard'
     constructor(
         public cpu_socket: string,

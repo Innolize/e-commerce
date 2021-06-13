@@ -1,11 +1,10 @@
 import { Cabinet } from "../entities/Cabinet"
-import { CabinetModel } from "../model/CabinetModel"
 import { ICabinetCreate } from '../interface/ICabinetCreate'
 import { fromRequestToProduct } from "../../../product/mapper/productMapper"
+import { ICabinet } from "../interface/ICabinet"
 
-export const fromDbToCabinet = (model: CabinetModel): Cabinet => {
-    const cabinet = model.toJSON() as Cabinet
-    const { generic_pws, size, id, id_product, product } = cabinet
+export const fromDbToCabinet = (model: ICabinet): Cabinet => {
+    const { generic_pws, size, id, id_product, product } = model
     const cabinetProduct = product ? fromRequestToProduct(product) : undefined
     return new Cabinet(size, generic_pws, id_product, id, cabinetProduct)
 }

@@ -1,6 +1,7 @@
 import { Product } from '../../../product/entity/Product'
+import { IProcessor } from '../interface/IProcessor'
 
-export class Processor {
+export class Processor implements IProcessor {
     static readonly modelName = 'Processor'
     constructor(
         public cores: number,

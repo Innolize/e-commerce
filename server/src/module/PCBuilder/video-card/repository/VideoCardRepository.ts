@@ -1,14 +1,15 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractRepository } from "../../../abstractClasses/abstractRepository";
-import { Sequelize } from "sequelize";
+import { Sequelize, WhereOptions } from "sequelize";
 import { ProductModel } from "../../../product/module";
 import { Product } from "../../../product/entity/Product";
 import { VideoCardModel } from "../model/VideoCardModel";
 import { fromDbToVideoCard, fromRequestToVideoCard } from "../mapper/videoCardMapper";
-import { IVideoCardQuery } from "../interface/IVideoCardQuery";
 import { VideoCard } from "../entities/VideoCard";
 import { VideoCardError } from "../error/VideoCardError";
+import { GetVideoCardsReqDto } from "../dto/getVideoCardsReqDto";
+import { GetVideoCardsDto } from "../dto/getVideoCardsDto";
 
 @injectable()
 export class VideoCardRepository extends AbstractRepository {
@@ -27,13 +28,14 @@ export class VideoCardRepository extends AbstractRepository {
         this.ORM = ORM
     }
 
-    async getVideoCards(query?: IVideoCardQuery): Promise<VideoCard[]> {
-        const queryParams: IVideoCardQuery = {}
-        if (query?.version) {
-            queryParams.version = query.version
-        }
-        const response = await this.videoCardModel.findAll({ where: queryParams, include: VideoCardModel.associations.product });
-        return response.map(fromDbToVideoCard)
+    async getVideoCards(queryParams: GetVideoCardsReqDto): Promise<GetVideoCardsDto> {
+        const { limit, offset, version } = queryParams
+        const whereOptions: WhereOptions<VideoCard> = {}
+        version ? whereOptions.version = version : ''
+        const { count, rows } = await this.videoCardModel.findAndCountAll({ where: whereOptions, limit, offset, include: VideoCardModel.associations.product });
+        const videoCards = rows.map(fromDbToVideoCard)
+        const response = new GetVideoCardsDto(count, videoCards)
+        return response
     }
 
     async getSingleVideoCard(id: number): Promise<VideoCard | Error> {

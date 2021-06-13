@@ -19,7 +19,9 @@ import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
 import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
 import { ProductError } from '../error/ProductError'
 import { fromRequestToProduct } from '../mapper/productMapper'
-import { IGetAllProductsQueries } from '../interfaces/IGetAllProductsQueries'
+import { IProductGetAllQueries } from '../interfaces/IProductGetAllQueries'
+import { validateGetProductDto } from '../helper/get_dto_validator'
+import { GetProductsReqDto } from '../dto/getProductsReqDto'
 
 @injectable()
 export class ProductController extends AbstractController {
@@ -57,10 +59,9 @@ export class ProductController extends AbstractController {
 
     async getAllProducts(req: Request, res: Response, next: NextFunction) {
         try {
-            const { category_id, name } = req.query
-            let queryParams: IGetAllProductsQueries = {}
-            category_id ? queryParams.category_id = Number(category_id) : ''
-            name ? queryParams.name = String(name) : ''
+            const dto: IProductGetAllQueries = req.query
+            const { category_id, limit, name, offset } = await bodyValidator(validateGetProductDto, dto)
+            const queryParams = new GetProductsReqDto(limit, offset, name, category_id)
             const products = await this.productService.getAllProducts(queryParams)
             res.status(StatusCodes.OK).send(products)
         } catch (err) {

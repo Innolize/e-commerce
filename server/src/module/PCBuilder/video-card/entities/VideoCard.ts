@@ -1,7 +1,8 @@
 import { VIDEO_CARD_VERSION } from '../../../../config/constants/pcbuilder'
 import { Product } from '../../../product/entity/Product'
+import { IVideoCard } from '../interface/IVideoCard'
 
-export class VideoCard {
+export class VideoCard implements IVideoCard {
     static readonly modelName = 'VideoCard'
     constructor(
         public version: typeof VIDEO_CARD_VERSION[number],

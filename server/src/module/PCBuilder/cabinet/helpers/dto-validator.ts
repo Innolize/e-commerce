@@ -4,6 +4,8 @@ import { validateCreateProductSchema } from "../../../product/helper/create_dto_
 
 
 export const validateCabinetQuerySchema = Joi.object({
+    limit: Joi.number(),
+    offset: Joi.number(),
     size: Joi.any()
         .valid(...SIZE)
 })

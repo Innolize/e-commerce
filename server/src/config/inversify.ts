@@ -22,6 +22,9 @@ import bcrypt from 'bcrypt'
 import { AuthController, AuthService } from "../module/auth/module"
 import { PermissionModel, RoleModel } from "../module/authorization/module"
 import { ImageUploadRepository } from "../module/imageUploader/repository/imageUploadRepository"
+import { CartController, CartItemModel, CartModel } from "../module/cart/module"
+import { CartRepository } from "../module/cart/repository/CartRepository"
+import { CartService } from "../module/cart/service/CartService"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -47,8 +50,8 @@ function configureImageDatabase() {
 
 export function configProductModel(container: Container): typeof ProductModel {
     ProductModel.setup(container.get(TYPES.Common.Database))
-    ProductModel.setupCategoryAssociation(container.get(TYPES.Category.Model))
-    ProductModel.setupBrandAssociation(container.get(TYPES.Brand.Model))
+    // ProductModel.setupCategoryAssociation(container.get(TYPES.Category.Model))
+    // ProductModel.setupBrandAssociation(container.get(TYPES.Brand.Model))
     return ProductModel
 }
 
@@ -63,54 +66,55 @@ export function configBrandModel(container: Container): typeof BrandModel {
 
 export function configMotherboardModel(container: Container): typeof MotherboardModel {
     MotherboardModel.setup(container.get(TYPES.Common.Database))
-    MotherboardModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    // MotherboardModel.setupProductAssociation(container.get(TYPES.Product.Model))
     return MotherboardModel
 }
 
 export function configRamModel(container: Container): typeof RamModel {
     RamModel.setup(container.get(TYPES.Common.Database))
-    RamModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    // RamModel.setupProductAssociation(container.get(TYPES.Product.Model))
     return RamModel
 }
 
 export function configProcessorModel(container: Container): typeof ProcessorModel {
     ProcessorModel.setup(container.get(TYPES.Common.Database))
-    ProcessorModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    // ProcessorModel.setupProductAssociation(container.get(TYPES.Product.Model))
     return ProcessorModel
 }
 
 export function configVideoCardModel(container: Container): typeof VideoCardModel {
     VideoCardModel.setup(container.get(TYPES.Common.Database))
-    VideoCardModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    // VideoCardModel.setupProductAssociation(container.get(TYPES.Product.Model))
     return VideoCardModel
 }
 
 export function configCabinetModel(container: Container): typeof CabinetModel {
     CabinetModel.setup(container.get(TYPES.Common.Database))
-    CabinetModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    // CabinetModel.setupProductAssociation(container.get(TYPES.Product.Model))
     return CabinetModel
 }
 
 export function configPowerSupplyModel(container: Container): typeof PowerSupplyModel {
     PowerSupplyModel.setup(container.get(TYPES.Common.Database))
-    PowerSupplyModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    // PowerSupplyModel.setupProductAssociation(container.get(TYPES.Product.Model))
     return PowerSupplyModel
 }
 
 export function configDiskStorageModel(container: Container): typeof DiskStorageModel {
     DiskStorageModel.setup(container.get(TYPES.Common.Database))
-    DiskStorageModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    // DiskStorageModel.setupProductAssociation(container.get(TYPES.Product.Model))
     return DiskStorageModel
 }
 export function configUserModel(container: Container): typeof UserModel {
     UserModel.setup(container.get(TYPES.Common.Database))
-    UserModel.setupRoleAssociation(container.get(TYPES.Authorization.Role.Model))
+    // UserModel.setupRoleAssociation(container.get<typeof RoleModel>(TYPES.Authorization.Role.Model))
+    // UserModel.setupCartAssociation(container.get<typeof CartModel>(TYPES.Cart.CartModel))
     return UserModel
 }
 
 export function configRoleModel(container: Container): typeof RoleModel {
     RoleModel.setup(container.get(TYPES.Common.Database))
-    RoleModel.setupPermissionAssociation(container.get(TYPES.Authorization.Permission.Model))
+    // RoleModel.setupPermissionAssociation(container.get(TYPES.Authorization.Permission.Model))
     return RoleModel
 }
 
@@ -149,6 +153,26 @@ function configureBrandContainer(container: Container): void {
     container.bind<BrandRepository>(TYPES.Brand.Repository).to(BrandRepository)
     container.bind<BrandService>(TYPES.Brand.Service).to(BrandService)
     container.bind<BrandController>(TYPES.Brand.Controller).to(BrandController)
+}
+
+function configCartModels(container: Container): [typeof CartModel, typeof CartItemModel] {
+    const database = container.get<Sequelize>(TYPES.Common.Database)
+    const cartModel = CartModel.setup(database)
+    const cartItemModel = CartItemModel.setup(database)
+    // CartModel.setupCartItemAssociation(cartItemModel)
+    // CartModel.setupUserAssociation(container.get<typeof UserModel>(TYPES.User.Model))
+    // CartItemModel.setupCartAssociation(CartModel)
+    // CartItemModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
+    return [cartModel, cartItemModel]
+}
+
+function configureCartContainer(container: Container): void {
+    const [cartModel, cartItemModel] = configCartModels(container)
+    container.bind<typeof CartModel>(TYPES.Cart.CartModel).toConstantValue(cartModel)
+    container.bind<typeof CartItemModel>(TYPES.Cart.CartItemModel).toConstantValue(cartItemModel)
+    container.bind<CartRepository>(TYPES.Cart.Repository).to(CartRepository)
+    container.bind<CartService>(TYPES.Cart.Service).to(CartService)
+    container.bind<CartController>(TYPES.Cart.Controller).to(CartController)
 }
 
 function configureUserContainer(container: Container): void {
@@ -209,10 +233,31 @@ function configureDIC() {
     configurePCBuilder(dependencyContainer)
     configureAuthContainer(dependencyContainer)
     configPermissionContainer(dependencyContainer)
+    configureCartContainer(dependencyContainer)
     configureUserContainer(dependencyContainer)
+    associations(dependencyContainer)
+
     return dependencyContainer
 }
 
+function associations(container: Container) {
+    ProductModel.setupCategoryAssociation(container.get(TYPES.Category.Model))
+    ProductModel.setupBrandAssociation(container.get(TYPES.Brand.Model))
+    MotherboardModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    CartModel.setupCartItemAssociation(container.get<typeof CartItemModel>(TYPES.Cart.CartItemModel))
+    CartModel.setupUserAssociation(container.get<typeof UserModel>(TYPES.User.Model))
+    CartItemModel.setupCartAssociation(container.get<typeof CartModel>(TYPES.Cart.CartModel))
+    CartItemModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
+    RoleModel.setupPermissionAssociation(container.get(TYPES.Authorization.Permission.Model))
+    UserModel.setupRoleAssociation(container.get<typeof RoleModel>(TYPES.Authorization.Role.Model))
+    UserModel.setupCartAssociation(container.get<typeof CartModel>(TYPES.Cart.CartModel))
+    DiskStorageModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    PowerSupplyModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    CabinetModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    VideoCardModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    ProcessorModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    RamModel.setupProductAssociation(container.get(TYPES.Product.Model))
+}
 const container = configureDIC()
 
 export default container

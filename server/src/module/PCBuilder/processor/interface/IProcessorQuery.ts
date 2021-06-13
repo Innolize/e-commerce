@@ -1,3 +1,5 @@
-export interface IProcessorQuery{
-    socket?: number
+export interface IProcessorGetAllQuery{
+    limit?: number,
+    offset?: number,
+    socket?: string
 }

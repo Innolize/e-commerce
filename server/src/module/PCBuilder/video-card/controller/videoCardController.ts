@@ -9,7 +9,7 @@ import { ImageUploadService } from "../../../imageUploader/module";
 import { VideoCard } from "../entities/VideoCard";
 import { validateVideoCardAndProductDto, validateVideoCardEditDto, validateVideoCardQuerySchema } from "../helpers/dto-validator";
 import { IVideoCard_Product } from "../interface/IVideoCardCreate";
-import { IVideoCardQuery } from "../interface/IVideoCardQuery";
+import { IVideoCardGetAllQuery } from "../interface/IVideoCardGetAllQuery";
 import { IVideoCardEdit } from '../interface/IVideoCardEdit'
 import { VideoCardService } from "../service/VideoCardService";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
@@ -18,8 +18,8 @@ import { authorizationMiddleware } from "../../../authorization/util/authorizati
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToVideoCard } from "../mapper/videoCardMapper";
 import { ProductService } from "../../../product/module";
-import { VIDEO_CARD_VERSION } from "../../../../config/constants/pcbuilder";
 import { VideoCardError } from "../error/VideoCardError";
+import { GetVideoCardsReqDto } from "../dto/getVideoCardsReqDto";
 
 export class VideoCardController extends AbstractController {
     private ROUTE_BASE: string
@@ -52,14 +52,10 @@ export class VideoCardController extends AbstractController {
 
     getAll = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const queryDto = req.query
-            const hasQuery = Object.keys(queryDto).length
-            if (hasQuery) {
-                const validQueryDto = await bodyValidator(validateVideoCardQuerySchema, queryDto as IVideoCardQuery)
-                const ramWithQuery = await this.videoCardService.getVideoCard(validQueryDto)
-                return res.status(StatusCodes.OK).send(ramWithQuery)
-            }
-            const response = await this.videoCardService.getVideoCard()
+            const dto: IVideoCardGetAllQuery = req.query
+            const { limit, version, offset } = await bodyValidator(validateVideoCardQuerySchema, dto)
+            const queryParams = new GetVideoCardsReqDto(limit, offset, version)
+            const response = await this.videoCardService.getVideoCard(queryParams)
             return res.status(200).send(response)
         } catch (err) {
             next(err)

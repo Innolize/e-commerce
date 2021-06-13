@@ -8,6 +8,8 @@ import { ProductModel } from "../../../product/module";
 import { Motherboard } from "../entity/Motherboard";
 import { Product } from "../../../product/entity/Product";
 import { MotherboardError } from "../error/MotherboardError";
+import { GetMotherboardReqDto } from "../dto/getMotherboardsReqDto";
+import { GetMotherboardDto } from "../dto/getMotherboardsDto";
 
 @injectable()
 export class MotherboardRepository extends AbstractRepository {
@@ -27,13 +29,15 @@ export class MotherboardRepository extends AbstractRepository {
 
     }
 
-    async getAll(cpu_brand?: string): Promise<Motherboard[]> {
-        const findParams: WhereOptions<Motherboard> = {}
-        if (cpu_brand) {
-            findParams.cpu_brand = cpu_brand
-        }
-        const response = await this.motherboardModel.findAll({ where: findParams, include: MotherboardModel.associations.product });
-        return response.map(fromDbToMotherboard)
+    async getAll(queryParams: GetMotherboardReqDto): Promise<GetMotherboardDto> {
+        const { cpu_brand, offset, limit } = queryParams
+        const whereOptions: WhereOptions<Motherboard> = {}
+        cpu_brand ? whereOptions.cpu_brand = cpu_brand : ''
+
+        const { count, rows } = await this.motherboardModel.findAndCountAll({ where: whereOptions, offset, limit, include: MotherboardModel.associations.product });
+        const motherboards = rows.map(fromDbToMotherboard)
+        const response = new GetMotherboardDto(count, motherboards)
+        return response
     }
 
     async getSingle(id: number): Promise<Motherboard> {

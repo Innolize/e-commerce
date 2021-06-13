@@ -7,6 +7,8 @@ import { UserRepository } from "../repository/UserRepository";
 import bcrypt from "bcrypt"
 import { UserError } from "../error/UserError";
 import { fromRequestToUser } from "../mapper/userMapper";
+import { GetUsersDto } from "../dto/getUsersDto";
+import { GetUserReqDto } from "../dto/getUsersReqDto";
 
 @injectable()
 export class UserService extends AbstractService {
@@ -21,8 +23,8 @@ export class UserService extends AbstractService {
         this.encryption = encryption
     }
 
-    async getUsers(): Promise<User[]> {
-        const response = await this.userRepository.getUsers()
+    async getUsers(searchParam: GetUserReqDto): Promise<GetUsersDto> {
+        const response = await this.userRepository.getUsers(searchParam)
         return response
     }
 

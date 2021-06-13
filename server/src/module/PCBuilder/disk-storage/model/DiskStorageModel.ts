@@ -4,9 +4,19 @@ import { ProductModel } from "../../../product/module";
 import { DiskStorage } from '../entities/DiskStorage'
 import { IDiskStorageCreate } from '../interface/IDiskStorageCreate'
 import { DISK_TYPE } from '../../../../config/constants/pcbuilder';
+import { IDiskStorage } from '../interface/IDiskStorage';
+import { Product } from '../../../product/entity/Product';
 
 @injectable()
-export class DiskStorageModel extends Model<DiskStorage, IDiskStorageCreate>{
+export class DiskStorageModel extends Model<DiskStorage, IDiskStorageCreate> implements IDiskStorage{
+    public total_storage!: number;
+    public type!: typeof DISK_TYPE[number];
+    public mbs!: number;
+    public watts!: number;
+    public id_product!: number;
+    public id!: number | undefined;
+    public product?: Product | undefined;
+
     static setup(database: Sequelize): typeof DiskStorageModel {
         DiskStorageModel.init({
             id: {

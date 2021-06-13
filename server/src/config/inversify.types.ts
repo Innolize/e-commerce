@@ -89,4 +89,11 @@ export const TYPES = {
             Model: Symbol('RoleModel'),
         }
     },
+    Cart: {
+        CartModel: Symbol('CartModel'),
+        CartItemModel: Symbol('CartItemModel'),
+        Repository: Symbol('CartRepository'),
+        Service: Symbol('CartService'),
+        Controller: Symbol('CartController'),
+    }
 }

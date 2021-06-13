@@ -1,12 +1,11 @@
 import { PowerSupply } from "../entities/PowerSupply"
-import { PowerSupplyModel } from "../model/PowerSupplyModel"
 import { IPowerSupplyCreate } from '../interface/IPowerSupplyCreate'
-import { fromRequestToProduct } from "../../../product/mapper/productMapper"
+import { fromDbToProduct } from "../../../product/mapper/productMapper"
+import { IPowerSupply } from "../interface/IPowerSupply"
 
-export const fromDbToPowerSupply = (model: PowerSupplyModel): PowerSupply => {
-    const powerSupply = model.toJSON() as PowerSupply
-    const { certification, watts, id, id_product, product } = powerSupply
-    const powerSupplyProduct = product ? fromRequestToProduct(product) : undefined
+export const fromDbToPowerSupply = (model: IPowerSupply): PowerSupply => {
+    const { certification, watts, id, id_product, product } = model
+    const powerSupplyProduct = product ? fromDbToProduct(product) : undefined
     return new PowerSupply(watts, certification, id_product, id, powerSupplyProduct)
 }
 

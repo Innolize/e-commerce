@@ -9,7 +9,7 @@ import { ImageUploadService } from "../../../imageUploader/module";
 import { Processor } from "../entities/Processor";
 import { validateProcessorAndProductDto, validateProcessorEditDto, validateProcessorQuerySchema } from "../helpers/dto-validator";
 import { IProcessor_Product } from "../interface/IProcessorCreate";
-import { IProcessorQuery } from "../interface/IProcessorQuery";
+import { IProcessorGetAllQuery } from "../interface/IProcessorQuery";
 import { IProcessorEdit } from '../interface/IProcessorEdit'
 import { ProcessorService } from "../service/ProcessorService";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
@@ -19,6 +19,7 @@ import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToProcessor } from "../mapper/processorMapper";
 import { ProductService } from "../../../product/module";
 import { ProcessorError } from "../error/ProcessorError";
+import { GetProcessorReqDto } from "../dto/getProcessorsReqDto";
 
 export class ProcessorController extends AbstractController {
     private ROUTE_BASE: string
@@ -49,15 +50,11 @@ export class ProcessorController extends AbstractController {
     }
 
     getAll = async (req: Request, res: Response, next: NextFunction) => {
-        const queryDto = req.query
         try {
-            const hasQuery = Object.keys(queryDto).length
-            if (hasQuery) {
-                const validQueryDto = await bodyValidator(validateProcessorQuerySchema, queryDto as IProcessorQuery)
-                const ProcessorWithQuery = await this.processorService.getprocessors(validQueryDto)
-                return res.status(StatusCodes.OK).send(ProcessorWithQuery)
-            }
-            const response = await this.processorService.getprocessors()
+            const dto: IProcessorGetAllQuery = req.query
+            const { offset, socket, limit } = await bodyValidator(validateProcessorQuerySchema, dto)
+            const queryParams = new GetProcessorReqDto(limit, offset, socket)
+            const response = await this.processorService.getprocessors(queryParams)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)

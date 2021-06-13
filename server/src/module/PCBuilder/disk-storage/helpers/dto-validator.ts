@@ -3,13 +3,14 @@ import { DISK_TYPE } from "../../../../config/constants/pcbuilder";
 import { validateCreateProductSchema } from "../../../product/helper/create_dto_validator";
 
 
-export const validateRamQuerySchema = Joi.object({
+export const validateDiskStorageQuerySchema = Joi.object({
+    limit: Joi.number(),
+    offset: Joi.number(),
     type: Joi.string()
         .valid(...DISK_TYPE)
-        .required()
 })
 
-export const validateRamCreateSchema = {
+export const validateDiskStorageCreateSchema = {
     total_storage: Joi.number()
         .required(),
     type: Joi.string()
@@ -21,12 +22,12 @@ export const validateRamCreateSchema = {
         .required()
 }
 
-export const validateRamEditSchema = {
-    ...validateRamCreateSchema,
+export const validateDiskStorageEditSchema = {
+    ...validateDiskStorageCreateSchema,
     id: Joi.number()
         .required
 }
 
-export const validateRamAndProductDto = Joi.object({ ...validateRamCreateSchema, ...validateCreateProductSchema })
-export const validateRamCreateDto = Joi.object(validateRamCreateSchema)
-export const validateRamEditDto = Joi.object(validateRamEditSchema)
+export const validateDiskStorageAndProductDto = Joi.object({ ...validateDiskStorageCreateSchema, ...validateCreateProductSchema })
+export const validateDiskStorageCreateDto = Joi.object(validateDiskStorageCreateSchema)
+export const validateDiskStorageEditDto = Joi.object(validateDiskStorageEditSchema)

@@ -9,7 +9,7 @@ import { ImageUploadService } from "../../../imageUploader/module";
 import { PowerSupply } from "../entities/PowerSupply";
 import { validatePowerSupplyAndProductDto, validatePowerSupplyEditDto, validatePowerSupplyQuerySchema } from "../helpers/dto-validator";
 import { IPowerSupply_Product } from "../interface/IPowerSupplyCreate";
-import { IPowerSupplyQuery } from "../interface/IPowerSupplyQuery";
+import { IPowerSupplyGetAllQuery } from "../interface/IPowerSupplyGetAllQuery";
 import { IPowerSupplyEdit } from '../interface/IPowerSupplyEdit'
 import { PowerSupplyService } from "../service/PowerSupplyService";
 import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
@@ -19,6 +19,7 @@ import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToPowerSupply } from "../mapper/powerSupplyMapper";
 import { ProductService } from "../../../product/module";
 import { PowerSupplyError } from "../error/PowerSupplyError";
+import { GetPowerSuppliesReqDto } from "../dto/getPowerSuppliesReqDto";
 
 export class PowerSupplyController extends AbstractController {
     private ROUTE_BASE: string
@@ -50,14 +51,10 @@ export class PowerSupplyController extends AbstractController {
 
     getAll = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const queryDto = req.query
-            const hasQuery = Object.keys(queryDto).length
-            if (hasQuery) {
-                const validQueryDto = await bodyValidator(validatePowerSupplyQuerySchema, queryDto as IPowerSupplyQuery)
-                const powerSuppliesWithQuery = await this.powerSupplyService.getPowerSupply(validQueryDto)
-                return res.status(StatusCodes.OK).send(powerSuppliesWithQuery)
-            }
-            const response = await this.powerSupplyService.getPowerSupply()
+            const dto: IPowerSupplyGetAllQuery = req.query
+            const { limit, offset, watts } = await bodyValidator(validatePowerSupplyQuerySchema, dto)
+            const queryParams = new GetPowerSuppliesReqDto(limit, offset, watts)
+            const response = await this.powerSupplyService.getPowerSupply(queryParams)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)

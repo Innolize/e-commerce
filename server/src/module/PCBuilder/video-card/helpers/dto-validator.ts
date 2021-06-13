@@ -4,11 +4,10 @@ import { validateCreateProductSchema } from "../../../product/helper/create_dto_
 
 
 export const validateVideoCardQuerySchema = Joi.object({
-    min_frec: Joi.number(),
-    max_frec: Joi.number()
-        .greater(Joi.ref('min_frec')),
-    ram_version: Joi.any()
-        .valid(...RAM_VERSION)
+    limit: Joi.number(),
+    offset: Joi.number(),
+    version: Joi.any()
+        .valid(...VIDEO_CARD_VERSION)
 })
 
 export const validateVideoCardCreateSchema = {

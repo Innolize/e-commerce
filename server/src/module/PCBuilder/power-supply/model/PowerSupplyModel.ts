@@ -4,9 +4,17 @@ import { ProductModel } from "../../../product/module";
 import { PowerSupply } from '../entities/PowerSupply'
 import { IPowerSupplyCreate } from '../interface/IPowerSupplyCreate'
 import { PWS_CERTIFICATION } from '../../../../config/constants/pcbuilder';
+import { IPowerSupply } from '../interface/IPowerSupply';
+import { Product } from '../../../product/entity/Product';
 
 @injectable()
-export class PowerSupplyModel extends Model<PowerSupply, IPowerSupplyCreate>{
+export class PowerSupplyModel extends Model<PowerSupply, IPowerSupplyCreate> implements IPowerSupply {
+    public watts!: number
+    public certification!: typeof PWS_CERTIFICATION[number]
+    public id_product!: number
+    public id!: number
+    public product?: Product
+
     static setup(database: Sequelize): typeof PowerSupplyModel {
         PowerSupplyModel.init({
             id: {
