@@ -7,8 +7,7 @@ import { CartItemModel } from "../model/CartItemModel"
 import { CartModel } from "../model/CartModel"
 
 export const fromDbToCartItem = (model: CartItemModel): CartItem => {
-    const cartItem = model.toJSON() as CartItem
-    const { cart_id, quantity, product_id, id, product } = cartItem
+    const { cart_id, quantity, product_id, id, product } = model
     const cartItemProduct = product ? fromRequestToProduct(product) : undefined
     return new CartItem(product_id, quantity, cart_id, id, cartItemProduct)
 }

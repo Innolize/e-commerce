@@ -1,10 +1,18 @@
 import { Association, DataTypes, Model, Sequelize } from "sequelize";
+import { Product } from "../../product/entity/Product";
 import { ProductModel } from "../../product/module";
 import { CartItem } from "../entities/CartItem";
+import { ICartItem } from "../interface/ICartItem";
 import { ICartItemCreate } from "../interface/ICartItemCreate";
 import { CartModel } from "./CartModel";
 
-export class CartItemModel extends Model<CartItem, ICartItemCreate>{
+export class CartItemModel extends Model<CartItem, ICartItemCreate> implements ICartItem {
+    product_id: number;
+    quantity: number;
+    cart_id: number;
+    id?: number | undefined;
+    product?: Product | undefined;
+
     static setup(database: Sequelize): typeof CartItemModel {
         CartItemModel.init({
             cart_id: {

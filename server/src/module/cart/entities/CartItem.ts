@@ -1,6 +1,7 @@
 import { Product } from "../../product/entity/Product";
+import { ICartItem } from "../interface/ICartItem";
 
-export class CartItem {
+export class CartItem implements ICartItem {
     constructor(
         public product_id: number,
         public quantity: number,
