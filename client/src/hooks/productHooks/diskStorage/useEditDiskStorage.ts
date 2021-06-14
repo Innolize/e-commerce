@@ -1,6 +1,6 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQueryClient, useMutation } from "react-query";
-import { IDiskStorage } from "src/types";
+import { IDiskStorage, ServerError } from "src/types";
 import api from "../../../services/api";
 
 export default function useEditDiskStorage() {
@@ -10,9 +10,15 @@ export default function useEditDiskStorage() {
       api
         .put(`/api/disk-storage/`, values)
         .then((res: AxiosResponse<IDiskStorage>) => res.data)
-        .catch((error: AxiosError) => {
+        .catch((error: AxiosError<ServerError | string>) => {
           if (error.response) {
-            throw new Error(error.response.data.message);
+            if (typeof error.response.data === "string") {
+              throw new Error(error.response.data);
+            }
+            if (error.response.data.errors) {
+              throw new Error(Object.values(error.response.data.errors[0])[0]);
+            }
+            throw error.response;
           } else {
             throw new Error(error.message);
           }

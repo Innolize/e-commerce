@@ -85,7 +85,10 @@ const DiskStorageTable = ({ rows, handleDelete }: Props) => {
               width: 300,
               renderCell: (params: GridCellParams) => (
                 <ButtonGroup>
-                  <Button to={"edit/" + params.row.id} component={RouterLink}>
+                  <Button
+                    to={"edit/disk-storage/" + params.row.id}
+                    component={RouterLink}
+                  >
                     Edit disk storage
                   </Button>
                   <Button onClick={() => handleDelete(params.row.id as string)}>

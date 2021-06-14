@@ -10,13 +10,15 @@ export default function useCreateBrand() {
       api
         .post("/api/brand", values)
         .then((res: AxiosResponse<IBrand>) => res.data)
-        .catch((error: AxiosError<ServerError>) => {
+        .catch((error: AxiosError<ServerError | string>) => {
           if (error.response) {
+            if (typeof error.response.data === "string") {
+              throw new Error(error.response.data);
+            }
             if (error.response.data.errors) {
               throw new Error(Object.values(error.response.data.errors[0])[0]);
-            } else {
-              throw new Error(error.response.data.message);
             }
+            throw error.response;
           } else {
             throw new Error(error.message);
           }
@@ -30,7 +32,7 @@ export default function useCreateBrand() {
         ]);
         queryClient.invalidateQueries("brands");
       },
-      onError: (e: AxiosError) => {
+      onError: (e: Error) => {
         console.error(e);
         queryClient.invalidateQueries("brands");
       },

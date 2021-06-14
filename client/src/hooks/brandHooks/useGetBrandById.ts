@@ -9,7 +9,7 @@ export default function useGetBrandById(brandId: string) {
     ["brands", brandId],
     () =>
       api
-        .get(`/api/brand/findById/${brandId}`)
+        .get(`/api/brand/${brandId}`)
         .then((res: AxiosResponse<IBrand>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {

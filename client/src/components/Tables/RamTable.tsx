@@ -58,7 +58,10 @@ const RamTable = ({ rows, handleDelete }: Props) => {
               width: 300,
               renderCell: (params: GridCellParams) => (
                 <ButtonGroup>
-                  <Button to={"edit/" + params.row.id} component={RouterLink}>
+                  <Button
+                    to={"edit/ram/" + params.row.id}
+                    component={RouterLink}
+                  >
                     Edit ram
                   </Button>
                   <Button onClick={() => handleDelete(params.row.id as string)}>
