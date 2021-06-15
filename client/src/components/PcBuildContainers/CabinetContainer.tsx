@@ -2,17 +2,19 @@ import { Box, Button } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import useCabinets from "src/hooks/productHooks/cabinet/useCabinets";
-import useDeleteCabinet from "src/hooks/productHooks/cabinet/useDeleteCabinet";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import CabinetTable from "../Tables/CabinetTable";
 import TableLayout from "../Tables/TableLayout";
 import SnackbarAlert from "../SnackbarAlert";
+import useGetAll from "src/hooks/useGetAll";
+import { ICabinet } from "src/types";
+import useDelete from "src/hooks/useDelete";
+import { IGetCabinets } from "src/hooks/types";
 
 const CabinetContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
-  const queryCabinet = useCabinets();
-  const deleteCabinet = useDeleteCabinet();
+  const queryCabinet = useGetAll<IGetCabinets>("cabinet");
+  const deleteCabinet = useDelete<ICabinet>("cabinet");
   const [open, setOpen] = useState(false);
 
   const handleClickDeleteBtn = (id: string) => {
@@ -68,7 +70,7 @@ const CabinetContainer = () => {
         isLoading={queryCabinet.isLoading}
         isSuccess={queryCabinet.isSuccess}
         handleDelete={handleClickDeleteBtn}
-        rows={queryCabinet.data}
+        rows={queryCabinet.data?.results}
       />
     </>
   );

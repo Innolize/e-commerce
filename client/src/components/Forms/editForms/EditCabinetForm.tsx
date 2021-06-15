@@ -17,9 +17,10 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { ICabinetForm } from "src/form_types";
-import useBrands from "src/hooks/brandHooks/useBrands";
-import useEditCabinet from "src/hooks/productHooks/cabinet/useEditCabinet";
-import useGetCabinetById from "src/hooks/productHooks/cabinet/useGetCabinetById";
+import { IGetBrands } from "src/hooks/types";
+import useEdit from "src/hooks/useEdit";
+import useGetAll from "src/hooks/useGetAll";
+import useGetById from "src/hooks/useGetById";
 import { IBrand, ICabinet, SIZE } from "src/types";
 import { CABINET_ID } from "src/utils/categoriesIds";
 import { cabinetSchema } from "src/utils/yup.pcPickerValidations";
@@ -49,9 +50,9 @@ interface Props {
 
 const EditCabinetForm = ({ id }: Props) => {
   const classes = useStyles();
-  const queryCabinet = useGetCabinetById(id);
-  const editCabinet = useEditCabinet();
-  const queryBrands = useBrands();
+  const queryCabinet = useGetById<ICabinet>("cabinet", id);
+  const editCabinet = useEdit<ICabinet>("cabinet");
+  const queryBrands = useGetAll<IGetBrands>("brand");
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -149,7 +150,7 @@ const EditCabinetForm = ({ id }: Props) => {
 
                 {queryBrands.isSuccess && (
                   <SelectField name="brand" label="Brand">
-                    {queryBrands.data.map((brand: IBrand) => (
+                    {queryBrands.data.results.map((brand: IBrand) => (
                       <MenuItem key={uuidv4()} value={brand.id}>
                         {brand.name}
                       </MenuItem>

@@ -1,14 +1,15 @@
-import { AxiosError } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { useQueryClient, useMutation } from "react-query";
-import api from "../../../services/api";
+import api from "src/services/api";
+import { apiOptions, ApiOptions } from "./apiOptions";
 
-export default function useDeleteDiskStorage() {
+export default function useDelete<T>(option: ApiOptions) {
   const queryClient = useQueryClient();
   return useMutation(
     (id: string) =>
       api
-        .delete(`/api/disk-storage/${id}`)
-        .then((res) => res.data)
+        .delete(apiOptions[option].route + "/" + id)
+        .then((res: AxiosResponse<T>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
             throw new Error(error.response.data.message);
@@ -18,8 +19,8 @@ export default function useDeleteDiskStorage() {
         }),
     {
       retry: false,
-      onSuccess: () => {
-        queryClient.invalidateQueries("disk_storage");
+      onSettled: () => {
+        queryClient.invalidateQueries(apiOptions[option].cacheString);
       },
       onError: (e: AxiosError) => {
         console.error(e);

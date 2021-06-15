@@ -16,9 +16,10 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IProcessorForm, IProductForm } from "src/form_types";
-import useBrands from "src/hooks/brandHooks/useBrands";
-import useCreateProcessor from "src/hooks/productHooks/processor/useCreateProcessor";
-import { IBrand } from "src/types";
+import { IGetBrands } from "src/hooks/types";
+import useCreate from "src/hooks/useCreate";
+import useGetAll from "src/hooks/useGetAll";
+import { IBrand, IProcessor } from "src/types";
 import { PROCESSOR_ID } from "src/utils/categoriesIds";
 import { processorSchema } from "src/utils/yup.pcPickerValidations";
 import { v4 as uuidv4 } from "uuid";
@@ -43,8 +44,8 @@ const useStyles = makeStyles((theme) => ({
 
 const ProcessorForm = () => {
   const classes = useStyles();
-  const createProcessor = useCreateProcessor();
-  const queryBrands = useBrands();
+  const createProcessor = useCreate<IProcessor>("processor");
+  const queryBrands = useGetAll<IGetBrands>("brand");
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -121,7 +122,7 @@ const ProcessorForm = () => {
 
               {queryBrands.isSuccess && (
                 <SelectField name="brand" label="Brand">
-                  {queryBrands.data.map((brand: IBrand) => (
+                  {queryBrands.data.results.map((brand: IBrand) => (
                     <MenuItem key={uuidv4()} value={brand.id}>
                       {brand.name}
                     </MenuItem>

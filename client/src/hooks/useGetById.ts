@@ -1,16 +1,16 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery, useQueryClient } from "react-query";
-import api from "../../../services/api";
-import { IProduct } from "../../../types";
+import api from "src/services/api";
+import { apiOptions, ApiOptions } from "./apiOptions";
 
-export default function useGetProductById(productId: string) {
+export default function useGetById<T>(option: ApiOptions, id: string) {
   const queryClient = useQueryClient();
-  return useQuery(
-    ["products", productId],
+  return useQuery<T, AxiosError>(
+    [apiOptions[option].cacheString, id],
     () =>
       api
-        .get(`/api/product/${productId}`)
-        .then((res: AxiosResponse<IProduct>) => res.data)
+        .get(apiOptions[option].route + "/" + id)
+        .then((res: AxiosResponse<T>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
             throw new Error(error.response.data.error);
@@ -21,8 +21,8 @@ export default function useGetProductById(productId: string) {
     {
       initialData: () => {
         return queryClient
-          .getQueryData<any>("products")
-          ?.find((b: any) => b.id === parseInt(productId));
+          .getQueryData<any>(apiOptions[option].cacheString)
+          .results?.find((d: any) => d.id === parseInt(id));
       },
       onError: (e: AxiosError) => {
         console.log(e);

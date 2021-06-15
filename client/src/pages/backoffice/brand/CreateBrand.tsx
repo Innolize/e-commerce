@@ -7,7 +7,8 @@ import { Redirect } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SnackbarAlert from "src/components/SnackbarAlert";
-import useCreateBrand from "src/hooks/brandHooks/useCreateBrand";
+import useCreate from "src/hooks/useCreate";
+import { IBrand } from "src/types";
 import { createBrandSchema } from "src/utils/yup.validations";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CreateBrand = () => {
-  const createBrand = useCreateBrand();
+  const createBrand = useCreate<IBrand>("brand");
   const classes = useStyles();
   const [redirect, setRedirect] = useState(false);
 

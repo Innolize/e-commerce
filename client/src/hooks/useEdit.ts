@@ -1,15 +1,17 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { useQueryClient, useMutation } from "react-query";
-import api from "../../../services/api";
-import { IProduct, ServerError } from "../../../types";
+import { useMutation, useQueryClient } from "react-query";
+import api from "src/services/api";
+import { ServerError } from "src/types";
+import { apiOptions, ApiOptions } from "./apiOptions";
 
-export default function useCreateMotherboard() {
+export default function useEdit<T>(option: ApiOptions) {
   const queryClient = useQueryClient();
+
   return useMutation(
     (values: FormData) =>
       api
-        .post("/api/motherboard", values)
-        .then((res: AxiosResponse<IProduct>) => res.data)
+        .put(apiOptions[option].route, values)
+        .then((res: AxiosResponse<T>) => res.data)
         .catch((error: AxiosError<ServerError | string>) => {
           if (error.response) {
             if (typeof error.response.data === "string") {
@@ -25,12 +27,11 @@ export default function useCreateMotherboard() {
         }),
     {
       retry: false,
-      onSuccess: () => {
-        queryClient.invalidateQueries("motherboards");
+      onSettled: () => {
+        queryClient.invalidateQueries(apiOptions[option].cacheString);
       },
       onError: (e: AxiosError) => {
-        console.error(e);
-        queryClient.invalidateQueries("motherboards");
+        console.log(e);
       },
     }
   );

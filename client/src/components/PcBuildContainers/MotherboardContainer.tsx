@@ -2,17 +2,19 @@ import { Box, Button } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import useDeleteMotherboard from "src/hooks/productHooks/motherboard/useDeleteMotherboard";
-import useMotherboards from "src/hooks/productHooks/motherboard/useMotherboards";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import MotherboardTable from "../Tables/MotherboardTable";
 import TableLayout from "../Tables/TableLayout";
 import SnackbarAlert from "../SnackbarAlert";
+import useGetAll from "src/hooks/useGetAll";
+import { IGetMotherboards } from "src/hooks/types";
+import useDelete from "src/hooks/useDelete";
+import { IMotherboard } from "src/types";
 
 const MotherboardContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
-  const queryMotherboards = useMotherboards();
-  const deleteMotherboard = useDeleteMotherboard();
+  const queryMotherboards = useGetAll<IGetMotherboards>("motherboard");
+  const deleteMotherboard = useDelete<IMotherboard>("motherboard");
   const [open, setOpen] = useState(false);
 
   const handleClickDeleteBtn = (id: string) => {
@@ -69,7 +71,7 @@ const MotherboardContainer = () => {
         isLoading={queryMotherboards.isLoading}
         isSuccess={queryMotherboards.isSuccess}
         handleDelete={handleClickDeleteBtn}
-        rows={queryMotherboards.data}
+        rows={queryMotherboards.data?.results}
       />
     </>
   );

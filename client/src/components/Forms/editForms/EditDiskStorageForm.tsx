@@ -17,9 +17,10 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IDiskStorageForm } from "src/form_types";
-import useBrands from "src/hooks/brandHooks/useBrands";
-import useCreateDiskStorage from "src/hooks/productHooks/diskStorage/useCreateDiskStorage";
-import useGetDiskStorageById from "src/hooks/productHooks/diskStorage/useGetDiskStorageById";
+import { IGetBrands } from "src/hooks/types";
+import useCreate from "src/hooks/useCreate";
+import useGetAll from "src/hooks/useGetAll";
+import useGetById from "src/hooks/useGetById";
 import { DISK_TYPE, IBrand, IDiskStorage } from "src/types";
 import { DISK_STORAGE_ID } from "src/utils/categoriesIds";
 import { diskStorageSchema } from "src/utils/yup.pcPickerValidations";
@@ -49,9 +50,9 @@ interface Props {
 
 const EditDiskStorageForm = ({ id }: Props) => {
   const classes = useStyles();
-  const createDiskStorage = useCreateDiskStorage();
-  const queryBrands = useBrands();
-  const queryDiskStorage = useGetDiskStorageById(id);
+  const createDiskStorage = useCreate<IDiskStorage>("disk-storage");
+  const queryBrands = useGetAll<IGetBrands>("brand");
+  const queryDiskStorage = useGetById<IDiskStorage>("disk-storage", id);
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -153,7 +154,7 @@ const EditDiskStorageForm = ({ id }: Props) => {
 
                 {queryBrands.isSuccess && (
                   <SelectField name="brand" label="Brand">
-                    {queryBrands.data.map((brand: IBrand) => (
+                    {queryBrands.data.results.map((brand: IBrand) => (
                       <MenuItem key={uuidv4()} value={brand.id}>
                         {brand.name}
                       </MenuItem>

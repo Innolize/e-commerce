@@ -1,15 +1,17 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQueryClient, useMutation } from "react-query";
-import api from "../../services/api";
-import { ICategory, ServerError } from "../../types";
+import api from "src/services/api";
+import { ServerError } from "src/types";
+import { apiOptions, ApiOptions } from "./apiOptions";
 
-export default function useCreateCategory() {
+export default function useCreate<T>(option: ApiOptions) {
   const queryClient = useQueryClient();
+
   return useMutation(
     (values: FormData) =>
       api
-        .post("/api/category", values)
-        .then((res: AxiosResponse<ICategory>) => res.data)
+        .post(apiOptions[option].route, values)
+        .then((res: AxiosResponse<T>) => res.data)
         .catch((error: AxiosError<ServerError | string>) => {
           if (error.response) {
             if (typeof error.response.data === "string") {
@@ -25,16 +27,11 @@ export default function useCreateCategory() {
         }),
     {
       retry: false,
-      onSuccess: (newCategory) => {
-        queryClient.setQueryData("categories", (previousCategory: any) => [
-          ...previousCategory,
-          newCategory,
-        ]);
-        queryClient.invalidateQueries("categories");
+      onSettled: () => {
+        queryClient.invalidateQueries(apiOptions[option].cacheString);
       },
       onError: (e: AxiosError) => {
         console.error(e);
-        queryClient.invalidateQueries("categories");
       },
     }
   );

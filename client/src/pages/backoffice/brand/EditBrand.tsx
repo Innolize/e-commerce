@@ -15,8 +15,8 @@ import { Redirect, useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SnackbarAlert from "src/components/SnackbarAlert";
-import useEditBrand from "src/hooks/brandHooks/useEditBrand";
-import useGetBrandById from "src/hooks/brandHooks/useGetBrandById";
+import useEdit from "src/hooks/useEdit";
+import useGetById from "src/hooks/useGetById";
 import { IBrand } from "src/types";
 import { editBrandSchema } from "src/utils/yup.validations";
 
@@ -56,8 +56,8 @@ const useStyles = makeStyles((theme) => ({
 
 const EditBrand = () => {
   const { id } = useParams<{ id: string }>();
-  const queryBrand = useGetBrandById(id);
-  const editBrand = useEditBrand();
+  const queryBrand = useGetById<IBrand>("brand", id);
+  const editBrand = useEdit<IBrand>("brand");
   const classes = useStyles();
   const [redirect, setRedirect] = useState(false);
 

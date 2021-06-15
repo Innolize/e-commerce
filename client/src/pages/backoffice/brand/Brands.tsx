@@ -1,20 +1,21 @@
-import { Box, Button, Typography } from "@material-ui/core";
-import useBrands from "../../../hooks/brandHooks/useBrands";
-import { Container } from "@material-ui/core";
-import { Link as RouterLink } from "react-router-dom";
-import { useState } from "react";
-import DeleteDialog from "../../../components/DeleteDialogs/DeleteDialog";
-import useDeleteBrand from "../../../hooks/brandHooks/useDeleteBrand";
-import SnackbarAlert from "src/components/SnackbarAlert";
+import { Box, Button, Container, Typography } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import TableLayout from "src/components/Tables/TableLayout";
+import { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import SnackbarAlert from "src/components/SnackbarAlert";
 import BrandTable from "src/components/Tables/BrandTable";
+import TableLayout from "src/components/Tables/TableLayout";
+import { IGetBrands } from "src/hooks/types";
+import useDelete from "src/hooks/useDelete";
+import useGetAll from "src/hooks/useGetAll";
+import { IBrand } from "src/types";
+import DeleteDialog from "../../../components/DeleteDialogs/DeleteDialog";
 
 const Brands = () => {
-  const query = useBrands();
+  const query = useGetAll<IGetBrands>("brand");
   const [deleteId, setDeleteId] = useState<string>("");
   const [open, setOpen] = useState(false);
-  const deleteBrand = useDeleteBrand();
+  const deleteBrand = useDelete<IBrand>("brand");
 
   const handleClickDeleteBtn = (id: string) => {
     setOpen(true);
@@ -74,7 +75,7 @@ const Brands = () => {
         isSuccess={query.isSuccess}
         handleDelete={handleClickDeleteBtn}
         Table={BrandTable}
-        rows={query.data}
+        rows={query.data?.results}
       />
     </Container>
   );
