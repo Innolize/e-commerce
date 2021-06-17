@@ -1,5 +1,4 @@
 import { Redirect, Route } from "react-router";
-import AdminLayoutRoute from "src/layouts/AdminLayout";
 import Brands from "src/pages/backoffice/brand/Brands";
 import CreateBrand from "src/pages/backoffice/brand/CreateBrand";
 import EditBrand from "src/pages/backoffice/brand/EditBrand";
@@ -12,66 +11,32 @@ import EditCategory from "src/pages/backoffice/category/EditCategory";
 import CreateProduct from "src/pages/backoffice/general-product/CreateProduct";
 import EditProduct from "src/pages/backoffice/general-product/EditProduct";
 import AdminProducts from "src/pages/backoffice/general-product/Products";
+import { AdminLayout } from "../components/layouts/AdminLayout";
+import NoMatch from "src/pages/NoMatch";
+import { Switch } from "react-router-dom";
 
 const AdminRoutes = () => {
   return (
-    <>
-      <Route path={["/admin", "/admin/build"]} exact>
-        <Redirect to="/admin/build/ram"></Redirect>
-      </Route>
-      <AdminLayoutRoute
-        path="/admin/build/:category"
-        exact
-        component={BuildProducts}
-      />
-      <AdminLayoutRoute
-        path="/admin/build/create/:category"
-        exact
-        component={CreateBuildProduct}
-      />
-      <AdminLayoutRoute
-        path="/admin/build/edit/:category/:id"
-        exact
-        component={EditBuildProduct}
-      />
-      <AdminLayoutRoute
-        path="/admin/products"
-        exact
-        component={AdminProducts}
-      />
-      <AdminLayoutRoute
-        path="/admin/products/create"
-        exact
-        component={CreateProduct}
-      />
-      <AdminLayoutRoute
-        path="/admin/products/edit/:id"
-        exact
-        component={EditProduct}
-      />
-      <AdminLayoutRoute path="/admin/categories" exact component={Categories} />
-      <AdminLayoutRoute
-        path="/admin/categories/create"
-        exact
-        component={CreateCategory}
-      />
-      <AdminLayoutRoute
-        path="/admin/categories/edit/:id"
-        exact
-        component={EditCategory}
-      />
-      <AdminLayoutRoute path="/admin/brands" exact component={Brands} />
-      <AdminLayoutRoute
-        path="/admin/brands/create"
-        exact
-        component={CreateBrand}
-      />
-      <AdminLayoutRoute
-        path="/admin/brands/edit/:id"
-        exact
-        component={EditBrand}
-      />
-    </>
+    <AdminLayout>
+      <Switch>
+        <Route path={["/admin", "/admin/build"]} exact>
+          <Redirect to="/admin/build/ram"></Redirect>
+        </Route>
+        <Route path="/admin/build/:category" exact component={BuildProducts} />
+        <Route path="/admin/build/create/:category" exact component={CreateBuildProduct} />
+        <Route path="/admin/build/edit/:category/:id" exact component={EditBuildProduct} />
+        <Route path="/admin/products" exact component={AdminProducts} />
+        <Route path="/admin/products/create" exact component={CreateProduct} />
+        <Route path="/admin/products/edit/:id" exact component={EditProduct} />
+        <Route path="/admin/categories" exact component={Categories} />
+        <Route path="/admin/categories/create" exact component={CreateCategory} />
+        <Route path="/admin/categories/edit/:id" exact component={EditCategory} />
+        <Route path="/admin/brands" exact component={Brands} />
+        <Route path="/admin/brands/create" exact component={CreateBrand} />
+        <Route path="/admin/brands/edit/:id" exact component={EditBrand} />
+        <Route path="*" component={NoMatch} />
+      </Switch>
+    </AdminLayout>
   );
 };
 
