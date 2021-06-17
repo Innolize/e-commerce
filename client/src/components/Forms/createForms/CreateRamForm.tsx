@@ -1,12 +1,4 @@
-import {
-  Box,
-  Checkbox,
-  Container,
-  Input,
-  makeStyles,
-  MenuItem,
-  Typography,
-} from "@material-ui/core";
+import { Box, Checkbox, Container, Input, makeStyles, MenuItem, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
@@ -108,19 +100,10 @@ const RamForm = () => {
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
               <Box>
-                <InputField
-                  label="Description"
-                  placeholder="Description"
-                  name="description"
-                />
+                <InputField label="Description" placeholder="Description" name="description" />
               </Box>
               <Box>
-                <InputField
-                  type="number"
-                  label="Price"
-                  placeholder="Price"
-                  name="price"
-                />
+                <InputField type="number" label="Price" placeholder="Price" name="price" />
               </Box>
 
               {queryBrands.isSuccess && (
@@ -136,11 +119,7 @@ const RamForm = () => {
               <Field hidden name="category" label="Category"></Field>
 
               <Box>
-                <SelectField
-                  label="RAM Version"
-                  placeholder="RAM Version"
-                  name="ram_version"
-                >
+                <SelectField label="RAM Version" placeholder="RAM Version" name="ram_version">
                   <MenuItem value="DDR1">DDR1</MenuItem>
                   <MenuItem value="DDR2">DDR2</MenuItem>
                   <MenuItem value="DDR3">DDR3</MenuItem>
@@ -149,37 +128,25 @@ const RamForm = () => {
               </Box>
 
               <Box>
-                <InputField
-                  label="Max Frequency"
-                  placeholder="Max Frequency"
-                  name="max_frec"
-                />
+                <InputField type="number" label="Max Frequency" placeholder="Max Frequency" name="max_frec" />
               </Box>
 
               <Box>
-                <InputField
-                  label="Min Frequency"
-                  placeholder="Min Frequency"
-                  name="min_frec"
-                />
+                <InputField type="number" label="Min Frequency" placeholder="Min Frequency" name="min_frec" />
               </Box>
 
               <Box>
-                <InputField label="Memory" placeholder="Memory" name="memory" />
+                <InputField type="number" label="Memory" placeholder="Memory" name="memory" />
               </Box>
 
               <Box>
-                <InputField label="Watts" placeholder="Watts" name="watts" />
+                <InputField type="number" label="Watts" placeholder="Watts" name="watts" />
               </Box>
 
               <Box display="flex" alignItems="center">
                 <Typography>Stock:</Typography>
                 <Field type="checkbox" name="stock" as={Checkbox} />
-                <ErrorMessage
-                  component={Typography}
-                  className={classes.errorMsg}
-                  name="stock"
-                />
+                <ErrorMessage component={Typography} className={classes.errorMsg} name="stock" />
               </Box>
 
               <Box my={3}>
@@ -188,15 +155,9 @@ const RamForm = () => {
                   placeholder="Image"
                   name="image"
                   fullWidth
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFieldValue("image", e.target.files![0])
-                  }
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldValue("image", e.target.files![0])}
                 />
-                <ErrorMessage
-                  component={Typography}
-                  className={classes.errorMsg}
-                  name="image"
-                />
+                <ErrorMessage component={Typography} className={classes.errorMsg} name="image" />
               </Box>
 
               {createRam.isError && (
