@@ -18,11 +18,12 @@ import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
-import useBrands from "src/hooks/brandHooks/useBrands";
-import useCategories from "src/hooks/categoryHooks/useCategories";
-import useEditProduct from "src/hooks/productHooks/generalProducts/useEditProduct";
-import useGetProductById from "src/hooks/productHooks/generalProducts/useGetProductById";
-import { IBrand, ICategory } from "src/types";
+import { IGeneralProductForm } from "src/form_types";
+import { IGetBrands, IGetCategories } from "src/hooks/types";
+import useEdit from "src/hooks/useEdit";
+import useGetAll from "src/hooks/useGetAll";
+import useGetById from "src/hooks/useGetById";
+import { IBrand, ICategory, IProduct } from "src/types";
 import { editProductSchema } from "src/utils/yup.validations";
 import { v4 as uuidv4 } from "uuid";
 
@@ -61,11 +62,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EditProduct = () => {
-  const queryCategories = useCategories();
-  const queryBrands = useBrands();
   const { id } = useParams<{ id: string }>();
-  const queryProduct = useGetProductById(id);
-  const editProduct = useEditProduct();
+  const queryCategories = useGetAll<IGetCategories>("category");
+  const queryBrands = useGetAll<IGetBrands>("brand");
+  const queryProduct = useGetById<IProduct>("product", id);
+  const editProduct = useEdit<IProduct>("product");
   const classes = useStyles();
   const history = useHistory();
 
@@ -78,6 +79,20 @@ const EditProduct = () => {
     }
     return () => clearTimeout(timer);
   }, [editProduct.isSuccess, history]);
+
+  const mapProduct = (product: IProduct): IGeneralProductForm => {
+    const productForm: IGeneralProductForm = {
+      id: product.id.toString(),
+      name: product.name,
+      description: product.description,
+      price: product.price.toString(),
+      stock: product.stock.toString(),
+      image: "",
+      brand: product.brand.id.toString(),
+      category: product.category.id.toString(),
+    };
+    return productForm;
+  };
 
   return (
     <Container>
@@ -106,19 +121,9 @@ const EditProduct = () => {
         <Box className={classes.formContainer} my={10}>
           <Typography variant="h4">Edit the product</Typography>
           <Formik
-            initialValues={{
-              name: queryProduct.data.name,
-              image: "",
-              description: queryProduct.data.description,
-              price: queryProduct.data.price,
-              stock: queryProduct.data.stock,
-              category: queryProduct.data.category?.id || "",
-              brand: queryProduct.data.brand?.id || "",
-              id,
-            }}
+            initialValues={mapProduct(queryProduct.data)}
             onSubmit={async (data) => {
               const formData = new FormData();
-
               formData.append("id", id);
               formData.append("name", data.name);
               formData.append("description", data.description);
@@ -127,7 +132,6 @@ const EditProduct = () => {
               formData.append("id_brand", data.brand);
               formData.append("id_category", data.category);
               formData.append("product_image", data.image);
-
               editProduct.mutate(formData);
             }}
             validationSchema={editProductSchema}
@@ -155,7 +159,7 @@ const EditProduct = () => {
 
                 {queryBrands.isSuccess && (
                   <SelectField name="brand" label="Brand">
-                    {queryBrands.data.map((brand: IBrand) => (
+                    {queryBrands.data.results.map((brand: IBrand) => (
                       <MenuItem key={uuidv4()} value={brand.id}>
                         {brand.name}
                       </MenuItem>
@@ -165,7 +169,7 @@ const EditProduct = () => {
 
                 {queryCategories.isSuccess && (
                   <SelectField name="category" label="Category">
-                    {queryCategories.data.map((category: ICategory) => (
+                    {queryCategories.data.results.map((category: ICategory) => (
                       <MenuItem key={uuidv4()} value={category.id}>
                         {category.name}
                       </MenuItem>

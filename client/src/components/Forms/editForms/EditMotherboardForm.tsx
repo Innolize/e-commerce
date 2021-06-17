@@ -17,9 +17,10 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IMotherboardForm } from "src/form_types";
-import useBrands from "src/hooks/brandHooks/useBrands";
-import useEditMotherboard from "src/hooks/productHooks/motherboard/useEditMotherboard";
-import useGetMotherboardById from "src/hooks/productHooks/motherboard/useGetMotherboardById";
+import { IGetBrands } from "src/hooks/types";
+import useEdit from "src/hooks/useEdit";
+import useGetAll from "src/hooks/useGetAll";
+import useGetById from "src/hooks/useGetById";
 import { IBrand, IMotherboard, RAM_VERSION, SIZE } from "src/types";
 import { MOTHERBOARD_ID } from "src/utils/categoriesIds";
 import { motherboardSchema } from "src/utils/yup.pcPickerValidations";
@@ -49,9 +50,9 @@ interface Props {
 
 const EditMotherboardForm = ({ id }: Props) => {
   const classes = useStyles();
-  const editMotherboard = useEditMotherboard();
-  const queryBrands = useBrands();
-  const queryMotherboard = useGetMotherboardById(id);
+  const editMotherboard = useEdit<IMotherboard>("motherboard");
+  const queryBrands = useGetAll<IGetBrands>("brand");
+  const queryMotherboard = useGetById<IMotherboard>("motherboard", id);
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -162,7 +163,7 @@ const EditMotherboardForm = ({ id }: Props) => {
 
                 {queryBrands.isSuccess && (
                   <SelectField name="brand" label="Brand">
-                    {queryBrands.data.map((brand: IBrand) => (
+                    {queryBrands.data.results.map((brand: IBrand) => (
                       <MenuItem key={uuidv4()} value={brand.id}>
                         {brand.name}
                       </MenuItem>

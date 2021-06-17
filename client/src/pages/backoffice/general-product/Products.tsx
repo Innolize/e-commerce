@@ -6,14 +6,16 @@ import DeleteDialog from "src/components/DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import GeneralProductTable from "src/components/Tables/GeneralProductTable";
 import TableLayout from "src/components/Tables/TableLayout";
-import useDeleteProduct from "src/hooks/productHooks/generalProducts/useDeleteProduct";
-import useProducts from "src/hooks/productHooks/generalProducts/useProducts";
+import { IGetProducts } from "src/hooks/types";
+import useDelete from "src/hooks/useDelete";
+import useGetAll from "src/hooks/useGetAll";
+import { IProduct } from "src/types";
 
 const Products = () => {
   const [deleteId, setDeleteId] = useState<string>("");
   const [open, setOpen] = useState(false);
-  const deleteProduct = useDeleteProduct();
-  const queryProducts = useProducts();
+  const deleteProduct = useDelete<IProduct>("product");
+  const queryProducts = useGetAll<IGetProducts>("product");
 
   const handleClickDeleteBtn = (id: string) => {
     setOpen(true);
@@ -73,7 +75,7 @@ const Products = () => {
         isLoading={queryProducts.isLoading}
         isSuccess={queryProducts.isSuccess}
         isError={queryProducts.isError}
-        rows={queryProducts.data}
+        rows={queryProducts.data?.results}
       />
     </Container>
   );

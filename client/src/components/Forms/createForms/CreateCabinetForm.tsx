@@ -16,9 +16,10 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { ICabinetForm, IProductForm } from "src/form_types";
-import useBrands from "src/hooks/brandHooks/useBrands";
-import useCreateCabinet from "src/hooks/productHooks/cabinet/useCreateCabinet";
-import { IBrand, SIZE } from "src/types";
+import { IGetBrands } from "src/hooks/types";
+import useCreate from "src/hooks/useCreate";
+import useGetAll from "src/hooks/useGetAll";
+import { IBrand, ICabinet, SIZE } from "src/types";
 import { CABINET_ID } from "src/utils/categoriesIds";
 import { cabinetSchema } from "src/utils/yup.pcPickerValidations";
 import { v4 as uuidv4 } from "uuid";
@@ -43,8 +44,8 @@ const useStyles = makeStyles((theme) => ({
 
 const CabinetForm = () => {
   const classes = useStyles();
-  const createCabinet = useCreateCabinet();
-  const queryBrands = useBrands();
+  const createCabinet = useCreate<ICabinet>("cabinet");
+  const queryBrands = useGetAll<IGetBrands>("brand");
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -118,8 +119,8 @@ const CabinetForm = () => {
 
               {queryBrands.isSuccess && (
                 <SelectField name="brand" label="Brand">
-                  {queryBrands.data.map((brand: IBrand) => (
-                    <MenuItem key={uuidv4()} value={brand.id}>
+                  {queryBrands.data.results.map((brand: IBrand) => (
+                    <MenuItem key={brand.id} value={brand.id}>
                       {brand.name}
                     </MenuItem>
                   ))}
@@ -177,7 +178,9 @@ const CabinetForm = () => {
 
               {createCabinet.isError && (
                 <Box my={2}>
-                  <Alert severity="error">{createCabinet.error?.message}</Alert>
+                  <Alert severity="error">
+                    {createCabinet.error?.message || "Something went wrong"}
+                  </Alert>
                 </Box>
               )}
 

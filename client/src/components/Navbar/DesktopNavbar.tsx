@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -13,6 +13,8 @@ import Container from "@material-ui/core/Container";
 import SearchBar from "./SearchBar";
 import ChangeThemeButton from "../ChangeThemeButton";
 import { Tabs } from "@material-ui/core";
+import { UserContext } from "src/contexts/UserContext";
+import { isAdmin } from "src/utils/isAdmin";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -52,41 +54,51 @@ const useStyles = makeStyles((theme: Theme) =>
     nowrap: {
       whiteSpace: "nowrap",
     },
+    logo: {
+      height: "50px",
+    },
   })
 );
 
 const DesktopNavbar = React.memo(() => {
+  const { user } = useContext(UserContext);
   const classes = useStyles();
 
   return (
     <AppBar color="default" position="static">
       <Toolbar className={classes.topBar}>
         <Container className={classes.container} maxWidth="lg">
-          <Typography className={classes.nowrap} variant="h6">
-            Master Tech
-          </Typography>
+          <Box display="flex" alignItems="center">
+            <img src="/logo192.png" alt="logo" className={classes.logo} />
+            <Box ml={2}>
+              <Typography className={classes.nowrap} variant="h6">
+                Master Tech
+              </Typography>
+            </Box>
+          </Box>
           <SearchBar />
           <Box className={classes.nowrap}>
-            <Link className={classes.link} component={RouterLink} to="/login">
-              Login
-            </Link>
-            <Link
-              className={classes.link}
-              component={RouterLink}
-              to="/register"
-            >
-              Register
-            </Link>
-
-            <Link
-              className={classes.linkIcon}
-              component={RouterLink}
-              to="/cart"
-            >
-              <Badge badgeContent={2} color="secondary">
-                <ShoppingCartIcon />
-              </Badge>
-            </Link>
+            {user ? (
+              <Box>
+                <Link className={classes.link} component={RouterLink} to="/logout">
+                  Logout
+                </Link>
+                <Link className={classes.linkIcon} component={RouterLink} to="/cart">
+                  <Badge badgeContent={2} color="secondary">
+                    <ShoppingCartIcon />
+                  </Badge>
+                </Link>
+              </Box>
+            ) : (
+              <>
+                <Link className={classes.link} component={RouterLink} to="/login">
+                  Login
+                </Link>
+                <Link className={classes.link} component={RouterLink} to="/register">
+                  Register
+                </Link>
+              </>
+            )}
           </Box>
         </Container>
       </Toolbar>
@@ -99,9 +111,11 @@ const DesktopNavbar = React.memo(() => {
             <Tab label="Build your pc" to="/build" component={RouterLink} />
           </Tabs>
           <ChangeThemeButton className={classes.autoMarginLeft} />
-          <Link className={classes.link} component={RouterLink} to="/admin">
-            Admin panel
-          </Link>
+          {isAdmin(user) && (
+            <Link className={classes.link} component={RouterLink} to="/admin">
+              Admin panel
+            </Link>
+          )}
         </Container>
       </Toolbar>
     </AppBar>

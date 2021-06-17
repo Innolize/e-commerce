@@ -4,11 +4,18 @@ const theme = createMuiTheme({
   palette: {
     type: "light",
     primary: {
-      main: "#2196F3",
+      main: "#fff",
+      dark: "#fff",
       contrastText: "#000",
     },
+    background: {
+      default: "#F3F5F7",
+    },
+    text: {
+      primary: "#000",
+    },
     secondary: {
-      main: "#FFAA33",
+      main: "#0079D3",
     },
     error: {
       main: "#F70000",
@@ -22,6 +29,11 @@ const theme = createMuiTheme({
           display: "flex",
           flexDirection: "column",
         },
+      },
+    },
+    MuiButton: {
+      label: {
+        color: "#000",
       },
     },
   },

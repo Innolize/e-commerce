@@ -16,9 +16,10 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IDiskStorageForm, IProductForm } from "src/form_types";
-import useBrands from "src/hooks/brandHooks/useBrands";
-import useCreateDiskStorage from "src/hooks/productHooks/diskStorage/useCreateDiskStorage";
-import { DISK_TYPE, IBrand } from "src/types";
+import { IGetBrands } from "src/hooks/types";
+import useCreate from "src/hooks/useCreate";
+import useGetAll from "src/hooks/useGetAll";
+import { DISK_TYPE, IBrand, IDiskStorage } from "src/types";
 import { DISK_STORAGE_ID } from "src/utils/categoriesIds";
 import { diskStorageSchema } from "src/utils/yup.pcPickerValidations";
 import { v4 as uuidv4 } from "uuid";
@@ -43,8 +44,8 @@ const useStyles = makeStyles((theme) => ({
 
 const DiskStorageForm = () => {
   const classes = useStyles();
-  const createDiskStorage = useCreateDiskStorage();
-  const queryBrands = useBrands();
+  const createDiskStorage = useCreate<IDiskStorage>("disk-storage");
+  const queryBrands = useGetAll<IGetBrands>("brand");
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -125,7 +126,7 @@ const DiskStorageForm = () => {
 
               {queryBrands.isSuccess && (
                 <SelectField name="brand" label="Brand">
-                  {queryBrands.data.map((brand: IBrand) => (
+                  {queryBrands.data.results.map((brand: IBrand) => (
                     <MenuItem key={uuidv4()} value={brand.id}>
                       {brand.name}
                     </MenuItem>

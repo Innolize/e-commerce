@@ -17,9 +17,10 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IVideoCardForm } from "src/form_types";
-import useBrands from "src/hooks/brandHooks/useBrands";
-import useCreateVideoCard from "src/hooks/productHooks/videoCard/useCreateVideoCard";
-import useGetVideoCardById from "src/hooks/productHooks/videoCard/useGetVideoCardById";
+import { IGetBrands } from "src/hooks/types";
+import useEdit from "src/hooks/useEdit";
+import useGetAll from "src/hooks/useGetAll";
+import useGetById from "src/hooks/useGetById";
 import { IBrand, IVideoCard, VIDEO_CARD_VERSION } from "src/types";
 import { VIDEO_CARD_ID } from "src/utils/categoriesIds";
 import { videoCardSchema } from "src/utils/yup.pcPickerValidations";
@@ -49,9 +50,9 @@ interface Props {
 
 const EditVideoCardForm = ({ id }: Props) => {
   const classes = useStyles();
-  const createVideoCard = useCreateVideoCard();
-  const queryBrands = useBrands();
-  const queryVideoCard = useGetVideoCardById(id);
+  const createVideoCard = useEdit<IVideoCard>("video-card");
+  const queryBrands = useGetAll<IGetBrands>("brand");
+  const queryVideoCard = useGetById<IVideoCard>("video-card", id);
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -150,7 +151,7 @@ const EditVideoCardForm = ({ id }: Props) => {
 
                 {queryBrands.isSuccess && (
                   <SelectField name="brand" label="Brand">
-                    {queryBrands.data.map((brand: IBrand) => (
+                    {queryBrands.data.results.map((brand: IBrand) => (
                       <MenuItem key={uuidv4()} value={brand.id}>
                         {brand.name}
                       </MenuItem>

@@ -2,17 +2,19 @@ import { Box, Button } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import useDeleteVideoCards from "src/hooks/productHooks/videoCard/useDeleteVideoCard";
-import useVideoCards from "src/hooks/productHooks/videoCard/useVideoCards";
+import { IGetVideoCards } from "src/hooks/types";
+import useDelete from "src/hooks/useDelete";
+import useGetAll from "src/hooks/useGetAll";
+import { IVideoCard } from "src/types";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
+import SnackbarAlert from "../SnackbarAlert";
 import TableLayout from "../Tables/TableLayout";
 import VideoCardTable from "../Tables/VideoCardTable";
-import SnackbarAlert from "../SnackbarAlert";
 
 const VideoCardContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
-  const queryVideoCards = useVideoCards();
-  const deleteVideoCard = useDeleteVideoCards();
+  const queryVideoCards = useGetAll<IGetVideoCards>("video-card");
+  const deleteVideoCard = useDelete<IVideoCard>("video-card");
   const [open, setOpen] = useState(false);
 
   const handleClickDeleteBtn = (id: string) => {
@@ -68,7 +70,7 @@ const VideoCardContainer = () => {
         isLoading={queryVideoCards.isLoading}
         isSuccess={queryVideoCards.isSuccess}
         handleDelete={handleClickDeleteBtn}
-        rows={queryVideoCards.data}
+        rows={queryVideoCards.data?.results}
       />
     </>
   );

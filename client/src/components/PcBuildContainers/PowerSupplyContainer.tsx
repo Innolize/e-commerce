@@ -2,17 +2,19 @@ import { Box, Button } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import useDeletePowerSupply from "src/hooks/productHooks/powerSupply/useDeletePowerSupply";
-import usePowerSupplies from "src/hooks/productHooks/powerSupply/usePowerSupplies";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import PowerSupplyTable from "../Tables/PowerSupplyTable";
 import TableLayout from "../Tables/TableLayout";
 import SnackbarAlert from "../SnackbarAlert";
+import useGetAll from "src/hooks/useGetAll";
+import { IGetPowerSupplies } from "src/hooks/types";
+import useDelete from "src/hooks/useDelete";
+import { IPowerSupply } from "src/types";
 
 const PowerSupplyContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
-  const queryPowerSupply = usePowerSupplies();
-  const deletePowerSupply = useDeletePowerSupply();
+  const queryPowerSupply = useGetAll<IGetPowerSupplies>("power-supply");
+  const deletePowerSupply = useDelete<IPowerSupply>("power-supply");
   const [open, setOpen] = useState(false);
 
   const handleClickDeleteBtn = (id: string) => {
@@ -68,7 +70,7 @@ const PowerSupplyContainer = () => {
         isLoading={queryPowerSupply.isLoading}
         isSuccess={queryPowerSupply.isSuccess}
         handleDelete={handleClickDeleteBtn}
-        rows={queryPowerSupply.data}
+        rows={queryPowerSupply.data?.results}
       />
     </>
   );

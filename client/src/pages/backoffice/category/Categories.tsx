@@ -6,14 +6,16 @@ import DeleteDialog from "src/components/DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import CategoryTable from "src/components/Tables/CategoryTable";
 import TableLayout from "src/components/Tables/TableLayout";
-import useCategories from "src/hooks/categoryHooks/useCategories";
-import useDeleteCategory from "src/hooks/categoryHooks/useDeleteCategory";
+import { IGetCategories } from "src/hooks/types";
+import useDelete from "src/hooks/useDelete";
+import useGetAll from "src/hooks/useGetAll";
+import { ICategory } from "src/types";
 
 const Categories = () => {
-  const query = useCategories();
+  const query = useGetAll<IGetCategories>("category");
   const [deleteId, setDeleteId] = useState<string>("");
   const [open, setOpen] = useState(false);
-  const deleteCategory = useDeleteCategory();
+  const deleteCategory = useDelete<ICategory>("category");
 
   const handleClickDeleteBtn = (id: string) => {
     setOpen(true);
@@ -73,7 +75,7 @@ const Categories = () => {
         isSuccess={query.isSuccess}
         handleDelete={handleClickDeleteBtn}
         Table={CategoryTable}
-        rows={query.data}
+        rows={query.data?.results}
       />
     </Container>
   );

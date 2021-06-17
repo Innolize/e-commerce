@@ -2,17 +2,19 @@ import { Box, Button } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import useDeleteProcessor from "src/hooks/productHooks/processor/useDeleteProcessor";
-import useProcessors from "src/hooks/productHooks/processor/useProcessors";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import ProcessorTable from "../Tables/ProcessorTable";
 import TableLayout from "../Tables/TableLayout";
 import SnackbarAlert from "../SnackbarAlert";
+import useGetAll from "src/hooks/useGetAll";
+import { IGetProcessors } from "src/hooks/types";
+import useDelete from "src/hooks/useDelete";
+import { IProcessor } from "src/types";
 
 const ProcessorContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
-  const queryProcessors = useProcessors();
-  const deleteProcessor = useDeleteProcessor();
+  const queryProcessors = useGetAll<IGetProcessors>("processor");
+  const deleteProcessor = useDelete<IProcessor>("processor");
   const [open, setOpen] = useState(false);
 
   const handleClickDeleteBtn = (id: string) => {
@@ -68,7 +70,7 @@ const ProcessorContainer = () => {
         isLoading={queryProcessors.isLoading}
         isSuccess={queryProcessors.isSuccess}
         handleDelete={handleClickDeleteBtn}
-        rows={queryProcessors.data}
+        rows={queryProcessors.data?.results}
       />
     </>
   );

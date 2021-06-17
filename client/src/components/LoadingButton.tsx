@@ -7,7 +7,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   buttonProgress: {
-    color: theme.palette.primary.main,
+    color: theme.palette.secondary.main,
     position: "absolute",
     top: "50%",
     left: "50%",
@@ -36,11 +36,7 @@ interface LoadingButtonProps {
   name: string;
 }
 
-const LoadingButton = ({
-  isSubmitting,
-  isSuccess,
-  name,
-}: LoadingButtonProps) => {
+const LoadingButton = ({ isSubmitting, isSuccess, name }: LoadingButtonProps) => {
   const classes = useStyles();
 
   return (
@@ -49,14 +45,12 @@ const LoadingButton = ({
         className={classes.submitBtn}
         type="submit"
         variant="contained"
-        color="primary"
+        color="secondary"
         disabled={isSubmitting || isSuccess}
       >
         {name}
       </Button>
-      {isSubmitting && (
-        <CircularProgress size={24} className={classes.buttonProgress} />
-      )}
+      {isSubmitting && <CircularProgress size={24} className={classes.buttonProgress} />}
       {isSuccess && <CheckIcon className={classes.buttonCheck} />}
     </div>
   );

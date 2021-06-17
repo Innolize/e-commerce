@@ -1,10 +1,5 @@
 import React, { useContext } from "react";
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  useTheme,
-} from "@material-ui/core/styles";
+import { createStyles, makeStyles, Theme, useTheme } from "@material-ui/core/styles";
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
@@ -22,6 +17,8 @@ import NightsStayIcon from "@material-ui/icons/NightsStay";
 import ListLink from "./ListLink";
 import { CustomThemeContext } from "../../contexts/customThemeContext";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
+import { UserContext } from "src/contexts/UserContext";
+import { isAdmin } from "src/utils/isAdmin";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -52,20 +49,18 @@ interface Props {
 function Sidebar({ state, setState }: Props) {
   const classes = useStyles();
   const theme = useTheme();
+  const { user } = useContext(UserContext);
   const { currentTheme, setTheme } = useContext(CustomThemeContext);
 
   const handleThemeChange = () => {
     currentTheme === "light" ? setTheme!("dark") : setTheme!("light");
   };
 
-  const toggleDrawer = (open: boolean) => (
-    event: React.KeyboardEvent | React.MouseEvent
-  ) => {
+  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (
       event &&
       event.type === "keydown" &&
-      ((event as React.KeyboardEvent).key === "Tab" ||
-        (event as React.KeyboardEvent).key === "Shift")
+      ((event as React.KeyboardEvent).key === "Tab" || (event as React.KeyboardEvent).key === "Shift")
     ) {
       return;
     }
@@ -73,8 +68,7 @@ function Sidebar({ state, setState }: Props) {
     setState(open);
   };
 
-  const iOS =
-    (process as any).browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const iOS = (process as any).browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   return (
     <SwipeableDrawer
@@ -97,48 +91,32 @@ function Sidebar({ state, setState }: Props) {
 
         <Divider />
 
-        <List
-          onClick={toggleDrawer(false)}
-          onKeyDown={toggleDrawer(false)}
-          className={classes.list}
-        >
+        <List onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)} className={classes.list}>
           <ListLink label="Home" to="/" icon={<HomeIcon />} />
           <ListLink label="Products" to="/products" icon={<ListAltIcon />} />
-          <ListLink
-            label="Build your pc"
-            to="/build"
-            icon={<DesktopMacIcon />}
-          />
+          <ListLink label="Build your pc" to="/build" icon={<DesktopMacIcon />} />
 
           <Divider />
 
-          <ListLink label="Login" to="/login" icon={<PersonIcon />} />
-          <ListLink label="Register" to="/register" icon={<PersonAddIcon />} />
+          {user ? (
+            <ListLink label="Logout" to="/logout" icon={<PersonIcon />} />
+          ) : (
+            <>
+              <ListLink label="Login" to="/login" icon={<PersonIcon />} />
+              <ListLink label="Register" to="/register" icon={<PersonAddIcon />} />
+            </>
+          )}
 
           <Divider />
 
           <ListItem onClick={handleThemeChange} button>
-            <ListItemIcon>
-              {theme.palette.type === "light" ? (
-                <WbSunnyIcon />
-              ) : (
-                <NightsStayIcon />
-              )}
-            </ListItemIcon>
-            <ListItemText>
-              {theme.palette.type === "light"
-                ? "Change to dark"
-                : "Change to light"}
-            </ListItemText>
+            <ListItemIcon>{theme.palette.type === "light" ? <WbSunnyIcon /> : <NightsStayIcon />}</ListItemIcon>
+            <ListItemText>{theme.palette.type === "light" ? "Change to dark" : "Change to light"}</ListItemText>
           </ListItem>
 
           <Divider />
 
-          <ListLink
-            label="Go to admin panel"
-            to="/admin"
-            icon={<SupervisorAccountIcon />}
-          />
+          {isAdmin(user) && <ListLink label="Admin panel" to="/admin" icon={<SupervisorAccountIcon />} />}
         </List>
       </div>
     </SwipeableDrawer>

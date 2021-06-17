@@ -2,8 +2,10 @@ import { Box, Button } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import useDeleteRam from "src/hooks/productHooks/ram/useDeleteRam";
-import useRams from "src/hooks/productHooks/ram/useRams";
+import { IGetRams } from "src/hooks/types";
+import useDelete from "src/hooks/useDelete";
+import useGetAll from "src/hooks/useGetAll";
+import { IRam } from "src/types";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "../SnackbarAlert";
 import RamTable from "../Tables/RamTable";
@@ -11,8 +13,8 @@ import TableLayout from "../Tables/TableLayout";
 
 const RamContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
-  const queryRams = useRams();
-  const deleteRam = useDeleteRam();
+  const queryRams = useGetAll<IGetRams>("ram");
+  const deleteRam = useDelete<IRam>("ram");
   const [open, setOpen] = useState(false);
 
   const handleClickDeleteBtn = (id: string) => {
@@ -68,7 +70,7 @@ const RamContainer = () => {
         isLoading={queryRams.isLoading}
         isSuccess={queryRams.isSuccess}
         handleDelete={handleClickDeleteBtn}
-        rows={queryRams.data}
+        rows={queryRams.data?.results}
       />
     </>
   );

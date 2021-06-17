@@ -16,10 +16,10 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IProductForm } from "src/form_types";
-import useBrands from "src/hooks/brandHooks/useBrands";
-import useCategories from "src/hooks/categoryHooks/useCategories";
-import useCreateProduct from "src/hooks/productHooks/generalProducts/useCreateProduct";
-import { IBrand, ICategory } from "src/types";
+import { IGetBrands, IGetCategories } from "src/hooks/types";
+import useCreate from "src/hooks/useCreate";
+import useGetAll from "src/hooks/useGetAll";
+import { IBrand, ICategory, IProduct } from "src/types";
 import { createProductSchema } from "src/utils/yup.validations";
 import { v4 as uuidv4 } from "uuid";
 
@@ -43,9 +43,9 @@ const useStyles = makeStyles((theme) => ({
 
 const CreateProduct = () => {
   const classes = useStyles();
-  const createProduct = useCreateProduct();
-  const queryBrands = useBrands();
-  const queryCategories = useCategories();
+  const createProduct = useCreate<IProduct>("product");
+  const queryBrands = useGetAll<IGetBrands>("brand");
+  const queryCategories = useGetAll<IGetCategories>("category");
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -115,7 +115,7 @@ const CreateProduct = () => {
 
               {queryBrands.isSuccess && (
                 <SelectField name="brand" label="Brand">
-                  {queryBrands.data.map((brand: IBrand) => (
+                  {queryBrands.data.results.map((brand: IBrand) => (
                     <MenuItem key={uuidv4()} value={brand.id}>
                       {brand.name}
                     </MenuItem>
@@ -125,7 +125,7 @@ const CreateProduct = () => {
 
               {queryCategories.isSuccess && (
                 <SelectField name="category" label="Category">
-                  {queryCategories.data.map((category: ICategory) => (
+                  {queryCategories.data.results.map((category: ICategory) => (
                     <MenuItem key={uuidv4()} value={category.id}>
                       {category.name}
                     </MenuItem>

@@ -16,9 +16,10 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IPowerSupplyForm, IProductForm } from "src/form_types";
-import useBrands from "src/hooks/brandHooks/useBrands";
-import useCreatePowerSupply from "src/hooks/productHooks/powerSupply/useCreatePowerSupply";
-import { IBrand, PWS_CERTIFICATION } from "src/types";
+import { IGetBrands } from "src/hooks/types";
+import useCreate from "src/hooks/useCreate";
+import useGetAll from "src/hooks/useGetAll";
+import { IBrand, IPowerSupply, PWS_CERTIFICATION } from "src/types";
 import { POWER_SUPPLY_ID } from "src/utils/categoriesIds";
 import { powerSupplySchema } from "src/utils/yup.pcPickerValidations";
 import { v4 as uuidv4 } from "uuid";
@@ -43,8 +44,8 @@ const useStyles = makeStyles((theme) => ({
 
 const PowerSupplyForm = () => {
   const classes = useStyles();
-  const createPowerSupply = useCreatePowerSupply();
-  const queryBrands = useBrands();
+  const createPowerSupply = useCreate<IPowerSupply>("power-supply");
+  const queryBrands = useGetAll<IGetBrands>("brand");
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -118,7 +119,7 @@ const PowerSupplyForm = () => {
 
               {queryBrands.isSuccess && (
                 <SelectField name="brand" label="Brand">
-                  {queryBrands.data.map((brand: IBrand) => (
+                  {queryBrands.data.results.map((brand: IBrand) => (
                     <MenuItem key={uuidv4()} value={brand.id}>
                       {brand.name}
                     </MenuItem>

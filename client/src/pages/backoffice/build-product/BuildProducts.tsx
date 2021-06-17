@@ -1,10 +1,4 @@
-import {
-  Box,
-  Breadcrumbs,
-  Container,
-  Link,
-  Typography,
-} from "@material-ui/core";
+import { Box, Breadcrumbs, Container, Link, Typography } from "@material-ui/core";
 import { Redirect, useParams } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
 import CabinetContainer from "src/components/PcBuildContainers/CabinetContainer";
@@ -40,25 +34,25 @@ const BuildProducts = () => {
         </Box>
         <Box my={2} display="flex" justifyContent="center">
           <Breadcrumbs>
-            <Link to="ram" component={RouterLink}>
+            <Link color="secondary" to="ram" component={RouterLink}>
               Ram
             </Link>
-            <Link to="video-card" component={RouterLink}>
+            <Link color="secondary" to="video-card" component={RouterLink}>
               Video Card
             </Link>
-            <Link to="motherboard" component={RouterLink}>
+            <Link color="secondary" to="motherboard" component={RouterLink}>
               Motherboard
             </Link>
-            <Link to="processor" component={RouterLink}>
+            <Link color="secondary" to="processor" component={RouterLink}>
               Processor
             </Link>
-            <Link to="power-supply" component={RouterLink}>
+            <Link color="secondary" to="power-supply" component={RouterLink}>
               Power Supply
             </Link>
-            <Link to="cabinet" component={RouterLink}>
+            <Link color="secondary" to="cabinet" component={RouterLink}>
               Cabinet
             </Link>
-            <Link to="disk-storage" component={RouterLink}>
+            <Link color="secondary" to="disk-storage" component={RouterLink}>
               Disk Storage
             </Link>
           </Breadcrumbs>

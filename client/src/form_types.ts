@@ -1,3 +1,14 @@
+export interface IGeneralProductForm {
+  id?: string;
+  name: string;
+  description: string;
+  image: string;
+  price: string;
+  stock: string;
+  category: string;
+  brand: string;
+}
+
 export interface IProductForm {
   product_id?: string;
   name: string;

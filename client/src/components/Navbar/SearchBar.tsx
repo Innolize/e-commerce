@@ -1,10 +1,5 @@
-import {
-  createStyles,
-  Theme,
-  makeStyles,
-  fade,
-} from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -12,9 +7,13 @@ const useStyles = makeStyles((theme: Theme) =>
     search: {
       position: "relative",
       borderRadius: theme.shape.borderRadius,
-      backgroundColor: fade(theme.palette.common.white, 0.15),
+      backgroundColor: theme.palette.background.default,
+      boxShadow: "0 2px 5px 2px rgb(64 60 67 / 30%)",
       "&:hover": {
-        backgroundColor: fade(theme.palette.common.white, 0.25),
+        border: `1px solid #0079D3`,
+      },
+      "&:focus-within": {
+        border: `1px solid #0079D3`,
       },
       marginRight: theme.spacing(2),
       marginLeft: theme.spacing(2),

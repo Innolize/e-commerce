@@ -17,9 +17,10 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IRamForm } from "src/form_types";
-import useBrands from "src/hooks/brandHooks/useBrands";
-import useCreateRam from "src/hooks/productHooks/ram/useCreateRam";
-import useGetRamById from "src/hooks/productHooks/ram/useGetRamById";
+import { IGetBrands } from "src/hooks/types";
+import useCreate from "src/hooks/useCreate";
+import useGetAll from "src/hooks/useGetAll";
+import useGetById from "src/hooks/useGetById";
 import { IBrand, IRam } from "src/types";
 import { RAM_ID } from "src/utils/categoriesIds";
 import { ramSchema } from "src/utils/yup.pcPickerValidations";
@@ -49,9 +50,9 @@ interface Props {
 
 const EditRamForm = ({ id }: Props) => {
   const classes = useStyles();
-  const createRam = useCreateRam();
-  const queryBrands = useBrands();
-  const queryRam = useGetRamById(id);
+  const createRam = useCreate<IRam>("ram");
+  const queryBrands = useGetAll<IGetBrands>("brand");
+  const queryRam = useGetById<IRam>("ram", id);
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -156,7 +157,7 @@ const EditRamForm = ({ id }: Props) => {
 
                 {queryBrands.isSuccess && (
                   <SelectField name="brand" label="Brand">
-                    {queryBrands.data.map((brand: IBrand) => (
+                    {queryBrands.data.results.map((brand: IBrand) => (
                       <MenuItem key={uuidv4()} value={brand.id}>
                         {brand.name}
                       </MenuItem>

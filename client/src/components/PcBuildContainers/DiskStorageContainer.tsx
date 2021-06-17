@@ -2,17 +2,19 @@ import { Box, Button } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import useDeleteDiskStorage from "src/hooks/productHooks/diskStorage/useDeleteDiskStorage";
-import useDiskStorage from "src/hooks/productHooks/diskStorage/useDiskStorage";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import DiskStorageTable from "../Tables/DiskStorageTable";
 import TableLayout from "../Tables/TableLayout";
 import SnackbarAlert from "../SnackbarAlert";
+import useGetAll from "src/hooks/useGetAll";
+import { IDiskStorage } from "src/types";
+import useDelete from "src/hooks/useDelete";
+import { IGetDiskStorages } from "src/hooks/types";
 
 const DiskStorageContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
-  const queryDiskStorages = useDiskStorage();
-  const deleteDiskStorage = useDeleteDiskStorage();
+  const queryDiskStorages = useGetAll<IGetDiskStorages>("disk-storage");
+  const deleteDiskStorage = useDelete<IDiskStorage>("disk-storage");
   const [open, setOpen] = useState(false);
 
   const handleClickDeleteBtn = (id: string) => {
@@ -69,7 +71,7 @@ const DiskStorageContainer = () => {
         isLoading={queryDiskStorages.isLoading}
         isSuccess={queryDiskStorages.isSuccess}
         handleDelete={handleClickDeleteBtn}
-        rows={queryDiskStorages.data}
+        rows={queryDiskStorages.data?.results}
       />
     </>
   );

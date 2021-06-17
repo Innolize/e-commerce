@@ -7,7 +7,8 @@ import { Redirect } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SnackbarAlert from "src/components/SnackbarAlert";
-import useCreateCategory from "src/hooks/categoryHooks/useCreateCategory";
+import useCreate from "src/hooks/useCreate";
+import { ICategory } from "src/types";
 import { createCategorySchema } from "src/utils/yup.validations";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CreateCategory = () => {
-  const createCategory = useCreateCategory();
+  const createCategory = useCreate<ICategory>("category");
   const classes = useStyles();
   const [redirect, setRedirect] = useState(false);
 

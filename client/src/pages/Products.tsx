@@ -1,4 +1,3 @@
-import useProducts from "src/hooks/productHooks/generalProducts/useProducts";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
@@ -8,6 +7,8 @@ import Typography from "@material-ui/core/Typography";
 import { v4 as uuidv4 } from "uuid";
 import { IProduct } from "src/types";
 import { Box, Button } from "@material-ui/core";
+import useGetAll from "src/hooks/useGetAll";
+import { IGetProducts } from "src/hooks/types";
 
 const useStyles = makeStyles({
   cardContainer: {
@@ -29,17 +30,20 @@ const useStyles = makeStyles({
 
 const Products = () => {
   const classes = useStyles();
-  const queryProducts = useProducts();
+  const queryProducts = useGetAll<IGetProducts>("product");
 
   return (
     <Box alignItems="center" my={2} display="flex" flexDirection="column">
       <Box my={2} display="flex" alignItems="center">
-        {/* TODO FILTER AND NUMBER OF PRODUCTS */}
-        <Typography variant="subtitle1">0 productos.</Typography>
+        {queryProducts.isSuccess && (
+          <Typography variant="subtitle1">
+            Mostrando {queryProducts.data.count} productos.
+          </Typography>
+        )}
         <Button variant="text">Filtrar</Button>
       </Box>
       {queryProducts.isSuccess &&
-        queryProducts.data.map((product: IProduct) => (
+        queryProducts.data.results.map((product: IProduct) => (
           <Card elevation={0} key={uuidv4()} className={classes.cardContainer}>
             <CardActionArea className={classes.card}>
               <CardMedia className={classes.media} image={product.image} />

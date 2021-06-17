@@ -12,8 +12,8 @@ import { Redirect, useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SnackbarAlert from "src/components/SnackbarAlert";
-import useEditCategory from "src/hooks/categoryHooks/useEditCategory";
-import useGetCategoryById from "src/hooks/categoryHooks/useGetCategoryById";
+import useEdit from "src/hooks/useEdit";
+import useGetById from "src/hooks/useGetById";
 import { ICategory } from "src/types";
 import { editCategorySchema } from "src/utils/yup.validations";
 
@@ -53,8 +53,8 @@ const useStyles = makeStyles((theme) => ({
 
 const EditCategory = () => {
   const { id } = useParams<{ id: string }>();
-  const queryCategory = useGetCategoryById(id);
-  const editCategory = useEditCategory();
+  const queryCategory = useGetById<ICategory>("category", id);
+  const editCategory = useEdit<ICategory>("category");
   const classes = useStyles();
   const [redirect, setRedirect] = useState(false);
 

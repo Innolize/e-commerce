@@ -1,9 +1,15 @@
-import * as yup from "yup";
-import { Formik, Form } from "formik";
+import { Box, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { Alert } from "@material-ui/lab";
+import { Form, Formik } from "formik";
+import { useContext } from "react";
+import { Redirect, useLocation } from "react-router-dom";
 import FormWrapper from "src/components/FormWrapper";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
+import { UserContext } from "src/contexts/UserContext";
+import useLoginUser from "src/hooks/loginUser";
+import * as yup from "yup";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -13,44 +19,59 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const loginSchema = yup.object({
-  username: yup.string().required("Username is required."),
+  mail: yup.string().required("Email is required."),
   password: yup.string().required("Password is required."),
 });
 
-const Login = () => {
-  const classes = useStyles();
+interface ILocationState {
+  from: string;
+}
 
-  const loginUser = () => {
-    return new Promise((resolve) => setTimeout(resolve, 1000));
-  };
+const Login = () => {
+  const { user } = useContext(UserContext);
+  const classes = useStyles();
+  const loginUser = useLoginUser();
+  const { state } = useLocation<ILocationState>();
+
+  if (user) {
+    return <Redirect to={state?.from || "/"} />;
+  }
 
   return (
-    <FormWrapper title="Sign in">
-      <Formik
-        initialValues={{ username: "", password: "" }}
-        onSubmit={async (data) => {
-          await loginUser();
-        }}
-        validationSchema={loginSchema}
-      >
-        {({ isSubmitting }) => (
-          <Form className={classes.form}>
-            <InputField
-              label="Username"
-              placeholder="Username"
-              name="username"
-            />
-            <InputField
-              type="password"
-              label="Password"
-              placeholder="Password"
-              name="password"
-            />
-            <LoadingButton name="Login" isSubmitting={isSubmitting} />
-          </Form>
-        )}
-      </Formik>
-    </FormWrapper>
+    <Container>
+      <FormWrapper title="Sign in">
+        <Formik
+          initialValues={{ mail: "", password: "" }}
+          onSubmit={(data) => {
+            loginUser.mutate(data);
+          }}
+          validationSchema={loginSchema}
+        >
+          {() => (
+            <Form className={classes.form}>
+              <InputField label="Email" placeholder="Email" name="mail" />
+              <InputField type="password" label="Password" placeholder="Password" name="password" />
+
+              <Box>
+                {loginUser.isLoading ? (
+                  <LoadingButton isSubmitting name="Loading..." />
+                ) : loginUser.isSuccess ? (
+                  <LoadingButton isSuccess name="Logged in" />
+                ) : (
+                  <LoadingButton name="Login" />
+                )}
+              </Box>
+
+              {loginUser.isError && (
+                <Box my={2}>
+                  <Alert severity="error">Wrong email or password. Please try again.</Alert>
+                </Box>
+              )}
+            </Form>
+          )}
+        </Formik>
+      </FormWrapper>
+    </Container>
   );
 };
 

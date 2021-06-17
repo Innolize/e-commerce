@@ -17,9 +17,10 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IPowerSupplyForm } from "src/form_types";
-import useBrands from "src/hooks/brandHooks/useBrands";
-import useEditPowerSupply from "src/hooks/productHooks/powerSupply/useEditPowerSupply";
-import useGetPowerSupplyById from "src/hooks/productHooks/powerSupply/useGetPowerSupplyById";
+import { IGetBrands } from "src/hooks/types";
+import useEdit from "src/hooks/useEdit";
+import useGetAll from "src/hooks/useGetAll";
+import useGetById from "src/hooks/useGetById";
 import { IBrand, IPowerSupply, PWS_CERTIFICATION } from "src/types";
 import { POWER_SUPPLY_ID } from "src/utils/categoriesIds";
 import { powerSupplySchema } from "src/utils/yup.pcPickerValidations";
@@ -49,9 +50,9 @@ interface Props {
 
 const EditPowerSupplyForm = ({ id }: Props) => {
   const classes = useStyles();
-  const editPowerSupply = useEditPowerSupply();
-  const queryPowerSupply = useGetPowerSupplyById(id);
-  const queryBrands = useBrands();
+  const editPowerSupply = useEdit<IPowerSupply>("power-supply");
+  const queryPowerSupply = useGetById<IPowerSupply>("power-supply", id);
+  const queryBrands = useGetAll<IGetBrands>("brand");
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -150,7 +151,7 @@ const EditPowerSupplyForm = ({ id }: Props) => {
 
                 {queryBrands.isSuccess && (
                   <SelectField name="brand" label="Brand">
-                    {queryBrands.data.map((brand: IBrand) => (
+                    {queryBrands.data.results.map((brand: IBrand) => (
                       <MenuItem key={uuidv4()} value={brand.id}>
                         {brand.name}
                       </MenuItem>
