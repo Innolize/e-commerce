@@ -6,8 +6,7 @@ import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
 import { jwtAuthentication } from "../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../authorization/util/authorizationMiddleware";
-import { bodyValidator, mapperMessageError } from "../../common/helpers/bodyValidator";
-import { idNumberOrError } from "../../common/helpers/idNumberOrError";
+import { bodyValidator } from "../../common/helpers/bodyValidator";
 import { GetUserReqDto } from "../dto/getUsersReqDto";
 import { UserError } from "../error/UserError";
 import { validateCreateUserDto } from "../helper/create_dto_validator";
@@ -38,7 +37,7 @@ export class UserController extends AbstractController {
         app.get(`/api${ROUTE}`, this.getUsers.bind(this))
         app.get(`/api${ROUTE}/:id`, this.getSingleUser.bind(this))
         app.post(`/api${ROUTE}`, this.uploadMiddleware.none(), this.createUser.bind(this))
-        app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'User' })], this.createUser.bind(this))
+        app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'User' })], this.deleteUser.bind(this))
     }
 
     async getUsers(req: Request, res: Response, next: NextFunction) {

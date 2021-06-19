@@ -51,15 +51,15 @@ export class UserModel extends Model<User, IUserCreate>{
     static setupCartAssociation(model: typeof CartModel): typeof UserModel {
         UserModel.hasMany(model, {
             foreignKey: {
-                name: "user_id"
+                name: "id"
             },
-            as: 'carts'
+            as: 'cart'
         })
         return UserModel
     }
 
     public static associations: {
         role: Association<UserModel, RoleModel>;
-        carts: Association<UserModel, CartModel>;
+        cart: Association<UserModel, CartModel>;
     };
 }

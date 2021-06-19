@@ -19,18 +19,17 @@ export function configureJwtStrategy(userService: UserService, passport: Passpor
             try {
                 const { sub: id } = payload
                 const user = await userService.getSingleUser(Number(id)) as User
-                if(user.role?.permissions){
+                if (user.role?.permissions) {
                     const permissions = interpolatePermission(user.role.permissions, user)
                     user.role.permissions = permissions
                     const role = buildAbility(user.role)
-                    const {password, ...rest} = user
+                    const { password, ...rest } = user
                     const passwordlessUser = rest
                     const userWithAuthorization: IUserWithAuthorization = { ...passwordlessUser, role }
                     return done(null, userWithAuthorization)
                 }
                 return done(new Error('user permission not found'), false)
             } catch (err) {
-                console.log(err)
                 return done(new Error('jwt'), false)
             }
 

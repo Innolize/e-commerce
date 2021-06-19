@@ -1,5 +1,4 @@
 import Joi from "joi"
-import { Roles } from "../../../config/constants/roles"
 
 export const validateCreateUserSchema = {
     mail: Joi.string()
@@ -10,8 +9,7 @@ export const validateCreateUserSchema = {
         .min(3)
         .max(20)
         .required(),
-    role: Joi.string()
-        .valid(...Object.keys(Roles))
+    role_id: Joi.number()
 }
 
 export const validateCreateUserDto = Joi.object(validateCreateUserSchema)
