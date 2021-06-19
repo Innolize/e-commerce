@@ -6,7 +6,6 @@ export const validateProcessorQuerySchema = Joi.object({
     limit: Joi.number(),
     offset: Joi.number(),
     socket: Joi.string()
-        .required(),
 })
 
 export const validateProcessorCreateSchema = {

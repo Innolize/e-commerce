@@ -189,8 +189,8 @@ const seedRole = async () => {
 
 const seedPermission = async () => {
     await PermissionModel.create({ action: "manage", subject: "all", role_id: 1 })
-    await PermissionModel.create({ action: "update", subject: "User", role_id: 2, conditions: JSON.stringify({ id: "${id}" }) })
-    await PermissionModel.create({ action: "delete", subject: "User", role_id: 2, conditions: JSON.stringify({ id: "${id}" }) })
+    await PermissionModel.create({ action: "update", subject: "User", role_id: 2, condition: JSON.stringify({ id: "${id}" }) })
+    await PermissionModel.create({ action: "delete", subject: "User", role_id: 2, condition: JSON.stringify({ id: "${id}" }) })
     console.log('Permission seeded')
 }
 

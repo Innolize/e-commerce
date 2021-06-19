@@ -32,14 +32,17 @@ export class UserService extends AbstractService {
         return await this.userRepository.getSingleUser(id)
     }
 
-    async createUser(user: User): Promise<User | Error> {
+    async createUser(user: User, loggedRole?: number): Promise<User | Error> {
+        const DEFAULT_ROLE_ID = 2
         try {
             const mailInUse = await this.userRepository.findUserByMail(user.mail)
             if (mailInUse) {
                 throw UserError.mailAlreadyInUse()
             }
+
+            const role_id = loggedRole === 1 ? user.role_id : DEFAULT_ROLE_ID
             const hashedPassword = await this.encryption.hash(user.password, Number(<string>process.env.BCRYPT_SALT_NUMBER))
-            const userHashed = fromRequestToUser({ ...user, password: hashedPassword })
+            const userHashed = fromRequestToUser({ ...user, password: hashedPassword, role_id })
             return await this.userRepository.createUser(userHashed)
         } catch (err) {
             throw Error(err.message)

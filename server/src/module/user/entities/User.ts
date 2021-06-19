@@ -8,8 +8,8 @@ export class User {
         public password: string,
         public role_id: number,
         public id?: number,
+        public cart?: Cart,
+        // public orders: Orders[]
         public role?: Role,
-        public activeCart?: Cart,
-        public carts?: Cart[]
     ) { }
 }

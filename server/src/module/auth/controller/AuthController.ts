@@ -1,5 +1,6 @@
 import { Application, Request, Response } from "express";
 import { inject, injectable } from "inversify";
+import { Multer } from "multer";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
 import { User } from "../../user/entities/User";
@@ -11,17 +12,20 @@ import { localAuthentication } from "../util/passportMiddlewares";
 export class AuthController extends AbstractController {
     private authService: AuthService
     private ROUTE: string
+    private uploadMiddleware: Multer
     constructor(
-        @inject(TYPES.Auth.Service) authService: AuthService
+        @inject(TYPES.Auth.Service) authService: AuthService,
+        @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer
     ) {
         super()
         this.ROUTE = '/auth'
         this.authService = authService
+        this.uploadMiddleware = uploadMiddleware
     }
 
     configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE
-        app.post(`/api${ROUTE}`, localAuthentication, this.login.bind(this))
+        app.post(`/api${ROUTE}`, this.uploadMiddleware.none(), localAuthentication, this.login.bind(this))
         app.post(`/api${ROUTE}/refresh`, this.refresh.bind(this))
     }
 

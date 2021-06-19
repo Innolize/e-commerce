@@ -30,11 +30,10 @@ export class UserRepository extends AbstractRepository {
     }
 
     async getSingleUser(id: number): Promise<User | Error> {
-        const user = await this.userModel.findByPk(id, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }, { association: UserModel.associations.carts }] })
+        const user = await this.userModel.findByPk(id, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }, { association: UserModel.associations.cart }] })
         if (!user) {
             throw UserError.notFound()
         }
-
         const response = fromDbToUser(user)
         return response
     }

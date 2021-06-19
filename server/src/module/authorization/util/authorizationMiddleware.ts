@@ -5,7 +5,6 @@ import { IAbility } from './abilityBuilder'
 export const authorizationMiddleware = (permission: IAbility): (req: Request, res: Response, next: NextFunction) => void => {
     const { action, subject } = permission
     return function (req: Request, res: Response, next: NextFunction): void {
-        console.log(permission)
         const user = req?.user as IUserWithAuthorization
         if (!user) {
             return next(new Error('Unauthorized role'))
