@@ -12,18 +12,19 @@ import { CartItemModel } from "./CartItemModel";
 export class CartModel extends Model<Cart, ICartCreate> implements ICart {
     user_id: number;
     active: boolean;
+    total: number;
     cartItems?: CartItem[] | undefined;
     id?: number | undefined;
     static setup(database: Sequelize): typeof CartModel {
         CartModel.init({
-            active: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: true
-            },
             user_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false
+            },
+            total: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue: 0
             }
         },
             {

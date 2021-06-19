@@ -1,4 +1,4 @@
-import { fromDbToProduct, fromRequestToProduct } from "../../product/mapper/productMapper"
+import { fromDbToProduct } from "../../product/mapper/productMapper"
 import { Cart } from "../entities/Cart"
 import { CartItem } from "../entities/CartItem"
 import { ICart } from "../interface/ICart"
@@ -13,9 +13,9 @@ export const fromDbToCartItem = (model: ICartItem): CartItem => {
 }
 
 export const fromDbToCart = (model: ICart): Cart => {
-    const { active, cartItems, id, user_id } = model
+    const { total, cartItems, id, user_id } = model
     const cartItemsArray = cartItems ? cartItems.map(item => fromDbToCartItem(item)) : undefined
-    return new Cart(user_id, active, cartItemsArray, id)
+    return new Cart(user_id, total, id, cartItemsArray)
 }
 
 export const fromRequestToCartItem = (request: ICartItemCreate): CartItem => {
@@ -24,8 +24,7 @@ export const fromRequestToCartItem = (request: ICartItemCreate): CartItem => {
 }
 
 export const fromRequestToCart = (request: ICartCreate): Cart => {
-    const { user_id, id, cartItems, active } = request
-    const cart_cartItem = cartItems ? cartItems.map(item => fromRequestToCartItem(item)) : undefined
-    return new Cart(user_id, active, cart_cartItem, id)
+    const { user_id, id } = request
+    return new Cart(user_id, undefined, id)
 }
 
