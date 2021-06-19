@@ -1,12 +1,17 @@
 import { injectable } from "inversify";
 import { Association, DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
-import { IRoleCreate } from "../interfaces/IRoleCreateModelAttributes";
-import { IRoleModelAttributes } from "../interfaces/IRoleModelAttributes";
+import { Permission } from "../entities/Permission";
+import { Role } from "../entities/Role";
+import { IRoleCreate } from "../interfaces/IRoleCreate";
+import { IRole } from "../interfaces/IRole";
 import { PermissionModel } from "./PermissionModel";
 
 @injectable()
-export class RoleModel extends Model<IRoleModelAttributes, IRoleCreate>{
+export class RoleModel extends Model<Role, IRoleCreate> implements IRole {
+    name: string;
+    id!: number;
+    permissions!: Permission[]
     static setup(database: Sequelize): typeof RoleModel {
         RoleModel.init({
             id: {

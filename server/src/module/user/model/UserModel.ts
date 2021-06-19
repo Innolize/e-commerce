@@ -1,12 +1,22 @@
 import { injectable } from "inversify"
 import { Association, DataTypes, Model, Sequelize } from "sequelize"
+import { Role } from "../../authorization/entities/Role"
 import { RoleModel } from "../../authorization/module"
+import { Cart } from "../../cart/entities/Cart"
 import { CartModel } from "../../cart/module"
 import { User } from "../entities/User"
+import { IUser } from "../interfaces/IUser"
 import { IUserCreate } from "../interfaces/IUserCreate"
 
 @injectable()
-export class UserModel extends Model<User, IUserCreate>{
+export class UserModel extends Model<User, IUserCreate> implements IUser {
+    mail!: string
+    password!: string
+    role_id!: number
+    id!: number
+    cart?: Cart
+    role?: Role
+
     static setup(database: Sequelize): typeof UserModel {
         UserModel.init({
             id: {
@@ -49,9 +59,9 @@ export class UserModel extends Model<User, IUserCreate>{
     }
 
     static setupCartAssociation(model: typeof CartModel): typeof UserModel {
-        UserModel.hasMany(model, {
+        UserModel.hasOne(model, {
             foreignKey: {
-                name: "id"
+                name: "user_id"
             },
             as: 'cart'
         })

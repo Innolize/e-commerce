@@ -1,19 +1,10 @@
-import { IRoleCreate } from "../interfaces/IRoleCreate"
-import { RawRuleOf } from "@casl/ability"
-import {appAbility} from '../util/abilityBuilder'
+import { IRole } from "../interfaces/IRole";
 import { Permission } from "./Permission"
 
-export class Role {
-    id?: number
-    name: string
-    permissions?: Permission[]
-    constructor({ id, name, permissions }: IRoleCreate) {
-        if (id) {
-            this.id = id
-        }
-        this.name = name
-        if (permissions) {
-            this.permissions = permissions.map(permission => new Permission(permission))
-        }
-    }
+export class Role implements IRole {
+    constructor(
+        public name: string,
+        public id?: number,
+        public permissions?: Permission[]
+    ) { }
 }
