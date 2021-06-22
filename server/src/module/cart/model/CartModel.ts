@@ -9,11 +9,11 @@ import { ICartCreate } from "../interface/ICartCreate";
 import { CartItemModel } from "./CartItemModel";
 
 @injectable()
-export class CartModel extends Model<Cart, ICartCreate> implements ICart {
+export class CartModel extends Model<ICart, ICartCreate> implements ICart {
     user_id: number;
     active: boolean;
     total: number;
-    cartItems?: CartItem[] | undefined;
+    cartItems!: CartItem[];
     id?: number | undefined;
     static setup(database: Sequelize): typeof CartModel {
         CartModel.init({

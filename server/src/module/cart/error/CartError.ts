@@ -20,4 +20,10 @@ export class CartError extends BaseError {
     static invalidCartItemId(): CartError {
         return new CartError(this.name, StatusCodes.UNPROCESSABLE_ENTITY, 'Invalid cart item id')
     }
+    static CartItemNotIncluded(): CartError {
+        return new CartError(this.name, StatusCodes.INTERNAL_SERVER_ERROR, 'Cart item not included')
+    }
+    static CartItemProductNotIncluded(): CartError {
+        return new CartError(this.name, StatusCodes.INTERNAL_SERVER_ERROR, 'Cart item product not included')
+    }
 }
