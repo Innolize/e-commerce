@@ -20,12 +20,12 @@ export class CartService extends AbstractService {
     async getCarts(queryParams: ICartGetAllQuery): Promise<GetCartsDto> {
         return await this.cartRepository.getAll(queryParams)
     }
-    
+
     async getCart(id: number, userId: number): Promise<Cart> {
         return await this.cartRepository.getCart(id, userId)
     }
 
-    async addCartItem(cartId: number, newCartItem: ICartItemCreateFromCartModel): Promise<CartItem[]> {
+    async addCartItem(cartId: number, newCartItem: ICartItemCreateFromCartModel): Promise<CartItem> {
         return await this.cartRepository.addCartItem(cartId, newCartItem)
     }
 
@@ -34,7 +34,8 @@ export class CartService extends AbstractService {
     }
 
     async modifyCartItemQuantity(cartId: number, cartItemId: number, quantity: number): Promise<CartItem> {
-        return await this.cartRepository.modifyCartItemQuantity(cartId, cartItemId, quantity)
+        await this.cartRepository.modifyCartItemQuantity(cartId, cartItemId, quantity)
+        return await this.cartRepository.getCartItem(cartItemId)
     }
 }
 

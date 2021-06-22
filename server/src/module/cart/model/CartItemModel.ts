@@ -10,8 +10,8 @@ export class CartItemModel extends Model<CartItem, ICartItemCreate> implements I
     product_id: number;
     quantity: number;
     cart_id: number;
-    id?: number | undefined;
-    product?: Product | undefined;
+    id: number;
+    product!: Product;
 
     static setup(database: Sequelize): typeof CartItemModel {
         CartItemModel.init({
@@ -44,7 +44,7 @@ export class CartItemModel extends Model<CartItem, ICartItemCreate> implements I
     static setupCartAssociation(model: typeof CartModel): typeof CartItemModel {
         CartItemModel.belongsTo(model, {
             as: 'cart',
-            foreignKey: "id"
+            foreignKey: "cart_id"
         })
         return CartItemModel
     }
