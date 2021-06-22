@@ -1,6 +1,9 @@
+import { ForbiddenError } from "@casl/ability";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractService } from "../../abstractClasses/abstractService";
+import { IUserWithAuthorization } from "../../authorization/interfaces/IUserWithAuthorization";
+import { appAbility } from "../../authorization/util/abilityBuilder";
 import { GetCartsDto } from "../dto/getCartsDto";
 import { Cart } from "../entities/Cart";
 import { CartItem } from "../entities/CartItem";
@@ -26,6 +29,9 @@ export class CartService extends AbstractService {
     }
 
     async addCartItem(cartId: number, newCartItem: ICartItemCreateFromCartModel): Promise<CartItem> {
+        // user: IUserWithAuthorization
+        // const cart = await this.cartRepository.getCart(cartId, user.id)
+        // ForbiddenError.from<appAbility>(user.role).throwUnlessCan('update', cart)
         return await this.cartRepository.addCartItem(cartId, newCartItem)
     }
 
