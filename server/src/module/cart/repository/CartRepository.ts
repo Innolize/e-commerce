@@ -41,33 +41,46 @@ export class CartRepository extends AbstractRepository {
         return carts
     }
 
-    async addCartItem(cartId: number, newCartItem: ICartItemCreateFromCartModel): Promise<CartItem[]> {
-        const cart = await this.cartModel.findByPk(cartId, { include: CartModel.associations.cartItems })
-        if (!cart) {
+    async getCartItem(id: number): Promise<CartItem> {
+        const cartItemModel = await this.cartItemModel.findOne({
+            where: { id },
+            include:
+                [{
+                    association: CartItemModel.associations.product,
+                    include:
+                        [{ association: ProductModel.associations.brand },
+                        { association: ProductModel.associations.category }]
+                }]
+        })
+        if (!cartItemModel) {
             throw CartError.cartNotFound()
         }
-        await cart.createCartItem(newCartItem)
-        const cartItems = await cart.getCartItems({ include: { association: CartItemModel.associations.product } })
-        const response = cartItems.map(fromDbToCartItem)
-        return response
+        const cartItem = fromDbToCartItem(cartItemModel)
+        return cartItem
+    }
+
+    async addCartItem(cartId: number, newCartItem: ICartItemCreateFromCartModel): Promise<CartItem> {
+
+        // const cartItemExists = await cart.getCartItems({ where: { product_id: newCartItem.product_id } })
+        // if (cartItemExists[0]) {
+        //     return await this.modifyCartItemQuantity(cartId, cartItemExists[0].id, newCartItem.quantity)
+        // }
+        const cartItem = await this.cartItemModel.create({ cart_id: cartId, ...newCartItem })
+        const populatedCartItem = await this.getCartItem(cartItem.id)
+        return fromDbToCartItem(populatedCartItem)
     }
 
     async removeCartItem(cartId: number, cartItemId: number): Promise<boolean> {
-        const cart = await this.cartModel.findByPk(cartId)
-        if (!cart) {
-            throw CartError.cartNotFound()
-        }
         const cartItem = await this.cartItemModel.findOne({ where: { id: cartItemId, cart_id: cartId } })
         if (!cartItem) {
             throw CartError.cartItemNotFound()
         }
 
-        await cartItem.destroy()
-
+        await cartItem.destroy({})
         return true
     }
 
-    async modifyCartItemQuantity(cartId: number, cartItemId: number, quantity: number): Promise<CartItem> {
+    async modifyCartItemQuantity(cartId: number, cartItemId: number, quantity: number): Promise<boolean> {
         const cart = await this.cartModel.findByPk(cartId)
         if (!cart) {
             throw CartError.cartNotFound()
@@ -76,8 +89,7 @@ export class CartRepository extends AbstractRepository {
         if (!cartItem) {
             throw CartError.cartItemNotFound()
         }
-        const cartItemUpdated = await cartItem.update({ quantity })
-        const response = fromDbToCartItem(cartItemUpdated)
-        return response
+        await cartItem.update({ quantity })
+        return true
     }
 }
