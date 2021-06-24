@@ -4,6 +4,7 @@ import Routes from "./routes/Routes";
 import { QueryClient, QueryClientProvider } from "react-query";
 import UserProvider from "./contexts/UserContext";
 import WithAxios from "./services/WithAxios";
+import { ReactQueryDevtools } from "react-query/devtools";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ const App = () => {
           </WithAxios>
         </CustomThemeProvider>
       </UserProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 };

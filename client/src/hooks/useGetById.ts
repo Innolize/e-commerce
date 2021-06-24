@@ -20,9 +20,11 @@ export default function useGetById<T>(option: ApiOptions, id: string) {
         }),
     {
       initialData: () => {
-        return queryClient
-          .getQueryData<any>(apiOptions[option].cacheString)
-          .results?.find((d: any) => d.id === parseInt(id));
+        const cacheResults = queryClient.getQueryData<any>(apiOptions[option].cacheString);
+        if (cacheResults) {
+          return cacheResults.results.find((d: any) => d.id === parseInt(id));
+        }
+        return;
       },
       onError: (e: AxiosError) => {
         console.log(e);

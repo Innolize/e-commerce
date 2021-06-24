@@ -1,10 +1,5 @@
 import { Box, Button, ButtonGroup } from "@material-ui/core";
-import {
-  DataGrid,
-  GridCellParams,
-  GridColDef,
-  ValueFormatterParams,
-} from "@material-ui/data-grid";
+import { DataGrid, GridCellParams, GridColDef, ValueFormatterParams } from "@material-ui/data-grid";
 import { Link as RouterLink } from "react-router-dom";
 import { IProduct } from "src/types";
 import currencyFormatter from "src/utils/formatCurrency";
@@ -32,8 +27,7 @@ const GeneralProductTable = ({ rows, handleDelete }: Props) => {
               headerAlign: "center",
               align: "left",
               type: "number",
-              valueFormatter: (params: ValueFormatterParams) =>
-                currencyFormatter.format(Number(params.value)),
+              valueFormatter: (params: ValueFormatterParams) => currencyFormatter.format(Number(params.value)),
             },
             { field: "stock", width: 100, headerName: "Stock" },
             { field: "brand", width: 100, headerName: "Brand" },
@@ -42,20 +36,12 @@ const GeneralProductTable = ({ rows, handleDelete }: Props) => {
               sortable: false,
               filterable: false,
               width: 300,
-              flex: 1,
               renderCell: (params: GridCellParams) => (
                 <ButtonGroup>
-                  <Button
-                    variant="outlined"
-                    to={"products/edit/" + params.row.id}
-                    component={RouterLink}
-                  >
+                  <Button variant="outlined" to={"products/edit/" + params.row.id} component={RouterLink}>
                     Edit
                   </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={() => handleDelete(params.row.id as string)}
-                  >
+                  <Button variant="outlined" onClick={() => handleDelete(params.row.id as string)}>
                     Delete
                   </Button>
                 </ButtonGroup>

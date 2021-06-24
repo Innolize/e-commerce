@@ -9,7 +9,7 @@ import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { UserContext } from "src/contexts/UserContext";
-import useCreateUser from "src/hooks/createUser";
+import useCreateUser from "src/hooks/useCreateUser";
 import * as yup from "yup";
 
 const useStyles = makeStyles((theme) => ({
@@ -20,14 +20,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const registerSchema = yup.object({
-  mail: yup.string().required("Email is required."),
-  password: yup
-    .string()
-    .required("Password is required.")
-    .min(8, "Password must have at least 8 characters"),
-  "confirm-password": yup
-    .string()
-    .oneOf([yup.ref("password"), null], "Passwords must match"),
+  mail: yup.string().email("Invalid email").required("Email is required."),
+  password: yup.string().required("Password is required.").min(8, "Password must have at least 8 characters"),
+  "confirm-password": yup.string().oneOf([yup.ref("password"), null], "Passwords must match"),
 });
 
 const Register = () => {
@@ -51,12 +46,7 @@ const Register = () => {
         {() => (
           <Form className={classes.form}>
             <InputField label="Email" placeholder="Email" name="mail" />
-            <InputField
-              type="password"
-              label="Password"
-              placeholder="Password"
-              name="password"
-            />
+            <InputField type="password" label="Password" placeholder="Password" name="password" />
             <InputField
               type="password"
               label="Confirm Password"
@@ -75,9 +65,7 @@ const Register = () => {
 
             {createUser.isError && (
               <Box my={2}>
-                <Alert severity="error">
-                  Something went wrong. Please try again.
-                </Alert>
+                <Alert severity="error">Something went wrong. Please try again.</Alert>
               </Box>
             )}
 

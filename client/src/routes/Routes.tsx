@@ -1,15 +1,20 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Loading from "src/pages/Loading";
 import ProtectedAdminRoute from "src/routes/ProtectedAdminRoute";
-import AdminRoutes from "./AdminRoutes";
 import DefaultRoutes from "./DefaultRoutes";
+
+const AdminRoutes = lazy(() => import("./AdminRoutes"));
 
 const Routes = () => {
   return (
     <Router>
-      <Switch>
-        <ProtectedAdminRoute path="/admin" component={AdminRoutes} />
-        <Route path="/" component={DefaultRoutes} />
-      </Switch>
+      <Suspense fallback={<Loading />}>
+        <Switch>
+          <ProtectedAdminRoute path="/admin" component={AdminRoutes} />
+          <Route path="/" component={DefaultRoutes} />
+        </Switch>
+      </Suspense>
     </Router>
   );
 };

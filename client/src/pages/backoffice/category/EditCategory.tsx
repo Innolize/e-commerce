@@ -1,14 +1,9 @@
-import {
-  Box,
-  CircularProgress,
-  Container,
-  Typography,
-} from "@material-ui/core";
+import { Box, CircularProgress, Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import { Form, Formik } from "formik";
-import { useState } from "react";
-import { Redirect, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SnackbarAlert from "src/components/SnackbarAlert";
@@ -56,12 +51,17 @@ const EditCategory = () => {
   const queryCategory = useGetById<ICategory>("category", id);
   const editCategory = useEdit<ICategory>("category");
   const classes = useStyles();
-  const [redirect, setRedirect] = useState(false);
+  const history = useHistory();
 
-  editCategory.isSuccess &&
-    setTimeout(() => {
-      setRedirect(true);
-    }, 2500);
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (editCategory.isSuccess) {
+      timer = setTimeout(() => {
+        history.replace("/admin/categories");
+      }, 2000);
+    }
+    return () => clearTimeout(timer);
+  }, [editCategory.isSuccess, history]);
 
   return (
     <Container>
@@ -85,8 +85,6 @@ const EditCategory = () => {
           text="Category edited successfully. You will be redirected soon..."
         ></SnackbarAlert>
       )}
-
-      {redirect && <Redirect to="/admin/categories" />}
 
       {queryCategory.isSuccess && (
         <Box className={classes.formContainer} my={10}>
@@ -113,9 +111,7 @@ const EditCategory = () => {
 
                 {editCategory.isError && (
                   <Box my={2}>
-                    <Alert severity="error">
-                      {editCategory.error?.message || "Something went wrong."}
-                    </Alert>
+                    <Alert severity="error">{editCategory.error?.message || "Something went wrong."}</Alert>
                   </Box>
                 )}
 

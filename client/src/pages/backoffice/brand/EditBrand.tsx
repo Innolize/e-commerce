@@ -1,17 +1,10 @@
-import {
-  Box,
-  CircularProgress,
-  Container,
-  Input,
-  Paper,
-  Typography,
-} from "@material-ui/core";
+import { Box, CircularProgress, Container, Input, Paper, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import { ErrorMessage, Form, Formik } from "formik";
 import Image from "material-ui-image";
-import React, { useState } from "react";
-import { Redirect, useParams } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SnackbarAlert from "src/components/SnackbarAlert";
@@ -59,12 +52,17 @@ const EditBrand = () => {
   const queryBrand = useGetById<IBrand>("brand", id);
   const editBrand = useEdit<IBrand>("brand");
   const classes = useStyles();
-  const [redirect, setRedirect] = useState(false);
+  const history = useHistory();
 
-  editBrand.isSuccess &&
-    setTimeout(() => {
-      setRedirect(true);
-    }, 2500);
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (editBrand.isSuccess) {
+      timer = setTimeout(() => {
+        history.replace("/admin/brands");
+      }, 2000);
+    }
+    return () => clearTimeout(timer);
+  }, [editBrand.isSuccess, history]);
 
   return (
     <Container>
@@ -88,8 +86,6 @@ const EditBrand = () => {
           text="Brand edited successfully. You will be redirected soon..."
         ></SnackbarAlert>
       )}
-
-      {redirect && <Redirect to="/admin/brands" />}
 
       {queryBrand.isSuccess && (
         <Box className={classes.formContainer} my={10}>
@@ -143,21 +139,13 @@ const EditBrand = () => {
                     placeholder="Logo"
                     name="logo"
                     color="secondary"
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setFieldValue("logo", e.target.files![0])
-                    }
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldValue("logo", e.target.files![0])}
                   />
-                  <ErrorMessage
-                    component={Typography}
-                    className={classes.errorMsg}
-                    name="logo"
-                  />
+                  <ErrorMessage component={Typography} className={classes.errorMsg} name="logo" />
                 </Box>
                 {editBrand.isError && (
                   <Box my={2}>
-                    <Alert severity="error">
-                      {editBrand.error?.message || "Something went wrong."}
-                    </Alert>
+                    <Alert severity="error">{editBrand.error?.message || "Something went wrong."}</Alert>
                   </Box>
                 )}
                 <Box>

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "src/contexts/UserContext";
-import useRefreshUser from "src/hooks/refreshUser";
+import useRefreshUser from "src/hooks/useRefreshUser";
 import Loading from "src/pages/Loading";
 import api from "./api";
 

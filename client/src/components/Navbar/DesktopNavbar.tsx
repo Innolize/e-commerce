@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: "0 10px",
       fontSize: "10px",
       "&:hover": {
-        color: theme.palette.primary.main,
+        color: theme.palette.secondary.dark,
       },
     },
     bottomBar: {
@@ -56,6 +56,12 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     logo: {
       height: "50px",
+      width: "50px",
+    },
+    tab: {
+      "&:hover": {
+        color: theme.palette.secondary.main,
+      },
     },
   })
 );
@@ -106,9 +112,9 @@ const DesktopNavbar = React.memo(() => {
       <Toolbar className={classes.bottomBar}>
         <Container className={classes.container} maxWidth="lg">
           <Tabs value={false}>
-            <Tab label="Home" to="/" component={RouterLink} />
-            <Tab label="Products" to="/products" component={RouterLink} />
-            <Tab label="Build your pc" to="/build" component={RouterLink} />
+            <Tab className={classes.tab} label="Home" to="/" component={RouterLink} />
+            <Tab className={classes.tab} label="Products" to="/products" component={RouterLink} />
+            <Tab className={classes.tab} label="Build your pc" to="/build" component={RouterLink} />
           </Tabs>
           <ChangeThemeButton className={classes.autoMarginLeft} />
           {isAdmin(user) && (

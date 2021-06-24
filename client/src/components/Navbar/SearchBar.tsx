@@ -1,6 +1,8 @@
 import InputBase from "@material-ui/core/InputBase";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
+import React, { useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,8 +46,24 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const SearchBar = () => {
   const classes = useStyles();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const [searchQuery, setSearchQuery] = useState("");
+  const history = useHistory();
+
+  const handleSumbit = (e: React.FormEvent) => {
+    e.preventDefault();
+    searchParams.set("name", searchQuery);
+    history.replace("/products/?" + searchParams.toString());
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   return (
-    <div className={classes.search}>
+    <form className={classes.search} onSubmit={handleSumbit}>
+      <button hidden type="submit"></button>
       <div className={classes.searchIcon}>
         <SearchIcon />
       </div>
@@ -56,8 +74,10 @@ const SearchBar = () => {
           input: classes.inputInput,
         }}
         inputProps={{ "aria-label": "search" }}
+        value={searchQuery}
+        onChange={handleChange}
       />
-    </div>
+    </form>
   );
 };
 

@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import AdminNavbar from "src/components/AdminNavbar";
+import AdminNavbar from "src/components/Navbar/AdminNavbar";
 
 interface Props {
   children: ReactNode;

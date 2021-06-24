@@ -1,13 +1,4 @@
-import {
-  Box,
-  Checkbox,
-  CircularProgress,
-  Container,
-  Input,
-  MenuItem,
-  Paper,
-  Typography,
-} from "@material-ui/core";
+import { Box, Checkbox, CircularProgress, Container, Input, MenuItem, Paper, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import { ErrorMessage, Field, Form, Formik } from "formik";
@@ -24,6 +15,7 @@ import useEdit from "src/hooks/useEdit";
 import useGetAll from "src/hooks/useGetAll";
 import useGetById from "src/hooks/useGetById";
 import { IBrand, ICategory, IProduct } from "src/types";
+import { BUILD_CATEGORIES_IDS } from "src/utils/categoriesIds";
 import { editProductSchema } from "src/utils/yup.validations";
 import { v4 as uuidv4 } from "uuid";
 
@@ -142,19 +134,10 @@ const EditProduct = () => {
                   <InputField label="Name" placeholder="Name" name="name" />
                 </Box>
                 <Box>
-                  <InputField
-                    label="Description"
-                    placeholder="Description"
-                    name="description"
-                  />
+                  <InputField label="Description" placeholder="Description" name="description" />
                 </Box>
                 <Box>
-                  <InputField
-                    type="number"
-                    label="Price"
-                    placeholder="Price"
-                    name="price"
-                  />
+                  <InputField type="number" label="Price" placeholder="Price" name="price" />
                 </Box>
 
                 {queryBrands.isSuccess && (
@@ -167,24 +150,25 @@ const EditProduct = () => {
                   </SelectField>
                 )}
 
+                {/* If the category is one of the pc-build categories we dont allow a change */}
                 {queryCategories.isSuccess && (
                   <SelectField name="category" label="Category">
-                    {queryCategories.data.results.map((category: ICategory) => (
-                      <MenuItem key={uuidv4()} value={category.id}>
-                        {category.name}
-                      </MenuItem>
-                    ))}
+                    {BUILD_CATEGORIES_IDS.includes(Number(queryProduct.data.category.id)) ? (
+                      <MenuItem value={queryProduct.data.category.id}>{queryProduct.data.category.name}</MenuItem>
+                    ) : (
+                      queryCategories.data.results.map((category: ICategory) => (
+                        <MenuItem key={uuidv4()} value={category.id}>
+                          {category.name}
+                        </MenuItem>
+                      ))
+                    )}
                   </SelectField>
                 )}
 
                 <Box display="flex" alignItems="center">
                   <Typography>Stock:</Typography>
                   <Field type="checkbox" name="stock" as={Checkbox} />
-                  <ErrorMessage
-                    component={Typography}
-                    className={classes.errorMsg}
-                    name="stock"
-                  />
+                  <ErrorMessage component={Typography} className={classes.errorMsg} name="stock" />
                 </Box>
 
                 <Box display="flex" justifyContent="center">
@@ -212,22 +196,14 @@ const EditProduct = () => {
                     placeholder="Image"
                     name="image"
                     color="secondary"
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setFieldValue("image", e.target.files![0])
-                    }
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldValue("image", e.target.files![0])}
                   />
-                  <ErrorMessage
-                    component={Typography}
-                    className={classes.errorMsg}
-                    name="logo"
-                  />
+                  <ErrorMessage component={Typography} className={classes.errorMsg} name="logo" />
                 </Box>
 
                 {editProduct.isError && (
                   <Box my={2}>
-                    <Alert severity="error">
-                      {editProduct.error?.message || "Something went wrong."}
-                    </Alert>
+                    <Alert severity="error">{editProduct.error?.message || "Something went wrong."}</Alert>
                   </Box>
                 )}
 
