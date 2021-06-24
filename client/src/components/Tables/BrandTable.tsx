@@ -22,19 +22,13 @@ const BrandTable = ({ rows, handleDelete }: Props) => {
               field: "Edit options",
               sortable: false,
               filterable: false,
-              width: 250,
-              flex: 1,
+              width: 300,
               renderCell: (params: GridCellParams) => (
                 <ButtonGroup>
-                  <Button
-                    to={"brands/edit/" + params.row.id}
-                    component={RouterLink}
-                  >
+                  <Button to={"brands/edit/" + params.row.id} component={RouterLink}>
                     Edit brand
                   </Button>
-                  <Button onClick={() => handleDelete(params.row.id as string)}>
-                    Delete
-                  </Button>
+                  <Button onClick={() => handleDelete(params.row.id as string)}>Delete</Button>
                 </ButtonGroup>
               ),
             },
