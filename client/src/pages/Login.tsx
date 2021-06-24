@@ -8,7 +8,7 @@ import FormWrapper from "src/components/FormWrapper";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import { UserContext } from "src/contexts/UserContext";
-import useLoginUser from "src/hooks/loginUser";
+import useLoginUser from "src/hooks/useLoginUser";
 import * as yup from "yup";
 
 const useStyles = makeStyles((theme) => ({
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const loginSchema = yup.object({
-  mail: yup.string().required("Email is required."),
+  mail: yup.string().email("Invalid email").required("Email is required."),
   password: yup.string().required("Password is required."),
 });
 
