@@ -12,10 +12,6 @@ export default function useRefreshUser() {
     retry: false,
     onSuccess: (user) => {
       setUser(user);
-      console.log(user);
-    },
-    onError: (e) => {
-      console.log(e);
     },
   });
 }
