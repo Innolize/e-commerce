@@ -31,10 +31,10 @@ export class CartController extends AbstractController {
     configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAllCarts.bind(this))
-        app.get(`/api${ROUTE}/:cartId`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Cabinet' })], this.getSingleCart.bind(this))
-        app.post(`/api${ROUTE}/:cartId/item`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Cabinet' })],this.uploadMiddleware.none(), this.addCartItem.bind(this))
-        app.delete(`/api${ROUTE}/:cartId/item/:itemId`, this.removeCartItem.bind(this))
-        app.put(`/api${ROUTE}/:cartId/item/:itemId`, this.uploadMiddleware.none(), this.modifyCartItemQuantity.bind(this))
+        app.get(`/api${ROUTE}/:cartId`, [jwtAuthentication, authorizationMiddleware({ action: 'read', subject: 'Cart' })], this.getSingleCart.bind(this))
+        app.post(`/api${ROUTE}/:cartId/item`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Cart' })],this.uploadMiddleware.none(), this.addCartItem.bind(this))
+        app.delete(`/api${ROUTE}/:cartId/item/:itemId`,[jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Cart' })], this.removeCartItem.bind(this))
+        app.put(`/api${ROUTE}/:cartId/item/:itemId`,[jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Cart' })], this.uploadMiddleware.none(), this.modifyCartItemQuantity.bind(this))
     }
 
     async getAllCarts(req: Request, res: Response, next: NextFunction): Promise<void> {
