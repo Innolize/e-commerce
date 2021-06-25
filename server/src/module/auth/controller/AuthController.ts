@@ -3,6 +3,7 @@ import { inject, injectable } from "inversify";
 import { Multer } from "multer";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
+import { AuthenticationError } from "../error/AuthenticationError";
 import { ILoginResponse } from "../interfaces/ILoginResponse";
 import { AuthService } from "../service/AuthService";
 import { localAuthentication } from "../util/passportMiddlewares";
@@ -32,7 +33,7 @@ export class AuthController extends AbstractController {
     async login(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const user = req.user
-            const { refresh_token, ...clientResponse } = await this.authService.login(user.id as number)
+            const { refresh_token, ...clientResponse } = await this.authService.login(user.id)
             res.cookie("refresh", refresh_token)
             res.status(200).send(clientResponse)
         } catch (err) {
@@ -45,7 +46,7 @@ export class AuthController extends AbstractController {
         try {
             const { refresh }: { refresh: string | null } = req.cookies
             if (!refresh) {
-                throw new Error('You were not logged')
+                throw AuthenticationError.notLogged()
             }
             res.clearCookie("refresh")
             res.status(200).send({ message: "You've been logged out" })
@@ -59,7 +60,7 @@ export class AuthController extends AbstractController {
         try {
             const refreshCookie = req.cookies.refresh
             if (!refreshCookie) {
-                throw Error("Refresh token not found!")
+                throw AuthenticationError.refreshTokenNotFound()
             }
             const { refresh_token, ...clientResponse } = await this.authService.refreshToken(refreshCookie) as ILoginResponse
             res.cookie("refresh", refresh_token)
