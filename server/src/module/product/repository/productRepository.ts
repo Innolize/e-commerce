@@ -28,7 +28,8 @@ export class ProductRepository extends AbstractRepository {
         const { limit, offset, category_id, name } = querieParams
 
         const whereOptions: WhereOptions<Product> = {}
-        name ? whereOptions.name = { [Op.substring]: querieParams.name } : ''
+        name ? whereOptions.name = { [Op.iLike]: "%" + querieParams.name + "%" } : ''
+        console.log(whereOptions)
         category_id ? whereOptions.id_category = querieParams.category_id : ''
 
         const { count, rows } = await this.productModel.findAndCountAll({ where: whereOptions, limit, offset, include: [ProductModel.associations.brand, ProductModel.associations.category] })
