@@ -3,6 +3,10 @@ import { inject, injectable } from "inversify";
 import { Multer } from "multer";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
+import { bodyValidator } from "../../common/helpers/bodyValidator";
+import { validateCreateUserDto } from "../../user/helper/create_dto_validator";
+import { IUserCreate } from "../../user/interfaces/IUserCreate";
+import { UserService } from "../../user/module";
 import { AuthenticationError } from "../error/AuthenticationError";
 import { ILoginResponse } from "../interfaces/ILoginResponse";
 import { AuthService } from "../service/AuthService";
@@ -10,17 +14,17 @@ import { localAuthentication } from "../util/passportMiddlewares";
 
 @injectable()
 export class AuthController extends AbstractController {
-    private authService: AuthService
     private ROUTE: string
-    private uploadMiddleware: Multer
     constructor(
-        @inject(TYPES.Auth.Service) authService: AuthService,
-        @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer
+        @inject(TYPES.Auth.Service) private authService: AuthService,
+        @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer,
+        @inject(TYPES.User.Service) private userService: UserService
     ) {
         super()
         this.ROUTE = '/auth'
         this.authService = authService
         this.uploadMiddleware = uploadMiddleware
+        this.userService = userService
     }
 
     configureRoutes(app: Application): void {
@@ -28,6 +32,20 @@ export class AuthController extends AbstractController {
         app.post(`/api${ROUTE}`, this.uploadMiddleware.none(), localAuthentication, this.login.bind(this))
         app.post(`/api${ROUTE}/refresh`, this.refresh.bind(this))
         app.post(`/api${ROUTE}/logout`, this.logOut.bind(this))
+        app.post(`/api${ROUTE}/signup`,this.uploadMiddleware.none(), this.signup.bind(this))
+    }
+
+    async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const dto: IUserCreate = req.body
+            const validatedDto = await bodyValidator(validateCreateUserDto, dto)
+            const { id } = await this.userService.createUser(validatedDto)
+            const { refresh_token, ...clientResponse } = await this.authService.login(id)
+            res.cookie("refresh", refresh_token)
+            res.status(200).send(clientResponse)
+        } catch (err) {
+            next(err)
+        }
     }
 
     async login(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -44,7 +62,7 @@ export class AuthController extends AbstractController {
 
     async logOut(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { refresh }: { refresh: string | null } = req.cookies
+            const { refresh }: { refresh: string | undefined } = req.cookies
             if (!refresh) {
                 throw AuthenticationError.notLogged()
             }
@@ -62,7 +80,7 @@ export class AuthController extends AbstractController {
             if (!refreshCookie) {
                 throw AuthenticationError.refreshTokenNotFound()
             }
-            const { refresh_token, ...clientResponse } = await this.authService.refreshToken(refreshCookie) as ILoginResponse
+            const { refresh_token, ...clientResponse } = await this.authService.refreshToken(refreshCookie)
             res.cookie("refresh", refresh_token)
             res.status(200).send(clientResponse)
         } catch (err) {

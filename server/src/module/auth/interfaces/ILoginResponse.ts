@@ -1,9 +1,9 @@
 import { User } from "../../user/entities/User";
 
-type IPasswordlessUser = Omit<User, 'password' | 'role_id'>
+type IBasicUser = Pick<User, 'id' | 'mail' | 'role_id' | 'cart'>
 
 export interface ILoginResponse {
-    user: IPasswordlessUser,
+    user: IBasicUser,
     access_token: string,
     refresh_token: string
 }

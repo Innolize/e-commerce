@@ -39,7 +39,7 @@ export class UserRepository extends AbstractRepository {
         return response
     }
 
-    async createUser(user: IUserCreate): Promise<User | Error> {
+    async createUser(user: IUserCreate): Promise<User> {
         try {
             const newUser = await this.userModel.create(user)
             return fromDbToUser(newUser)

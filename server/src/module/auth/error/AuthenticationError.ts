@@ -11,14 +11,6 @@ export class AuthenticationError extends BaseError {
     }
 
     static notLogged(): AuthenticationError {
-        return new AuthenticationError(this.name, StatusCodes.UNPROCESSABLE_ENTITY, 'You were not logged')
-    }
-
-    static idMissing() {
-        return new AuthenticationError(this.name, StatusCodes.UNPROCESSABLE_ENTITY, 'Product id missing')
-    }
-
-    static invalidId() {
-        return new AuthenticationError(this.name, StatusCodes.UNPROCESSABLE_ENTITY, 'Invalid product id')
+        return new AuthenticationError(this.name, StatusCodes.BAD_REQUEST, 'You were not logged')
     }
 }

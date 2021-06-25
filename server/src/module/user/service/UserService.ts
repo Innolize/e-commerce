@@ -32,7 +32,7 @@ export class UserService extends AbstractService {
         return await this.userRepository.getSingleUser(id)
     }
 
-    async createUser(user: IUserCreate, loggedRole?: number): Promise<User | Error> {
+    async createUser(user: IUserCreate, loggedRole?: number): Promise<User> {
         const DEFAULT_ROLE_ID = 2
         try {
             const mailInUse = await this.userRepository.findUserByMail(user.mail)
