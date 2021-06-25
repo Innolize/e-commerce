@@ -1,4 +1,4 @@
-import { Application, Request, Response } from "express";
+import { Application, NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { Multer } from "multer";
 import { TYPES } from "../../../config/inversify.types";
@@ -26,26 +26,46 @@ export class AuthController extends AbstractController {
         const ROUTE = this.ROUTE
         app.post(`/api${ROUTE}`, this.uploadMiddleware.none(), localAuthentication, this.login.bind(this))
         app.post(`/api${ROUTE}/refresh`, this.refresh.bind(this))
+        app.post(`/api${ROUTE}/logout`, this.logOut.bind(this))
     }
 
-    async login(req: Request, res: Response): Promise<Response> {
-        const user = req.user
-        const { refresh_token, ...clientResponse } = await this.authService.login(user.id as number)
-        res.cookie("refresh", refresh_token)
-        return res.status(200).send(clientResponse)
+    async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const user = req.user
+            const { refresh_token, ...clientResponse } = await this.authService.login(user.id as number)
+            res.cookie("refresh", refresh_token)
+            res.status(200).send(clientResponse)
+        } catch (err) {
+            next(err)
+        }
+
     }
 
-    async refresh(req: Request, res: Response): Promise<Response> {
+    async logOut(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { refresh }: { refresh: string | null } = req.cookies
+            if (!refresh) {
+                throw new Error('You were not logged')
+            }
+            res.clearCookie("refresh")
+            res.status(200).send({ message: "You've been logged out" })
+        } catch (err) {
+            next(err)
+        }
+
+    }
+
+    async refresh(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const refreshCookie = req.cookies.refresh
             if (!refreshCookie) {
-                throw Error("Refresh cookie not found!")
+                throw Error("Refresh token not found!")
             }
             const { refresh_token, ...clientResponse } = await this.authService.refreshToken(refreshCookie) as ILoginResponse
             res.cookie("refresh", refresh_token)
-            return res.status(200).send(clientResponse)
+            res.status(200).send(clientResponse)
         } catch (err) {
-            return res.status(500).send({ error: err.message })
+            next(err)
         }
 
     }
