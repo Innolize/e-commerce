@@ -33,65 +33,48 @@ export class ProcessorRepository extends AbstractRepository {
         const { offset, limit, socket } = queryParams
         const whereOptions: WhereOptions<Processor> = {}
         socket ? whereOptions.socket = socket : ''
-        const { count, rows } = await this.processorModel.findAndCountAll({ where: whereOptions, offset, limit, include: ProcessorModel.associations.product });
+        const { count, rows } = await this.processorModel.findAndCountAll({ where: whereOptions, offset, limit, include: { association: ProcessorModel.associations.product, include: [{ association: ProductModel.associations.brand }, { association: ProductModel.associations.category }] } });
         const processors = rows.map(fromDbToProcessor)
         const response = new GetProcessorDto(count, processors)
         return response
     }
 
     async getSingleProcessor(id: number): Promise<Processor | Error> {
-        try {
-            const response = await this.processorModel.findByPk(id, { include: ProcessorModel.associations.product })
-            if (!response) {
-                throw ProcessorError.notFound()
-            }
-            return fromDbToProcessor(response)
-        } catch (err) {
-            throw err
+        const response = await this.processorModel.findByPk(id, { include: { association: ProcessorModel.associations.product, include: [{ association: ProductModel.associations.brand }, { association: ProductModel.associations.category }] } })
+        if (!response) {
+            throw ProcessorError.notFound()
         }
+        return fromDbToProcessor(response)
     }
 
     async createProcessor(product: Product, ram: Processor): Promise<Processor | Error> {
         const transaction = await this.ORM.transaction()
-        try {
-            const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
-            const id_product = newProduct.getDataValue("id") as number
-            const newProcessor = fromRequestToProcessor({ ...ram, id_product })
-            const createdProcessor = await this.processorModel.create(newProcessor, { transaction, isNewRecord: true })
-            transaction.commit()
-            const response = fromDbToProcessor(createdProcessor)
-            return response
-        } catch (err) {
-            throw err
-        }
+        const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
+        const id_product = newProduct.getDataValue("id") as number
+        const newProcessor = fromRequestToProcessor({ ...ram, id_product })
+        const createdProcessor = await this.processorModel.create(newProcessor, { transaction, isNewRecord: true })
+        transaction.commit()
+        const response = fromDbToProcessor(createdProcessor)
+        return response
     }
 
     async modifyProcessor(id: number, ram: Processor): Promise<Processor | Error> {
-        try {
-            const [processorEdited, processorArray] = await this.processorModel.update(ram, { where: { id }, returning: true })
-            // update returns an array, first argument is the number of elements updated in the
-            // database. Second argument are the array of elements. Im updating by id so there is only 
-            // one element in the array.
-            if (!processorEdited) {
-                throw ProcessorError.notFound()
-            }
-            const modifiedProcessor = processorArray[0]
-            return fromDbToProcessor(modifiedProcessor)
-        } catch (err) {
-            throw err
+        const [processorEdited, processorArray] = await this.processorModel.update(ram, { where: { id }, returning: true })
+        // update returns an array, first argument is the number of elements updated in the
+        // database. Second argument are the array of elements. Im updating by id so there is only 
+        // one element in the array.
+        if (!processorEdited) {
+            throw ProcessorError.notFound()
         }
+        const modifiedProcessor = processorArray[0]
+        return fromDbToProcessor(modifiedProcessor)
     }
 
     async deleteProcessor(id: number): Promise<true | Error> {
-
-        try {
-            const response = await this.processorModel.destroy({ where: { id } })
-            if (!response) {
-                throw ProcessorError.notFound()
-            }
-            return true
-        } catch (err) {
-            throw err
+        const response = await this.processorModel.destroy({ where: { id } })
+        if (!response) {
+            throw ProcessorError.notFound()
         }
+        return true
     }
 }
