@@ -52,7 +52,7 @@ export class ProductController extends AbstractController {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAllProducts.bind(this))
         app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Product' })], this.uploadMiddleware.single('product_image'), this.createProduct.bind(this))
-        app.put(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Product' })], this.uploadMiddleware.single('product_image'), this.modifyProduct.bind(this))
+        app.put(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Product' })], this.uploadMiddleware.single('product_image'), this.modifyProduct.bind(this))
         app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Product' })], this.deleteProduct.bind(this))
         app.get(`/api${ROUTE}/:id`, this.findProductById.bind(this))
     }
@@ -110,7 +110,12 @@ export class ProductController extends AbstractController {
 
     async modifyProduct(req: Request, res: Response, next: NextFunction) {
         let productImage: string | undefined
+        const { id } = req.params
         try {
+            const idNumber = Number(id)
+            if (!idNumber || idNumber <= 0) {
+                throw ProductError.invalidId()
+            }
             const dto: IProductEdit = req.body
             const validatedDto = await bodyValidator(validateEditProductDto, dto)
             if (req.file) {
@@ -119,7 +124,7 @@ export class ProductController extends AbstractController {
                 validatedDto.image = uploadedImage.Location
                 productImage = uploadedImage.Location
             }
-            const response = await this.productService.modifyProduct(validatedDto) as Product
+            const response = await this.productService.modifyProduct(Number(id), validatedDto) as Product
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
             if (productImage) {

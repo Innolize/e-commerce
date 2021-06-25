@@ -65,7 +65,7 @@ export class ProductRepository extends AbstractRepository {
         return true
     }
 
-    public async modifyProduct(product: IProductEdit): Promise<Error | Product> {
+    public async modifyProduct(id: number, product: IProductEdit): Promise<Error | Product> {
 
         const [productEdited, productArray] = await this.productModel.update(product, { where: { id: product.id }, returning: true })
         // update returns an array, first argument is the number of elements updated in the
