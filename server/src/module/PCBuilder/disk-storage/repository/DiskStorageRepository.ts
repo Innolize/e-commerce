@@ -32,7 +32,7 @@ export class DiskStorageRepository extends AbstractRepository {
         const { limit, offset, type } = queryParams
         const whereOptions: WhereOptions<DiskStorage> = {}
         type ? whereOptions.type = type : ''
-        const { rows, count } = await this.diskStorageModel.findAndCountAll({ where: whereOptions, limit, offset, include: DiskStorageModel.associations.product });
+        const { rows, count } = await this.diskStorageModel.findAndCountAll({ where: whereOptions, limit, offset, include: { association: DiskStorageModel.associations.product, include: [{ association: ProductModel.associations.brand }, { association: ProductModel.associations.category }] } });
         const disks = rows.map(fromDbToDiskStorage)
         const response = new GetDiskStorageDto(count, disks)
         return response
@@ -40,7 +40,7 @@ export class DiskStorageRepository extends AbstractRepository {
 
     async getSingleDisk(id: number): Promise<DiskStorage | Error> {
         try {
-            const response = await this.diskStorageModel.findByPk(id, { include: DiskStorageModel.associations.product })
+            const response = await this.diskStorageModel.findByPk(id, { include: { association: DiskStorageModel.associations.product, include: [{ association: ProductModel.associations.brand }, { association: ProductModel.associations.category }] } })
             if (!response) {
                 throw DiskStorageError.notFound()
             }
@@ -55,44 +55,32 @@ export class DiskStorageRepository extends AbstractRepository {
 
     async createDisk(product: Product, diskStorage: DiskStorage): Promise<DiskStorage | Error> {
         const transaction = await this.ORM.transaction()
-        try {
-            const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
-            const id_product = newProduct.getDataValue("id") as number
-            const newDiskStorage = fromRequestToDiskStorage({ ...diskStorage, id_product })
-            const createdDiskStorage = await this.diskStorageModel.create(newDiskStorage, { transaction, isNewRecord: true })
-            transaction.commit()
-            const response = fromDbToDiskStorage(createdDiskStorage)
-            return response
-        } catch (err) {
-            throw err
-        }
+        const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
+        const id_product = newProduct.getDataValue("id") as number
+        const newDiskStorage = fromRequestToDiskStorage({ ...diskStorage, id_product })
+        const createdDiskStorage = await this.diskStorageModel.create(newDiskStorage, { transaction, isNewRecord: true })
+        transaction.commit()
+        const response = fromDbToDiskStorage(createdDiskStorage)
+        return response
     }
 
     async modifyDisk(id: number, diskStorage: DiskStorage): Promise<DiskStorage | Error> {
-        try {
-            const [diskEdited, diskArray] = await this.diskStorageModel.update(diskStorage, { where: { id }, returning: true })
-            // update returns an array, first argument is the number of elements updated in the
-            // database. Second argument are the array of elements. Im updating by id so there is only 
-            // one element in the array.
-            if (!diskEdited) {
-                throw DiskStorageError.notFound()
-            }
-            const modifiedDisk = diskArray[0]
-            return fromDbToDiskStorage(modifiedDisk)
-        } catch (err) {
-            throw err
+        const [diskEdited, diskArray] = await this.diskStorageModel.update(diskStorage, { where: { id }, returning: true })
+        // update returns an array, first argument is the number of elements updated in the
+        // database. Second argument are the array of elements. Im updating by id so there is only 
+        // one element in the array.
+        if (!diskEdited) {
+            throw DiskStorageError.notFound()
         }
+        const modifiedDisk = diskArray[0]
+        return fromDbToDiskStorage(modifiedDisk)
     }
 
-    async deleteDisk(id: number): Promise<true | Error> {
-        try {
-            const response = await this.diskStorageModel.destroy({ where: { id } })
-            if (!response) {
-                throw DiskStorageError.notFound()
-            }
-            return true
-        } catch (err) {
-            throw err
+    async deleteDisk(id: number): Promise<true> {
+        const response = await this.diskStorageModel.destroy({ where: { id } })
+        if (!response) {
+            throw DiskStorageError.notFound()
         }
+        return true
     }
 }

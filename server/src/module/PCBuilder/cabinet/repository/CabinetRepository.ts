@@ -72,14 +72,12 @@ export class CabinetRepository extends AbstractRepository {
     }
 
     async deleteCabinet(id: number): Promise<true | Error> {
-        try {
-            const response = await this.cabinetModel.destroy({ where: { id } })
-            if (!response) {
-                throw CabinetError.notFound()
-            }
-            return true
-        } catch (err) {
-            throw err
+
+        const response = await this.cabinetModel.destroy({ where: { id } })
+        if (!response) {
+            throw CabinetError.notFound()
         }
+        return true
+
     }
 }
