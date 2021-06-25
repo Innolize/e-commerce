@@ -3,12 +3,14 @@ import { ICart } from '../interface/ICart'
 import { CartError } from "../error/CartError";
 
 export class Cart implements ICart {
+    static readonly modelName = 'Cart'
     constructor(
         public user_id: number,
         public total: number = 0,
         public id?: number,
         public cartItems?: CartItem[],
     ) { }
+
     calculateAndUpdateTotal(): Cart {
         if (!this.cartItems) {
             throw CartError.CartItemNotIncluded()

@@ -6,9 +6,9 @@ import { IUserEdit } from "../interfaces/IUserEdit";
 import { UserRepository } from "../repository/UserRepository";
 import bcrypt from "bcrypt"
 import { UserError } from "../error/UserError";
-import { fromRequestToUser } from "../mapper/userMapper";
 import { GetUsersDto } from "../dto/getUsersDto";
 import { GetUserReqDto } from "../dto/getUsersReqDto";
+import { IUserCreate } from "../interfaces/IUserCreate";
 
 @injectable()
 export class UserService extends AbstractService {
@@ -28,11 +28,11 @@ export class UserService extends AbstractService {
         return response
     }
 
-    async getSingleUser(id: number): Promise<User | Error> {
+    async getSingleUser(id: number): Promise<User> {
         return await this.userRepository.getSingleUser(id)
     }
 
-    async createUser(user: User, loggedRole?: number): Promise<User | Error> {
+    async createUser(user: IUserCreate, loggedRole?: number): Promise<User | Error> {
         const DEFAULT_ROLE_ID = 2
         try {
             const mailInUse = await this.userRepository.findUserByMail(user.mail)
@@ -42,7 +42,7 @@ export class UserService extends AbstractService {
 
             const role_id = loggedRole === 1 ? user.role_id : DEFAULT_ROLE_ID
             const hashedPassword = await this.encryption.hash(user.password, Number(<string>process.env.BCRYPT_SALT_NUMBER))
-            const userHashed = fromRequestToUser({ ...user, password: hashedPassword, role_id })
+            const userHashed: IUserCreate = { ...user, password: hashedPassword, role_id }
             return await this.userRepository.createUser(userHashed)
         } catch (err) {
             throw Error(err.message)

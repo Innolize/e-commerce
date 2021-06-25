@@ -16,7 +16,8 @@ export class AuthService extends AbstractService {
         super()
         this.userService = userService
     }
-    login(user: User): ILoginResponse {
+    async login(userId: number): Promise<ILoginResponse> {
+        const user = await this.userService.getSingleUser(userId)
         const { id, password, ...rest } = user
         const payload = { sub: id }
         const access_token = this.signAccessToken(payload)

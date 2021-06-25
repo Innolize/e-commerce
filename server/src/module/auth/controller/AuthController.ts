@@ -3,7 +3,6 @@ import { inject, injectable } from "inversify";
 import { Multer } from "multer";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
-import { User } from "../../user/entities/User";
 import { ILoginResponse } from "../interfaces/ILoginResponse";
 import { AuthService } from "../service/AuthService";
 import { localAuthentication } from "../util/passportMiddlewares";
@@ -29,9 +28,9 @@ export class AuthController extends AbstractController {
         app.post(`/api${ROUTE}/refresh`, this.refresh.bind(this))
     }
 
-    login(req: Request, res: Response): Response {
-        const user = req.user as User
-        const { refresh_token, ...clientResponse } = this.authService.login(user)
+    async login(req: Request, res: Response): Promise<Response> {
+        const user = req.user
+        const { refresh_token, ...clientResponse } = await this.authService.login(user.id as number)
         res.cookie("refresh", refresh_token)
         return res.status(200).send(clientResponse)
     }

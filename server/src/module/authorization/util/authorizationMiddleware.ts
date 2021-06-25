@@ -14,6 +14,6 @@ export const authorizationMiddleware = (permission: IAbility): (req: Request, re
             return next()
 
         }
-        return next(new Error('authorizationMiddleware error'))
+        return next(new Error(`You dont have enough permissions to ${action} this ${subject}!`))
     }
 }

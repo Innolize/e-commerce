@@ -8,7 +8,6 @@ import { jwtAuthentication } from "../../auth/util/passportMiddlewares";
 import { IUserWithAuthorization } from "../../authorization/interfaces/IUserWithAuthorization";
 import { authorizationMiddleware } from "../../authorization/util/authorizationMiddleware";
 import { bodyValidator } from "../../common/helpers/bodyValidator";
-import { UserError } from "../../user/error/UserError";
 import { CartError } from "../error/CartError";
 import { validateCreateCartItemDto } from "../helpers/create_cart_item_dto";
 import { validateEditCartItemDto } from "../helpers/edit_cart_item_dto";
@@ -33,7 +32,7 @@ export class CartController extends AbstractController {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAllCarts.bind(this))
         app.get(`/api${ROUTE}/:cartId`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Cabinet' })], this.getSingleCart.bind(this))
-        app.post(`/api${ROUTE}/:cartId/item`, this.uploadMiddleware.none(), this.addCartItem.bind(this))
+        app.post(`/api${ROUTE}/:cartId/item`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Cabinet' })],this.uploadMiddleware.none(), this.addCartItem.bind(this))
         app.delete(`/api${ROUTE}/:cartId/item/:itemId`, this.removeCartItem.bind(this))
         app.put(`/api${ROUTE}/:cartId/item/:itemId`, this.uploadMiddleware.none(), this.modifyCartItemQuantity.bind(this))
     }
@@ -68,6 +67,8 @@ export class CartController extends AbstractController {
     }
 
     async addCartItem(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const user = req.user
+        console.log(user)
         const { cartId } = req.params
         const dto: ICartItemCreateFromCartModel = req.body
         try {
@@ -76,7 +77,7 @@ export class CartController extends AbstractController {
                 throw CartError.invalidCartId()
             }
             const validatedDto = await bodyValidator(validateCreateCartItemDto, dto)
-            const response = await this.cartService.addCartItem(cartIdNumber, validatedDto)
+            const response = await this.cartService.addCartItem(cartIdNumber, validatedDto, user)
             res.status(201).send(response)
         } catch (err) {
             next(err)

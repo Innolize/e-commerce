@@ -49,6 +49,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof MulterError) {
     return res.status(404).send({ error: err.message })
   }
+  console.log(err.stack)
   return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: err.message })
 })
 

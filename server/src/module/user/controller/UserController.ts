@@ -14,7 +14,6 @@ import { validateEditUserDto } from "../helper/edit_dto_validator";
 import { validateGetUsersDto } from "../helper/get_dto_validator";
 import { IUserCreate } from "../interfaces/IUserCreate";
 import { IUserEdit } from "../interfaces/IUserEdit";
-import { fromRequestToUser } from "../mapper/userMapper";
 import { UserService } from "../service/UserService";
 
 
@@ -67,8 +66,7 @@ export class UserController extends AbstractController {
         try {
             const dto: IUserCreate = req.body
             const validatedDto = await bodyValidator(validateCreateUserDto, dto)
-            const user = fromRequestToUser(validatedDto)
-            const createdUser = await this.userService.createUser(user)
+            const createdUser = await this.userService.createUser(validatedDto)
             return res.status(StatusCodes.CREATED).send(createdUser)
         } catch (err) {
             next(err)
