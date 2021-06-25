@@ -37,8 +37,7 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
                 type: DataTypes.STRING,
                 allowNull: false,
                 validate: {
-                    min: 4,
-                    max: 20
+                    len: [3,40]
                 }
             },
             image: {
@@ -48,6 +47,9 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
             description: {
                 type: DataTypes.STRING,
                 allowNull: true,
+                validate: {
+                    len: [3,100]
+                }
             },
             price: {
                 type: DataTypes.INTEGER,

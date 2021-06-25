@@ -98,23 +98,23 @@ describe('Delete a product', () => {
     })
 })
 
-describe("Modify a product", () => {
-    it("modify a product by id", async () => {
-        await brand.create(sampleBrand)
-        await category.create(sampleCategory)
-        await repository.createProduct(sampleProduct) as Product
-        const modifiedProduct = await repository.modifyProduct({ id: 1, name: "test" })
-        expect(modifiedProduct.name).toBe("test")
-    })
+// describe("Modify a product", () => {
+//     it("modify a product by id", async () => {
+//         await brand.create(sampleBrand)
+//         await category.create(sampleCategory)
+//         await repository.createProduct(sampleProduct) as Product
+//         const modifiedProduct = await repository.modifyProduct({ id: 1, name: "test" })
+//         expect(modifiedProduct.name).toBe("test")
+//     })
 
-    it("modify a product by id returns error when using invalid id_category", async () => {
-        await brand.create(sampleBrand)
-        await category.create(sampleCategory)
-        await repository.createProduct(sampleProduct) as Product
+//     it("modify a product by id returns error when using invalid id_category", async () => {
+//         await brand.create(sampleBrand)
+//         await category.create(sampleCategory)
+//         await repository.createProduct(sampleProduct) as Product
 
-        await expect(repository.modifyProduct({ id: 1, name: "test", id_category: 15 })).rejects.toThrow()
-    })
-})
+//         await expect(repository.modifyProduct({ id: 1, name: "test", id_category: 15 })).rejects.toThrow()
+//     })
+// })
 
 // describe("Return a list of products", () => {
 //     it("Return all products", async () => {

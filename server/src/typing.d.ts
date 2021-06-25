@@ -3,3 +3,4 @@ declare module 'interpolate-json' {
         function expand(target: string | json, values: json): json
     }
 }
+

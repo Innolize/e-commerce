@@ -35,8 +35,8 @@ export class ProductService extends AbstractService {
         return await this.productRepository.getAllProduct(queryParams)
     }
 
-    async modifyProduct(product: IProductEdit): Promise<Product | Error> {
-        return await this.productRepository.modifyProduct(product)
+    async modifyProduct(id: number, product: IProductEdit): Promise<Product | Error> {
+        return await this.productRepository.modifyProduct(id, product)
     }
 
     async createProduct(product: IProductCreate): Promise<Product | Error> {

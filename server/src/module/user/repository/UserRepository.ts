@@ -10,6 +10,7 @@ import { fromDbToUser } from "../mapper/userMapper";
 import { UserModel } from "../model/UserModel";
 import { GetUsersDto } from '../dto/getUsersDto'
 import { GetUserReqDto } from "../dto/getUsersReqDto";
+import { IUserCreate } from "../interfaces/IUserCreate";
 
 @injectable()
 export class UserRepository extends AbstractRepository {
@@ -29,7 +30,7 @@ export class UserRepository extends AbstractRepository {
         return response
     }
 
-    async getSingleUser(id: number): Promise<User | Error> {
+    async getSingleUser(id: number): Promise<User> {
         const user = await this.userModel.findByPk(id, { include: [{ association: UserModel.associations.role, include: [{ association: RoleModel.associations.permissions }] }, { association: UserModel.associations.cart }] })
         if (!user) {
             throw UserError.notFound()
@@ -38,7 +39,7 @@ export class UserRepository extends AbstractRepository {
         return response
     }
 
-    async createUser(user: User): Promise<User | Error> {
+    async createUser(user: IUserCreate): Promise<User> {
         try {
             const newUser = await this.userModel.create(user)
             return fromDbToUser(newUser)

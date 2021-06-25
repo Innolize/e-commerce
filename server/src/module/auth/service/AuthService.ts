@@ -16,13 +16,14 @@ export class AuthService extends AbstractService {
         super()
         this.userService = userService
     }
-    login(user: User): ILoginResponse {
-        const { id, password, ...rest } = user
+    async login(userId: number): Promise<ILoginResponse> {
+        const user = await this.userService.getSingleUser(userId)
+        const { id, mail, role_id, cart } = user
         const payload = { sub: id }
         const access_token = this.signAccessToken(payload)
         const refresh_token = this.signRefreshToken(payload)
         return {
-            user: { id, ...rest },
+            user: { id, cart, mail, role_id },
             access_token,
             refresh_token
         }
@@ -30,7 +31,7 @@ export class AuthService extends AbstractService {
 
 
 
-    async refreshToken(refreshToken: string): Promise<ILoginResponse | Error> {
+    async refreshToken(refreshToken: string): Promise<ILoginResponse> {
 
         const token = verify(refreshToken, <string>process.env.JWT_SECRET_REFRESH) as IJwtToken
         const { sub } = token

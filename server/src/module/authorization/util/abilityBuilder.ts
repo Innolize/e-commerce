@@ -1,5 +1,7 @@
 import { Ability, AbilityBuilder, AbilityClass, InferSubjects, MongoQuery } from '@casl/ability'
 import { Brand } from '../../brand/entity/Brand'
+import { Cart } from '../../cart/entities/Cart'
+import { CartItem } from '../../cart/entities/CartItem'
 import { Category } from '../../category/entity/Category'
 import { Cabinet } from '../../PCBuilder/cabinet/entities/Cabinet'
 import { DiskStorage } from '../../PCBuilder/disk-storage/entities/DiskStorage'
@@ -13,8 +15,8 @@ import { User } from '../../user/entities/User'
 import { Role } from '../entities/Role'
 
 export const actions = ['manage', 'create', 'read', 'delete', 'update'] as const
-export const subjects = ['Product', 'Brand', 'Category', 'User', 'Cabinet', 'DiskStorage', 'Motherboard', 'PowerSupply', 'Processor', 'Ram', 'VideoCard', 'all' ] as const
-export type subjects = InferSubjects<typeof Product | typeof Brand | typeof Category | typeof User | typeof Cabinet | typeof DiskStorage | typeof Motherboard | typeof PowerSupply | typeof Processor | typeof Ram | typeof VideoCard | 'all', true>
+export const subjects = ['Product', 'Brand', 'Category', 'User', 'Cabinet', 'DiskStorage', 'Motherboard', 'PowerSupply', 'Processor', 'Ram', 'VideoCard', 'Cart', 'CartItem', 'all'] as const
+export type subjects = InferSubjects<typeof Product | typeof Brand | typeof Category | typeof User | typeof Cabinet | typeof DiskStorage | typeof Motherboard | typeof PowerSupply | typeof Processor | typeof Ram | typeof VideoCard | typeof Cart | typeof CartItem | 'all', true>
 
 export interface IAbility {
     action: typeof actions[number],

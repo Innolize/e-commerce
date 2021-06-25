@@ -37,8 +37,8 @@ export class CartRepository extends AbstractRepository {
         if (!cartModel) {
             throw CartError.cartNotFound()
         }
-        const carts = fromDbToCart(cartModel)
-        return carts
+        const cart = fromDbToCart(cartModel)
+        return cart
     }
 
     async getCartItem(id: number): Promise<CartItem> {

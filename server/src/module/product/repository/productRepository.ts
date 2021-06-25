@@ -28,7 +28,8 @@ export class ProductRepository extends AbstractRepository {
         const { limit, offset, category_id, name } = querieParams
 
         const whereOptions: WhereOptions<Product> = {}
-        name ? whereOptions.name = { [Op.substring]: querieParams.name } : ''
+        name ? whereOptions.name = { [Op.iLike]: "%" + querieParams.name + "%" } : ''
+        console.log(whereOptions)
         category_id ? whereOptions.id_category = querieParams.category_id : ''
 
         const { count, rows } = await this.productModel.findAndCountAll({ where: whereOptions, limit, offset, include: [ProductModel.associations.brand, ProductModel.associations.category] })
@@ -64,7 +65,7 @@ export class ProductRepository extends AbstractRepository {
         return true
     }
 
-    public async modifyProduct(product: IProductEdit): Promise<Error | Product> {
+    public async modifyProduct(id: number, product: IProductEdit): Promise<Error | Product> {
 
         const [productEdited, productArray] = await this.productModel.update(product, { where: { id: product.id }, returning: true })
         // update returns an array, first argument is the number of elements updated in the

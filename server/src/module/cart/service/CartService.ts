@@ -28,10 +28,11 @@ export class CartService extends AbstractService {
         return await this.cartRepository.getCart(id, userId)
     }
 
-    async addCartItem(cartId: number, newCartItem: ICartItemCreateFromCartModel): Promise<CartItem> {
+    async addCartItem(cartId: number, newCartItem: ICartItemCreateFromCartModel, user: IUserWithAuthorization): Promise<CartItem> {
         // user: IUserWithAuthorization
-        // const cart = await this.cartRepository.getCart(cartId, user.id)
-        // ForbiddenError.from<appAbility>(user.role).throwUnlessCan('update', cart)
+        console.log(user)
+        const cart = await this.cartRepository.getCart(cartId, user.id)
+        ForbiddenError.from<appAbility>(user.role).throwUnlessCan('update', cart)
         return await this.cartRepository.addCartItem(cartId, newCartItem)
     }
 
