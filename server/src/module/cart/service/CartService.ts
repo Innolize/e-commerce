@@ -48,10 +48,12 @@ export class CartService extends AbstractService {
         return updatedCart
     }
 
-    async removeCartItem(cartId: number, cartItemId: number, user: IUserWithAuthorization): Promise<boolean> {
+    async removeCartItem(cartId: number, cartItemId: number, user: IUserWithAuthorization): Promise<Cart> {
         const cart = await this.cartRepository.getCart(cartId, user.id)
         ForbiddenError.from<appAbility>(user.role).throwUnlessCan('delete', cart)
-        return await this.cartRepository.removeCartItem(cartId, cartItemId)
+        await this.cartRepository.removeCartItem(cartId, cartItemId)
+        const updatedCart = await this.cartRepository.updateCartTotal(cartId)
+        return updatedCart
     }
 
     private async modifyCartItemQuantity(cartId: number, cartItemId: number, quantity: number): Promise<CartItem> {
