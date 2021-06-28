@@ -70,9 +70,7 @@ export class CartRepository extends AbstractRepository {
                 CartError.CreateErrorIfForeignKeyConstraintError(err)
             }
             throw err
-
         }
-
     }
 
     async removeCartItem(cartId: number, cartItemId: number): Promise<boolean> {
@@ -80,18 +78,20 @@ export class CartRepository extends AbstractRepository {
         if (!cartItem) {
             throw CartError.cartItemNotFound()
         }
-
         await cartItem.destroy({})
         return true
     }
 
     async modifyCartItemQuantity(cartId: number, cartItemId: number, quantity: number): Promise<boolean> {
-        const cartItem = await this.cartItemModel.findOne({ where: { id: cartItemId, cart_id: cartId } })
-        if (!cartItem) {
-            throw CartError.cartItemNotFound()
+        try {
+            await this.cartItemModel.update({ quantity }, { where: { id: cartItemId } })
+            return true
+        } catch (err) {
+            if (err instanceof ForeignKeyConstraintError) {
+                CartError.CreateErrorIfForeignKeyConstraintError(err)
+            }
+            throw err
         }
-        await cartItem.update({ quantity })
-        return true
     }
 
     async updateCartTotal(id: number): Promise<Cart> {
