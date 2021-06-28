@@ -1,8 +1,6 @@
 import Joi from "joi"
 
 export const validateEditProductDto = Joi.object({
-    id: Joi.number()
-        .required(),
     name: Joi.string()
         .min(3)
         .max(40),

@@ -20,27 +20,41 @@ export class CartService extends AbstractService {
         super()
     }
 
-    async getCarts(queryParams: ICartGetAllQuery): Promise<GetCartsDto> {
+    async getCarts(queryParams: ICartGetAllQuery, user: IUserWithAuthorization): Promise<GetCartsDto> {
+        ForbiddenError.from<appAbility>(user.role).throwUnlessCan('read', 'all')
         return await this.cartRepository.getAll(queryParams)
     }
 
-    async getCart(id: number, userId: number): Promise<Cart> {
-        return await this.cartRepository.getCart(id, userId)
+    async getCart(id: number, user: IUserWithAuthorization): Promise<Cart> {
+        const cart = await this.cartRepository.getCart(id, user.id)
+        ForbiddenError.from<appAbility>(user.role).throwUnlessCan('read', cart)
+        return cart
     }
 
-    async addCartItem(cartId: number, newCartItem: ICartItemCreateFromCartModel, user: IUserWithAuthorization): Promise<CartItem> {
-        // user: IUserWithAuthorization
-        console.log(user)
+    async addCartItem(cartId: number, newCartItem: ICartItemCreateFromCartModel, user: IUserWithAuthorization): Promise<Cart> {
         const cart = await this.cartRepository.getCart(cartId, user.id)
+
         ForbiddenError.from<appAbility>(user.role).throwUnlessCan('update', cart)
-        return await this.cartRepository.addCartItem(cartId, newCartItem)
+        const cartItemExists = cart.cartItems?.find(x => x.product_id === newCartItem.product_id)
+        if (cartItemExists) {
+            const cartItemId = cartItemExists.id as number
+            const { quantity } = newCartItem
+            await this.modifyCartItemQuantity(cartId, cartItemId, quantity)
+            const updatedCart = await this.cartRepository.updateCartTotal(cartId)
+            return updatedCart
+        }
+        await this.cartRepository.addCartItem(cartId, newCartItem)
+        const updatedCart = await this.cartRepository.updateCartTotal(cartId)
+        return updatedCart
     }
 
-    async removeCartItem(cartId: number, cartItemId: number): Promise<boolean> {
+    async removeCartItem(cartId: number, cartItemId: number, user: IUserWithAuthorization): Promise<boolean> {
+        const cart = await this.cartRepository.getCart(cartId, user.id)
+        ForbiddenError.from<appAbility>(user.role).throwUnlessCan('delete', cart)
         return await this.cartRepository.removeCartItem(cartId, cartItemId)
     }
 
-    async modifyCartItemQuantity(cartId: number, cartItemId: number, quantity: number): Promise<CartItem> {
+    private async modifyCartItemQuantity(cartId: number, cartItemId: number, quantity: number): Promise<CartItem> {
         await this.cartRepository.modifyCartItemQuantity(cartId, cartItemId, quantity)
         return await this.cartRepository.getCartItem(cartItemId)
     }

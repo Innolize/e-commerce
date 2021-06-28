@@ -1,5 +1,6 @@
 import { inject, injectable } from "inversify";
 import { WhereOptions } from "sequelize/types";
+import { ForeignKeyConstraintError } from 'sequelize'
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { ProductModel } from "../../product/module";
@@ -60,14 +61,22 @@ export class CartRepository extends AbstractRepository {
     }
 
     async addCartItem(cartId: number, newCartItem: ICartItemCreateFromCartModel): Promise<CartItem> {
+        try {
+            const cartItem = await this.cartItemModel.create({ cart_id: cartId, ...newCartItem })
+            const populatedCartItem = await this.getCartItem(cartItem.id)
+            return fromDbToCartItem(populatedCartItem)
+        } catch (err) {
+            if (err instanceof ForeignKeyConstraintError) {
+                const test = err.index.includes("product_id")
+                const a = Object.getOwnPropertySymbols(CartItem)
+                console.log(a)
+                console.log(err.index)
+                throw err
+            }
+            throw err
 
-        // const cartItemExists = await cart.getCartItems({ where: { product_id: newCartItem.product_id } })
-        // if (cartItemExists[0]) {
-        //     return await this.modifyCartItemQuantity(cartId, cartItemExists[0].id, newCartItem.quantity)
-        // }
-        const cartItem = await this.cartItemModel.create({ cart_id: cartId, ...newCartItem })
-        const populatedCartItem = await this.getCartItem(cartItem.id)
-        return fromDbToCartItem(populatedCartItem)
+        }
+
     }
 
     async removeCartItem(cartId: number, cartItemId: number): Promise<boolean> {
@@ -81,15 +90,23 @@ export class CartRepository extends AbstractRepository {
     }
 
     async modifyCartItemQuantity(cartId: number, cartItemId: number, quantity: number): Promise<boolean> {
-        const cart = await this.cartModel.findByPk(cartId)
-        if (!cart) {
-            throw CartError.cartNotFound()
-        }
         const cartItem = await this.cartItemModel.findOne({ where: { id: cartItemId, cart_id: cartId } })
         if (!cartItem) {
             throw CartError.cartItemNotFound()
         }
         await cartItem.update({ quantity })
         return true
+    }
+
+    async updateCartTotal(id: number): Promise<Cart> {
+        const cartModel = await this.cartModel.findByPk(id, { include: [{ association: CartModel.associations.cartItems, include: [{ association: CartItemModel.associations.product, include: [{ association: ProductModel.associations.brand }, { association: ProductModel.associations.category }] }] }] })
+        if (!cartModel) {
+            throw CartError.cartNotFound()
+        }
+        const cart = fromDbToCart(cartModel)
+        const cartUpdated = cart.calculateAndUpdateTotal()
+        const { total } = cartUpdated
+        await cartModel.update({ total })
+        return cartUpdated
     }
 }

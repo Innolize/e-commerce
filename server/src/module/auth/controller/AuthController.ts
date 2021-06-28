@@ -8,7 +8,6 @@ import { validateCreateUserDto } from "../../user/helper/create_dto_validator";
 import { IUserCreate } from "../../user/interfaces/IUserCreate";
 import { UserService } from "../../user/module";
 import { AuthenticationError } from "../error/AuthenticationError";
-import { ILoginResponse } from "../interfaces/ILoginResponse";
 import { AuthService } from "../service/AuthService";
 import { localAuthentication } from "../util/passportMiddlewares";
 
