@@ -67,11 +67,7 @@ export class CartRepository extends AbstractRepository {
             return fromDbToCartItem(populatedCartItem)
         } catch (err) {
             if (err instanceof ForeignKeyConstraintError) {
-                const test = err.index.includes("product_id")
-                const a = Object.getOwnPropertySymbols(CartItem)
-                console.log(a)
-                console.log(err.index)
-                throw err
+                CartError.CreateErrorIfForeignKeyConstraintError(err)
             }
             throw err
 
