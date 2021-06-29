@@ -18,7 +18,8 @@ import { CartModel } from "../model/CartModel";
 export class CartRepository extends AbstractRepository {
     constructor(
         @inject(TYPES.Cart.CartModel) private cartModel: typeof CartModel,
-        @inject(TYPES.Cart.CartItemModel) private cartItemModel: typeof CartItemModel
+        @inject(TYPES.Cart.CartItemModel) private cartItemModel: typeof CartItemModel,
+        @inject(TYPES.Product.Model) private productModel: typeof ProductModel
     ) {
         super()
         this.cartModel = cartModel
@@ -62,6 +63,7 @@ export class CartRepository extends AbstractRepository {
 
     async addCartItem(cartId: number, newCartItem: ICartItemCreateFromCartModel): Promise<CartItem> {
         try {
+            //12345
             const cartItem = await this.cartItemModel.create({ cart_id: cartId, ...newCartItem })
             const populatedCartItem = await this.getCartItem(cartItem.id)
             return fromDbToCartItem(populatedCartItem)
@@ -94,15 +96,10 @@ export class CartRepository extends AbstractRepository {
         }
     }
 
-    async updateCartTotal(id: number): Promise<Cart> {
-        const cartModel = await this.cartModel.findByPk(id, { include: [{ association: CartModel.associations.cartItems, include: [{ association: CartItemModel.associations.product, include: [{ association: ProductModel.associations.brand }, { association: ProductModel.associations.category }] }] }] })
-        if (!cartModel) {
-            throw CartError.cartNotFound()
+    async verifyIfProductExists(product_id: number): Promise<void> {
+        const item = await this.productModel.findByPk(product_id)
+        if (!item) {
+            throw CartError.InvalidProductId()
         }
-        const cart = fromDbToCart(cartModel)
-        const cartUpdated = cart.calculateAndUpdateTotal()
-        const { total } = cartUpdated
-        await cartModel.update({ total })
-        return cartUpdated
     }
 }

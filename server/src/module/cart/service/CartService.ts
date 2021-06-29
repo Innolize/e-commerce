@@ -40,11 +40,12 @@ export class CartService extends AbstractService {
             const cartItemId = cartItemExists.id as number
             const { quantity } = newCartItem
             await this.modifyCartItemQuantity(cartId, cartItemId, quantity)
-            const updatedCart = await this.cartRepository.updateCartTotal(cartId)
+            const updatedCart = await this.cartRepository.getCart(cartId, user.id)
             return updatedCart
         }
+        await this.cartRepository.verifyIfProductExists(newCartItem.product_id)
         await this.cartRepository.addCartItem(cartId, newCartItem)
-        const updatedCart = await this.cartRepository.updateCartTotal(cartId)
+        const updatedCart = await this.cartRepository.getCart(cartId, user.id)
         return updatedCart
     }
 
@@ -52,7 +53,7 @@ export class CartService extends AbstractService {
         const cart = await this.cartRepository.getCart(cartId, user.id)
         ForbiddenError.from<appAbility>(user.role).throwUnlessCan('delete', cart)
         await this.cartRepository.removeCartItem(cartId, cartItemId)
-        const updatedCart = await this.cartRepository.updateCartTotal(cartId)
+        const updatedCart = await this.cartRepository.getCart(cartId, user.id)
         return updatedCart
     }
 

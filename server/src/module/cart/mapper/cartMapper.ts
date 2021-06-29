@@ -13,9 +13,9 @@ export const fromDbToCartItem = (model: ICartItem): CartItem => {
 }
 
 export const fromDbToCart = (model: ICart): Cart => {
-    const { total, cartItems, id, user_id } = model
+    const { cartItems, id, user_id } = model
     const cartItemsArray = cartItems ? cartItems.map(item => fromDbToCartItem(item)) : undefined
-    return new Cart(user_id, total, id, cartItemsArray)
+    return new Cart(user_id, id, cartItemsArray)
 }
 
 export const fromRequestToCartItem = (request: ICartItemCreate): CartItem => {
@@ -25,6 +25,6 @@ export const fromRequestToCartItem = (request: ICartItemCreate): CartItem => {
 
 export const fromRequestToCart = (request: ICartCreate): Cart => {
     const { user_id, id } = request
-    return new Cart(user_id, undefined, id)
+    return new Cart(user_id, id)
 }
 
