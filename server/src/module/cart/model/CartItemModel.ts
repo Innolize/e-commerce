@@ -36,7 +36,8 @@ export class CartItemModel extends Model<CartItem, ICartItemCreate> implements I
     static setupProductAssociation(model: typeof ProductModel): typeof CartItemModel {
         CartItemModel.belongsTo(model, {
             as: 'product',
-            foreignKey: "product_id"
+            foreignKey: "product_id",
+            onDelete: "CASCADE"
         })
         return CartItemModel
     }

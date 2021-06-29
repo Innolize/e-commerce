@@ -257,6 +257,7 @@ function associations(container: Container) {
     VideoCardModel.setupProductAssociation(container.get(TYPES.Product.Model))
     ProcessorModel.setupProductAssociation(container.get(TYPES.Product.Model))
     RamModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    ProductModel.setupCartItemAssociation(container.get(TYPES.Cart.CartItemModel))
 }
 const container = configureDIC()
 
