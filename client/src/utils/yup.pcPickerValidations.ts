@@ -1,11 +1,4 @@
-import {
-  CPU_BRANDS,
-  DISK_TYPE,
-  PWS_CERTIFICATION,
-  RAM_VERSION,
-  SIZE,
-  VIDEO_CARD_VERSION,
-} from "src/types";
+import { CPU_BRANDS, DISK_TYPE, PWS_CERTIFICATION, RAM_VERSION, SIZE, VIDEO_CARD_VERSION } from "src/types";
 import * as yup from "yup";
 
 const FILE_SIZE = 1024 * 1024; // 1048576B === 1MB
@@ -19,17 +12,8 @@ const productSchema = yup.object({
     .max(20, "Name length cannot have more than 20 characters"),
   image: yup
     .mixed()
-    .required("Image for the product is required.")
-    .test(
-      "fileSize",
-      "File size is too large",
-      (value) => !value || value.size <= FILE_SIZE
-    )
-    .test(
-      "fileType",
-      "Unsupported file format",
-      (value) => !value || SUPPORTED_FORMATS.includes(value.type)
-    ),
+    .test("fileSize", "File size is too large", (value) => !value || value.size <= FILE_SIZE)
+    .test("fileType", "Unsupported file format", (value) => !value || SUPPORTED_FORMATS.includes(value.type)),
   description: yup
     .string()
     .required("Description is required.")
@@ -41,10 +25,7 @@ const productSchema = yup.object({
 
 export const videoCardSchema = yup
   .object({
-    version: yup
-      .string()
-      .required("Version is required.")
-      .oneOf(VIDEO_CARD_VERSION),
+    version: yup.string().required("Version is required.").oneOf(VIDEO_CARD_VERSION),
     memory: yup.number().required("Memory is required."),
     clock_speed: yup.number().required("Clock speed is required."),
     watts: yup.number().required("Watts is required."),

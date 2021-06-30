@@ -1,30 +1,17 @@
-import {
-  Box,
-  Checkbox,
-  CircularProgress,
-  Container,
-  Input,
-  makeStyles,
-  MenuItem,
-  Typography,
-} from "@material-ui/core";
+import { Box, CircularProgress, Container, makeStyles, MenuItem, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import React, { useEffect, useState } from "react";
+import { Form, Formik } from "formik";
+import { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IPowerSupplyForm } from "src/form_types";
-import { IGetBrands } from "src/hooks/types";
 import useEdit from "src/hooks/useEdit";
-import useGetAll from "src/hooks/useGetAll";
 import useGetById from "src/hooks/useGetById";
-import { IBrand, IPowerSupply, PWS_CERTIFICATION } from "src/types";
-import { POWER_SUPPLY_ID } from "src/utils/categoriesIds";
+import { IPowerSupply, PWS_CERTIFICATION } from "src/types";
 import { powerSupplySchema } from "src/utils/yup.pcPickerValidations";
-import { v4 as uuidv4 } from "uuid";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -50,9 +37,8 @@ interface Props {
 
 const EditPowerSupplyForm = ({ id }: Props) => {
   const classes = useStyles();
-  const editPowerSupply = useEdit<IPowerSupply>("power-supply");
+  const editPowerSupply = useEdit<IPowerSupply>("power-supply", id);
   const queryPowerSupply = useGetById<IPowerSupply>("power-supply", id);
-  const queryBrands = useGetAll<IGetBrands>("brand");
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -67,14 +53,6 @@ const EditPowerSupplyForm = ({ id }: Props) => {
 
   const mapPowerSupply = (powerSupply: IPowerSupply): IPowerSupplyForm => {
     const powerSupplyForm: IPowerSupplyForm = {
-      id: powerSupply.id.toString(),
-      name: powerSupply.product!.name,
-      description: powerSupply.product!.description,
-      price: powerSupply.product!.price.toString(),
-      stock: powerSupply.product!.stock.toString(),
-      image: "",
-      brand: powerSupply.product!.brand.id.toString(),
-      category: POWER_SUPPLY_ID.toString(),
       certification: powerSupply.certification,
       watts: powerSupply.watts.toString(),
     };
@@ -111,55 +89,22 @@ const EditPowerSupplyForm = ({ id }: Props) => {
             initialValues={mapPowerSupply(queryPowerSupply.data)}
             onSubmit={(data) => {
               const formData = new FormData();
-              formData.append("name", data.name);
-              formData.append("description", data.description);
-              formData.append("price", data.price);
-              formData.append("stock", data.stock);
-              formData.append("id_brand", data.brand);
-              formData.append("id_category", data.category);
-              formData.append("product_image", data.image);
               formData.append("certification", data.certification);
               formData.append("watts", data.watts);
               editPowerSupply.mutate(formData);
             }}
             validationSchema={powerSupplySchema}
           >
-            {({ setFieldValue }) => (
+            {() => (
               <Form className={classes.form} encType="multipart/form-data">
-                <Typography variant="h4">Edit a power supply</Typography>
-                <Box>
-                  <InputField name="id" hidden />
+                <Box mb={2}>
+                  <Typography align="center" variant="h5">
+                    Edit specifications of
+                  </Typography>
+                  <Typography align="center" variant="h5">
+                    "{queryPowerSupply.data.product!.name}"
+                  </Typography>
                 </Box>
-                <Box>
-                  <InputField label="Name" placeholder="Name" name="name" />
-                </Box>
-                <Box>
-                  <InputField
-                    label="Description"
-                    placeholder="Description"
-                    name="description"
-                  />
-                </Box>
-                <Box>
-                  <InputField
-                    type="number"
-                    label="Price"
-                    placeholder="Price"
-                    name="price"
-                  />
-                </Box>
-
-                {queryBrands.isSuccess && (
-                  <SelectField name="brand" label="Brand">
-                    {queryBrands.data.results.map((brand: IBrand) => (
-                      <MenuItem key={uuidv4()} value={brand.id}>
-                        {brand.name}
-                      </MenuItem>
-                    ))}
-                  </SelectField>
-                )}
-
-                <Field hidden name="category" label="Category"></Field>
 
                 <Box>
                   <SelectField label="Certification" name="certification">
@@ -170,46 +115,12 @@ const EditPowerSupplyForm = ({ id }: Props) => {
                 </Box>
 
                 <Box>
-                  <InputField
-                    type="number"
-                    label="Watts"
-                    placeholder="Watts"
-                    name="watts"
-                  />
-                </Box>
-
-                <Box display="flex" alignItems="center">
-                  <Typography>Stock:</Typography>
-                  <Field type="checkbox" name="stock" as={Checkbox} />
-                  <ErrorMessage
-                    component={Typography}
-                    className={classes.errorMsg}
-                    name="stock"
-                  />
-                </Box>
-
-                <Box my={3}>
-                  <Input
-                    type="file"
-                    placeholder="Image"
-                    name="image"
-                    fullWidth
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setFieldValue("image", e.target.files![0])
-                    }
-                  />
-                  <ErrorMessage
-                    component={Typography}
-                    className={classes.errorMsg}
-                    name="image"
-                  />
+                  <InputField type="number" label="Watts" placeholder="Watts" name="watts" />
                 </Box>
 
                 {editPowerSupply.isError && (
                   <Box my={2}>
-                    <Alert severity="error">
-                      {editPowerSupply.error?.message}
-                    </Alert>
+                    <Alert severity="error">{editPowerSupply.error?.message}</Alert>
                   </Box>
                 )}
 

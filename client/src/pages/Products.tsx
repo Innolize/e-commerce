@@ -1,7 +1,8 @@
 import { Box, CircularProgress, Container, makeStyles } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
+import { useEffect } from "react";
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import Filters from "src/components/ProductsPage/Filters";
 import ProductsContainer from "src/components/ProductsPage/ProductsContainer";
 import { IGetCategories } from "src/hooks/types";
@@ -11,8 +12,6 @@ import useGetProducts from "src/hooks/useGetProducts";
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
-
-const LIMIT = 12;
 
 const useStyles = makeStyles({
   box: {
@@ -25,36 +24,38 @@ const useStyles = makeStyles({
 });
 
 const Products = () => {
+  const LIMIT = 12;
   const classes = useStyles();
   const queryParam = useQuery();
-  const [offset, setOffset] = useState(0);
+  const history = useHistory();
   const queryProducts = useGetProducts(
-    offset,
-    queryParam.get("category") || undefined,
-    queryParam.get("name") || undefined,
+    queryParam.get("offset"),
+    queryParam.get("category"),
+    queryParam.get("name"),
     LIMIT
   );
   const queryCategories = useGetAll<IGetCategories>("category");
   const [page, setPage] = useState(1);
+  const offsetParam = queryParam.get("offset");
+
+  useEffect(() => {
+    if (!offsetParam) {
+      setPage(1);
+    }
+  }, [offsetParam]);
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     window.scrollTo({ top: 0 });
     setPage(value);
-    setOffset((value - 1) * LIMIT);
-  };
-
-  const handleCategoryChange = () => {
-    window.scrollTo({ top: 0 });
-    setPage(1);
-    setOffset(0);
+    const offset = (value - 1) * LIMIT;
+    queryParam.set("offset", offset.toString());
+    history.push("/products?" + queryParam.toString());
   };
 
   return (
     <Container>
       <Box className={classes.box} minHeight="70vh" display="flex" my={5}>
-        {queryCategories.isSuccess && (
-          <Filters categories={queryCategories.data.results} handleCategoryChange={handleCategoryChange} />
-        )}
+        {queryCategories.isSuccess && <Filters categories={queryCategories.data.results} />}
 
         <Box display="flex" justifyContent="space-between" flexDirection="column" flexGrow="1">
           {queryProducts.isSuccess ? (

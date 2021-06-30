@@ -16,7 +16,7 @@ export default function useCreateUser() {
   return useMutation(
     (values: ICreateUserData) =>
       api
-        .post("api/user", values)
+        .post("api/auth/signup", values)
         .then((res: AxiosResponse<IUser>) => res.data)
         .catch((error: AxiosError<ServerError | string>) => {
           if (error.response) {
@@ -34,6 +34,7 @@ export default function useCreateUser() {
     {
       retry: false,
       onSuccess: (user: IUser) => {
+        console.log(user);
         setUser!({
           user: user,
           access_token: "",

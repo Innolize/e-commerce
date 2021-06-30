@@ -1,30 +1,16 @@
-import {
-  Box,
-  Checkbox,
-  CircularProgress,
-  Container,
-  Input,
-  makeStyles,
-  MenuItem,
-  Typography,
-} from "@material-ui/core";
+import { Box, CircularProgress, Container, makeStyles, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import React, { useEffect, useState } from "react";
+import { Form, Formik } from "formik";
+import { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
-import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IProcessorForm } from "src/form_types";
-import { IGetBrands } from "src/hooks/types";
 import useEdit from "src/hooks/useEdit";
-import useGetAll from "src/hooks/useGetAll";
 import useGetById from "src/hooks/useGetById";
-import { IBrand, IProcessor } from "src/types";
-import { PROCESSOR_ID } from "src/utils/categoriesIds";
+import { IProcessor } from "src/types";
 import { processorSchema } from "src/utils/yup.pcPickerValidations";
-import { v4 as uuidv4 } from "uuid";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -50,8 +36,7 @@ interface Props {
 
 const EditProcessorForm = ({ id }: Props) => {
   const classes = useStyles();
-  const editProcessor = useEdit<IProcessor>("processor");
-  const queryBrands = useGetAll<IGetBrands>("brand");
+  const editProcessor = useEdit<IProcessor>("processor", id);
   const queryProcessor = useGetById<IProcessor>("processor", id);
   const [redirect, setRedirect] = useState(false);
 
@@ -67,14 +52,6 @@ const EditProcessorForm = ({ id }: Props) => {
 
   const mapProcessor = (processor: IProcessor): IProcessorForm => {
     const processorForm: IProcessorForm = {
-      id: processor.id.toString(),
-      name: processor.product!.name,
-      description: processor.product!.description,
-      price: processor.product!.price.toString(),
-      stock: processor.product!.stock.toString(),
-      image: "",
-      brand: processor.product!.brand.id.toString(),
-      category: PROCESSOR_ID.toString(),
       cores: processor.cores.toString(),
       frecuency: processor.frecuency.toString(),
       socket: processor.socket.toString(),
@@ -112,13 +89,6 @@ const EditProcessorForm = ({ id }: Props) => {
             initialValues={mapProcessor(queryProcessor.data)}
             onSubmit={(data) => {
               const formData = new FormData();
-              formData.append("name", data.name);
-              formData.append("description", data.description);
-              formData.append("price", data.price);
-              formData.append("stock", data.stock);
-              formData.append("id_brand", data.brand);
-              formData.append("id_category", data.category);
-              formData.append("product_image", data.image);
               formData.append("socket", data.socket);
               formData.append("cores", data.cores);
               formData.append("frecuency", data.frecuency);
@@ -127,110 +97,36 @@ const EditProcessorForm = ({ id }: Props) => {
             }}
             validationSchema={processorSchema}
           >
-            {({ setFieldValue }) => (
+            {() => (
               <Form className={classes.form} encType="multipart/form-data">
-                <Typography variant="h4">Edit a processor</Typography>
-                <Box>
-                  <InputField name="id" hidden />
-                </Box>
-                <Box>
-                  <InputField label="Name" placeholder="Name" name="name" />
-                </Box>
-                <Box>
-                  <InputField
-                    label="Description"
-                    placeholder="Description"
-                    name="description"
-                  />
-                </Box>
-                <Box>
-                  <InputField
-                    type="number"
-                    label="Price"
-                    placeholder="Price"
-                    name="price"
-                  />
-                </Box>
-
-                {queryBrands.isSuccess && (
-                  <SelectField name="brand" label="Brand">
-                    {queryBrands.data.results.map((brand: IBrand) => (
-                      <MenuItem key={uuidv4()} value={brand.id}>
-                        {brand.name}
-                      </MenuItem>
-                    ))}
-                  </SelectField>
-                )}
-
-                <Field hidden name="category" label="Category"></Field>
-
-                <Box>
-                  <InputField
-                    type="number"
-                    label="Frequency GHz"
-                    placeholder="Frequency GHz"
-                    name="frecuency"
-                  />
+                <Box mb={2}>
+                  <Typography align="center" variant="h5">
+                    Edit specifications of
+                  </Typography>
+                  <Typography align="center" variant="h5">
+                    "{queryProcessor.data.product!.name}"
+                  </Typography>
                 </Box>
 
                 <Box>
-                  <InputField
-                    label="Socket"
-                    placeholder="Socket"
-                    name="socket"
-                  />
+                  <InputField type="number" label="Frequency GHz" placeholder="Frequency GHz" name="frecuency" />
                 </Box>
 
                 <Box>
-                  <InputField
-                    type="number"
-                    label="Cores"
-                    placeholder="Cores"
-                    name="cores"
-                  />
+                  <InputField label="Socket" placeholder="Socket" name="socket" />
                 </Box>
 
                 <Box>
-                  <InputField
-                    type="number"
-                    label="Watts"
-                    placeholder="Watts"
-                    name="watts"
-                  />
+                  <InputField type="number" label="Cores" placeholder="Cores" name="cores" />
                 </Box>
 
-                <Box display="flex" alignItems="center">
-                  <Typography>Stock:</Typography>
-                  <Field type="checkbox" name="stock" as={Checkbox} />
-                  <ErrorMessage
-                    component={Typography}
-                    className={classes.errorMsg}
-                    name="stock"
-                  />
-                </Box>
-
-                <Box my={3}>
-                  <Input
-                    type="file"
-                    placeholder="Image"
-                    name="image"
-                    fullWidth
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setFieldValue("image", e.target.files![0])
-                    }
-                  />
-                  <ErrorMessage
-                    component={Typography}
-                    className={classes.errorMsg}
-                    name="image"
-                  />
+                <Box>
+                  <InputField type="number" label="Watts" placeholder="Watts" name="watts" />
                 </Box>
 
                 {editProcessor.isError && (
                   <Box my={2}>
-                    <Alert severity="error">
-                      {editProcessor.error?.message}
-                    </Alert>
+                    <Alert severity="error">{editProcessor.error?.message}</Alert>
                   </Box>
                 )}
 

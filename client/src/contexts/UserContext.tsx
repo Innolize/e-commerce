@@ -4,7 +4,7 @@ import { IUserResponse } from "src/types";
 
 type ContextType = {
   user?: IUserResponse;
-  setUser: (user: IUserResponse) => void;
+  setUser: (user?: IUserResponse) => void;
 };
 
 export const UserContext = createContext<ContextType>({

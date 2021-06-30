@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 const EditCategory = () => {
   const { id } = useParams<{ id: string }>();
   const queryCategory = useGetById<ICategory>("category", id);
-  const editCategory = useEdit<ICategory>("category");
+  const editCategory = useEdit<ICategory>("category", id);
   const classes = useStyles();
   const history = useHistory();
 
@@ -90,14 +90,9 @@ const EditCategory = () => {
         <Box className={classes.formContainer} my={10}>
           <Typography variant="h4">Edit the category</Typography>
           <Formik
-            initialValues={{ name: queryCategory.data.name, id }}
-            onSubmit={async (data: ICategory) => {
+            initialValues={{ name: queryCategory.data.name }}
+            onSubmit={async (data) => {
               const formData = new FormData();
-              // If the form was not modified we dont submit
-              if (data.name === queryCategory.data.name) {
-                return;
-              }
-              formData.append("id", id);
               formData.append("name", data.name);
               editCategory.mutate(formData);
             }}

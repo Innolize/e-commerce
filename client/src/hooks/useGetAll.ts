@@ -3,8 +3,8 @@ import { useQuery } from "react-query";
 import api from "src/services/api";
 import { ApiOptions, apiOptions } from "./apiOptions";
 
-export default function useGetAll<T>(option: ApiOptions) {
-  return useQuery(apiOptions[option].cacheString, () =>
-    api.get(apiOptions[option].route).then((res: AxiosResponse<T>) => res.data)
+export default function useGetAll<T>(option: ApiOptions, offset?: number, limit?: number) {
+  return useQuery([apiOptions[option].cacheString, { limit, offset }], () =>
+    api.get(apiOptions[option].route, { params: { limit, offset } }).then((res: AxiosResponse<T>) => res.data)
   );
 }

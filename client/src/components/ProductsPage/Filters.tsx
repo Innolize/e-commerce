@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   categories: ICategory[];
-  handleCategoryChange: () => void;
 }
 
 const Transition = forwardRef(function Transition(
@@ -41,7 +40,7 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const Filters = ({ categories, handleCategoryChange }: Props) => {
+const Filters = ({ categories }: Props) => {
   const screenSize = useScreenSize();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
@@ -54,15 +53,10 @@ const Filters = ({ categories, handleCategoryChange }: Props) => {
     setOpen(false);
   };
 
-  const mobileCategoryChange = () => {
-    handleCategoryChange();
-    handleClose();
-  };
-
   return (
     <>
       {screenSize.width > 768 ? (
-        <CategoryFilter categories={categories} handleCategoryChange={handleCategoryChange} />
+        <CategoryFilter categories={categories} />
       ) : (
         screenSize.width <= 768 && (
           <>
@@ -80,7 +74,7 @@ const Filters = ({ categories, handleCategoryChange }: Props) => {
                   </Typography>
                 </Toolbar>
               </AppBar>
-              <CategoryFilter categories={categories} handleCategoryChange={mobileCategoryChange} />
+              <CategoryFilter categories={categories} handleCategoryChange={handleClose} />
             </Dialog>
           </>
         )
