@@ -20,7 +20,8 @@ export default function useGetById<T>(option: ApiOptions, id: string) {
         }),
     {
       initialData: () => {
-        const cacheResults = queryClient.getQueryData<any>(apiOptions[option].cacheString);
+        // this might be pointless after the pagination update since we need 'offset' on the query key
+        const cacheResults = queryClient.getQueryData<any>([apiOptions[option].cacheString]);
         if (cacheResults) {
           return cacheResults.results.find((d: any) => d.id === parseInt(id));
         }

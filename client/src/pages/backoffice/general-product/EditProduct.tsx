@@ -58,7 +58,7 @@ const EditProduct = () => {
   const queryCategories = useGetAll<IGetCategories>("category");
   const queryBrands = useGetAll<IGetBrands>("brand");
   const queryProduct = useGetById<IProduct>("product", id);
-  const editProduct = useEdit<IProduct>("product");
+  const editProduct = useEdit<IProduct>("product", id);
   const classes = useStyles();
   const history = useHistory();
 
@@ -74,7 +74,6 @@ const EditProduct = () => {
 
   const mapProduct = (product: IProduct): IGeneralProductForm => {
     const productForm: IGeneralProductForm = {
-      id: product.id.toString(),
       name: product.name,
       description: product.description,
       price: product.price.toString(),
@@ -116,7 +115,6 @@ const EditProduct = () => {
             initialValues={mapProduct(queryProduct.data)}
             onSubmit={async (data) => {
               const formData = new FormData();
-              formData.append("id", id);
               formData.append("name", data.name);
               formData.append("description", data.description);
               formData.append("price", data.price);

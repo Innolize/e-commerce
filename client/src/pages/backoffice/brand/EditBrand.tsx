@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 const EditBrand = () => {
   const { id } = useParams<{ id: string }>();
   const queryBrand = useGetById<IBrand>("brand", id);
-  const editBrand = useEdit<IBrand>("brand");
+  const editBrand = useEdit<IBrand>("brand", id);
   const classes = useStyles();
   const history = useHistory();
 
@@ -91,19 +91,11 @@ const EditBrand = () => {
         <Box className={classes.formContainer} my={10}>
           <Typography variant="h4">Edit the brand</Typography>
           <Formik
-            initialValues={{ name: queryBrand.data.name, logo: "", id }}
-            onSubmit={async (data: IBrand) => {
+            initialValues={{ name: queryBrand.data.name, logo: "" }}
+            onSubmit={async (data) => {
               const formData = new FormData();
-
-              // If the form was not modified we dont submit
-              if (data.name === queryBrand.data.name && !data.logo) {
-                return;
-              }
-
-              formData.append("id", id);
               formData.append("name", data.name);
               formData.append("brand_logo", data.logo);
-
               editBrand.mutate(formData);
             }}
             validationSchema={editBrandSchema}

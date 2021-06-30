@@ -4,13 +4,13 @@ import api from "src/services/api";
 import { ServerError } from "src/types";
 import { apiOptions, ApiOptions } from "./apiOptions";
 
-export default function useEdit<T>(option: ApiOptions) {
+export default function useEdit<T>(option: ApiOptions, id: string | number) {
   const queryClient = useQueryClient();
 
   return useMutation(
     (values: FormData) =>
       api
-        .put(apiOptions[option].route, values)
+        .put(apiOptions[option].route + `/${id}`, values)
         .then((res: AxiosResponse<T>) => res.data)
         .catch((error: AxiosError<ServerError | string>) => {
           if (error.response) {
@@ -30,9 +30,7 @@ export default function useEdit<T>(option: ApiOptions) {
       onSettled: () => {
         queryClient.invalidateQueries(apiOptions[option].cacheString);
       },
-      onError: (e: AxiosError) => {
-        console.log(e);
-      },
+      onError: (e: AxiosError) => {},
     }
   );
 }
