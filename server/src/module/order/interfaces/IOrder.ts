@@ -1,10 +1,4 @@
-export interface IOrderItem {
-    product_id: number,
-    quantity: number,
-    price_per_unit: number,
-    total: number,
-    id?: number,
-}
+import { IOrderItem } from "./IOrderItem";
 
 export interface IOrder {
     user_id: number,

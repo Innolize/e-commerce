@@ -1,5 +1,5 @@
 import { Product } from "../../product/entity/Product";
-import { IOrderItem } from "../interfaces/IOrder";
+import { IOrderItem } from "../interfaces/IOrderItem";
 
 export class OrderItem implements IOrderItem {
     constructor(

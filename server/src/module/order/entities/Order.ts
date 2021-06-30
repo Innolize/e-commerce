@@ -1,4 +1,5 @@
-import { IOrder, IOrderItem, IPayment } from "../interfaces/IOrder";
+import { IOrder, IPayment } from "../interfaces/IOrder";
+import { IOrderItem } from "../interfaces/IOrderItem";
 
 export class Order implements IOrder {
     constructor(
