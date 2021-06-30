@@ -11,7 +11,7 @@ export interface IOrder {
     payment_id: number
     id?: number,
     cartItems?: IOrderItem[],
-    payment: IPayment
+    payment?: IPayment
 }
 
 export interface IPayment{
