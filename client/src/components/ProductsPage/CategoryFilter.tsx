@@ -7,7 +7,7 @@ import { convertText } from "src/utils/convertText";
 
 interface Props {
   categories: ICategory[];
-  handleCategoryChange: () => void;
+  handleCategoryChange?: () => void;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -35,20 +35,14 @@ const CategoryFilter = ({ categories, handleCategoryChange }: Props) => {
         </ListItem>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <Link color="textPrimary" to="/products" component={RouterLink} onClick={handleCategoryChange}>
-              <ListItem button className={classes.nested}>
+            <Link color="textPrimary" to="/products" component={RouterLink}>
+              <ListItem button className={classes.nested} onClick={handleCategoryChange}>
                 <ListItemText primary="Show all" />
               </ListItem>
             </Link>
             {categories.map((category: ICategory) => (
-              <Link
-                key={category.id}
-                color="textPrimary"
-                to={`?category=${category.id}`}
-                component={RouterLink}
-                onClick={handleCategoryChange}
-              >
-                <ListItem button className={classes.nested}>
+              <Link key={category.id} color="textPrimary" to={`?category=${category.id}`} component={RouterLink}>
+                <ListItem button className={classes.nested} onClick={handleCategoryChange}>
                   <ListItemText primary={convertText(category.name)} />
                 </ListItem>
               </Link>

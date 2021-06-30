@@ -1,16 +1,15 @@
-import React from "react";
-import { useState } from "react";
 import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import MenuIcon from "@material-ui/icons/Menu";
-import { createStyles, Theme, makeStyles } from "@material-ui/core/styles";
 import Badge from "@material-ui/core/Badge";
+import IconButton from "@material-ui/core/IconButton";
 import Link from "@material-ui/core/Link";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import Toolbar from "@material-ui/core/Toolbar";
+import MenuIcon from "@material-ui/icons/Menu";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import SearchBar from "./SearchBar";
 import Sidebar from "../Sidebar/Sidebar";
+import SearchBar from "./SearchBar";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,9 +33,7 @@ const DesktopNavbar = React.memo(() => {
   const classes = useStyles();
   const [state, setState] = useState(false);
 
-  const toggleDrawer = (open: boolean) => (
-    event: React.KeyboardEvent | React.MouseEvent
-  ) => {
+  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     setState(open);
   };
 
@@ -50,12 +47,7 @@ const DesktopNavbar = React.memo(() => {
             </Badge>
           </Link>
           <SearchBar />
-          <IconButton
-            onClick={toggleDrawer(true)}
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-          >
+          <IconButton onClick={toggleDrawer(true)} edge="start" color="inherit" aria-label="open drawer">
             <MenuIcon />
           </IconButton>
         </Toolbar>
