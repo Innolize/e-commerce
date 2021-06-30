@@ -26,6 +26,7 @@ import { CartController, CartItemModel, CartModel } from "../module/cart/module"
 import { CartRepository } from "../module/cart/repository/CartRepository"
 import { CartService } from "../module/cart/service/CartService"
 import { OrderController, OrderItemModel, OrderModel, OrderRepository } from '../module/order/module'
+import { OrderService } from "../module/order/service/OrderService"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -235,7 +236,7 @@ function configureOrderContainer(container: Container): void {
     container.bind<typeof OrderModel>(TYPES.Order.OrderModel).toConstantValue(orderModel)
     container.bind<typeof OrderItemModel>(TYPES.Order.OrderItemModel).toConstantValue(orderItemModel)
     container.bind<OrderRepository>(TYPES.Order.Repository).to(OrderRepository)
-    // container.bind<OrderServic>(TYPES.User.Service).to(UserService)
+    container.bind<OrderService>(TYPES.Order.Service).to(OrderService)
     container.bind<OrderController>(TYPES.Order.Controller).to(OrderController)
 }
 

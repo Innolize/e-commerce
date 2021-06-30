@@ -4,13 +4,13 @@ import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
 import { jwtAuthentication } from "../../auth/util/passportMiddlewares";
 import { CartService } from "../../cart/service/CartService";
-import { OrderRepository } from "../repository/OrderRepository";
+import { OrderService } from "../service/OrderService";
 
 @injectable()
 export class OrderController extends AbstractController {
     private ROUTE: string
     constructor(
-        @inject(TYPES.Order.Repository) private orderRepository: OrderRepository,
+        @inject(TYPES.Order.Service) private orderService: OrderService,
         @inject(TYPES.Cart.Service) private cartService: CartService
     ) {
         super()
@@ -31,7 +31,7 @@ export class OrderController extends AbstractController {
             }
             const cartId = user.cart.id as number
             const cart = await this.cartService.getCart(cartId, user)
-            const orderCreated = await this.orderRepository.create(cart, user.id)
+            const orderCreated = await this.orderService.create(cart, user)
             res.status(200).send({ orderCreated })
         } catch (err) {
             next(err)
