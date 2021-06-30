@@ -4,7 +4,7 @@ export interface IOrder {
     user_id: number,
     payment_id: number
     id?: number,
-    cartItems?: IOrderItem[],
+    orderItems?: IOrderItem[],
     payment?: IPayment
 }
 

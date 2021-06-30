@@ -12,7 +12,7 @@ export class OrderModel extends Model<Order, IOrderCreate> implements IOrder {
     public id!: number;
     public user_id!: number;
     public payment_id!: number;
-    public cartItems?: IOrderItem[];
+    public orderItems?: IOrderItem[];
     public payment?: IPayment;
 
     static setup(database: Sequelize): typeof OrderModel {
@@ -41,7 +41,7 @@ export class OrderModel extends Model<Order, IOrderCreate> implements IOrder {
     static setupOrderItemAssociation(model: typeof OrderItemModel): typeof OrderItemModel {
         OrderModel.hasMany(model, {
             foreignKey: "order_id",
-            as:"cartItems"
+            as:"orderItems"
         })
         return OrderItemModel
     }
@@ -55,7 +55,7 @@ export class OrderModel extends Model<Order, IOrderCreate> implements IOrder {
     }
 
     public static associations: {
-        cartItems: Association<OrderModel, OrderItemModel>;
+        orderItems: Association<OrderModel, OrderItemModel>;
         user: Association<OrderModel, UserModel>;
     };
 }

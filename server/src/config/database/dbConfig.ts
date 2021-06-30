@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 import "reflect-metadata";
-import { Association, Sequelize } from 'sequelize/types';
+import { Sequelize } from 'sequelize/types';
 import { ProductModel } from '../../module/product/model/productModel';
 import { CategoryModel } from '../../module/category/model/categoryModel'
 import container from '../inversify'
@@ -93,12 +93,7 @@ async function configureDatabase() {
                 { cart_id: 1, product_id: 2, quantity: 3 },
                 { cart_id: 1, product_id: 4, quantity: 2 },
                 { cart_id: 1, product_id: 6, quantity: 3 }
-            ])
-            await OrderModel.create({ user_id: 1, payment_id: 3 })
-            await OrderItemModel.create({ order_id: 1, price_per_unit: 200, product_id: 1, quantity: 3, total: 600 })
-            const orderPopulated = await OrderModel.findByPk(1, { include: { association: OrderModel.associations.cartItems } })
-            
-            console.log(orderPopulated)
+            ])           
         } catch (err) {
             console.log(err)
         }

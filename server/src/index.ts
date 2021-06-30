@@ -13,7 +13,7 @@ import { init as initAuth } from './module/auth/module'
 import { init as initCart } from './module/cart/module'
 import { init as initOrder } from './module/order/module'
 import { MulterError } from "multer";
-import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { StatusCodes } from "http-status-codes";
 import passport from "passport";
 import { configurePassportStrategies } from "./module/auth/strategies";
 import cookieParser from 'cookie-parser'

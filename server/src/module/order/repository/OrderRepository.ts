@@ -16,6 +16,7 @@ export class OrderRepository extends AbstractRepository {
     }
 
     async create(cart: Cart, userId: number): Promise<Order> {
+        
         if (!cart.cartItems?.length) {
             throw new Error("Impossible to create an order, no cart items in current cart")
         }
@@ -32,8 +33,10 @@ export class OrderRepository extends AbstractRepository {
             }
             return orderItem
         })
-        console.log(itemsArray)
-        const currentOrder = await this.orderModel.create({ user_id: userId, payment_id: 1, orderItems: itemsArray }, { include: { association: OrderModel.associations.cartItems } })
+
+        const currentOrder = await this.orderModel.create({ user_id: userId, payment_id: 1, orderItems: itemsArray },
+            { include: { association: OrderModel.associations.orderItems } })
+        console.log(currentOrder)
         return currentOrder
 
     }
