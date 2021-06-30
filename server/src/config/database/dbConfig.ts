@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 import "reflect-metadata";
-import { Sequelize } from 'sequelize/types';
+import { Association, Sequelize } from 'sequelize/types';
 import { ProductModel } from '../../module/product/model/productModel';
 import { CategoryModel } from '../../module/category/model/categoryModel'
 import container from '../inversify'
@@ -18,6 +18,8 @@ import { PermissionModel, RoleModel } from '../../module/authorization/module';
 import { UserModel } from '../../module/user/module';
 import { hash } from 'bcrypt'
 import { CartItemModel, CartModel } from '../../module/cart/module';
+import { OrderModel } from '../../module/order/model/OrderModel';
+import { OrderItemModel } from '../../module/order/model/OrderItemModel';
 
 async function configureDatabase() {
 
@@ -41,6 +43,8 @@ async function configureDatabase() {
             UserModel.setup(database);
             CartModel.setup(database);
             CartItemModel.setup(database);
+            OrderModel.setup(database);
+            OrderItemModel.setup(database);
             ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.Category.Model));
             ProductModel.setupBrandAssociation(container.get<typeof BrandModel>(TYPES.Brand.Model));
             MotherboardModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
@@ -58,6 +62,10 @@ async function configureDatabase() {
             UserModel.setupCartAssociation(CartModel)
             CartModel.setupUserAssociation(UserModel)
             ProductModel.setupCartItemAssociation(CartItemModel)
+            OrderModel.setupUserAssociation(UserModel)
+            OrderModel.setupOrderItemAssociation(OrderItemModel)
+            OrderItemModel.setupOrderAssociation(OrderModel)
+            OrderItemModel.setupProductAssociation(ProductModel)
         } catch (err) {
             console.log('config')
             console.log(err.message)
@@ -85,14 +93,13 @@ async function configureDatabase() {
                 { cart_id: 1, product_id: 2, quantity: 3 },
                 { cart_id: 1, product_id: 4, quantity: 2 },
                 { cart_id: 1, product_id: 6, quantity: 3 }
-
             ])
-            const test = await UserModel.findByPk(1, { include: 'cart' })
-            console.log(test?.toJSON())
-            const test2 = await CartModel.findByPk(1, { include: 'user' })
-            console.log(test2?.toJSON())
+            await OrderModel.create({ user_id: 1, payment_id: 3 })
+            await OrderItemModel.create({ order_id: 1, price_per_unit: 200, product_id: 1, quantity: 3, total: 600 })
+            const orderPopulated = await OrderModel.findByPk(1, { include: { association: OrderModel.associations.cartItems } })
+            
+            console.log(orderPopulated)
         } catch (err) {
-
             console.log(err)
         }
     }
