@@ -5,11 +5,12 @@ import { apiOptions } from "./apiOptions";
 import { IGetProducts } from "./types";
 
 export default function useGetProducts(
-  offset: string | null,
+  page: string | null,
   category_id: string | null,
   name: string | null,
   limit = 12
 ) {
+  const offset = page ? (Number(page) - 1) * limit : 0;
   return useQuery(
     ["products", { category_id, name, offset }],
     () =>
