@@ -1,29 +1,29 @@
 import { Box, Breadcrumbs, Container, Link, Typography } from "@material-ui/core";
 import { Redirect, useParams } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
-import CabinetContainer from "src/components/PcBuildContainers/CabinetContainer";
-import DiskStorageContainer from "src/components/PcBuildContainers/DiskStorageContainer";
-import MotherboardContainer from "src/components/PcBuildContainers/MotherboardContainer";
-import PowerSupplyContainer from "src/components/PcBuildContainers/PowerSupplyContainer";
-import ProcessorContainer from "src/components/PcBuildContainers/ProcessorContainer";
-import RamContainer from "src/components/PcBuildContainers/RamContainer";
-import VideoCardContainer from "src/components/PcBuildContainers/VideoCardContainer";
+import CabinetTable from "src/components/PcBuildTables/CabinetTable";
+import DiskStorageTable from "src/components/PcBuildTables/DiskStorageTable";
+import MotherboardTable from "src/components/PcBuildTables/MotherboardTable";
+import PowerSupplyTable from "src/components/PcBuildTables/PowerSupplyTable";
+import ProcessorTable from "src/components/PcBuildTables/ProcessorTable";
+import RamTable from "src/components/PcBuildTables/RamTable";
+import VideoCardTable from "src/components/PcBuildTables/VideoCardTable";
 
 interface ParamProps {
   category: string;
 }
 
-const BuildProducts = () => {
+const PcBuildProducts = () => {
   const { category } = useParams<ParamProps>();
 
-  const formToRender = {
-    ram: <RamContainer />,
-    "video-card": <VideoCardContainer />,
-    motherboard: <MotherboardContainer />,
-    processor: <ProcessorContainer />,
-    "power-supply": <PowerSupplyContainer />,
-    cabinet: <CabinetContainer />,
-    "disk-storage": <DiskStorageContainer />,
+  const tableToRender = {
+    ram: <RamTable />,
+    "video-card": <VideoCardTable />,
+    motherboard: <MotherboardTable />,
+    processor: <ProcessorTable />,
+    "power-supply": <PowerSupplyTable />,
+    cabinet: <CabinetTable />,
+    "disk-storage": <DiskStorageTable />,
   };
 
   return (
@@ -58,9 +58,9 @@ const BuildProducts = () => {
           </Breadcrumbs>
         </Box>
       </Box>
-      <Box>{formToRender[category] || <Redirect to="ram"></Redirect>}</Box>
+      <Box>{tableToRender[category] || <Redirect to="ram"></Redirect>}</Box>
     </Container>
   );
 };
 
-export default BuildProducts;
+export default PcBuildProducts;
