@@ -11,12 +11,21 @@ export default function useGetProducts(
   limit = 12
 ) {
   const offset = page ? (Number(page) - 1) * limit : 0;
+  const params = {
+    category_id,
+    name,
+    limit,
+    offset,
+  };
+
+  // deletes empty strings
+  Object.keys(params).forEach((key) => {
+    if (!params[key]) delete params[key];
+  });
+
   return useQuery(
     ["products", { category_id, name, offset }],
-    () =>
-      api
-        .get(apiOptions.product.route + "/", { params: { category_id, name, limit, offset } })
-        .then((res: AxiosResponse<IGetProducts>) => res.data),
+    () => api.get(apiOptions.product.route + "/", { params }).then((res: AxiosResponse<IGetProducts>) => res.data),
     {
       retry: false,
       staleTime: 60 * 1000, // 1 minute
