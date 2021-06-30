@@ -26,7 +26,13 @@ export class CartService extends AbstractService {
     }
 
     async getCart(id: number, user: IUserWithAuthorization): Promise<Cart> {
-        const cart = await this.cartRepository.getCart(id, user.id)
+        const ADMIN_ID = 1
+        let cart: Cart
+        if (user.role_id === ADMIN_ID) {
+            cart = await this.cartRepository.getCart(id)
+        } else {
+            cart = await this.cartRepository.getCart(id, user.id)
+        }
         ForbiddenError.from<appAbility>(user.role).throwUnlessCan('read', cart)
         return cart
     }

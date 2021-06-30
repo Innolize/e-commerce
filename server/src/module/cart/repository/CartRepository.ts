@@ -33,9 +33,11 @@ export class CartRepository extends AbstractRepository {
         return new GetCartsDto(count, carts)
     }
 
-    async getCart(id: number, userId: number): Promise<Cart> {
-        const user_id = userId
-        const cartModel = await this.cartModel.findOne({ where: { id, user_id }, include: [{ association: CartModel.associations.cartItems, include: [{ association: CartItemModel.associations.product, include: [{ association: ProductModel.associations.brand }, { association: ProductModel.associations.category }] }] }] })
+    async getCart(id: number, userId?: number): Promise<Cart> {
+        const whereOptions: WhereOptions<Cart> = {}
+        whereOptions.id = id
+        userId ? whereOptions.user_id = userId : ''
+        const cartModel = await this.cartModel.findOne({ where: whereOptions, include: [{ association: CartModel.associations.cartItems, include: [{ association: CartItemModel.associations.product, include: [{ association: ProductModel.associations.brand }, { association: ProductModel.associations.category }] }] }] })
         if (!cartModel) {
             throw CartError.cartNotFound()
         }

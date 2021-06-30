@@ -30,7 +30,7 @@ export class CartModel extends Model<ICart, ICartCreate> implements ICart {
     }
 
     public getCartItems!: HasManyGetAssociationsMixin<CartItemModel>
-    public createCartItem!: HasManyCreateAssociationMixin<CartItemModel>
+    public createCartItem!: HasManyCreateAssociationMixin<Cart>
 
     static setupCartItemAssociation(model: typeof CartItemModel): void {
         CartModel.hasMany(model, {

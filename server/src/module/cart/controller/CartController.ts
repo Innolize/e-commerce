@@ -92,7 +92,7 @@ export class CartController extends AbstractController {
             if (!itemIdNumber || itemIdNumber <= 0) {
                 throw CartError.invalidCartItemId()
             }
-            console.log(await this.cartService.removeCartItem(cartIdNumber, itemIdNumber, user))
+            await this.cartService.removeCartItem(cartIdNumber, itemIdNumber, user)
             res.status(StatusCodes.OK).send({ message: 'Cart item removed successfully!' })
         } catch (err) {
             next(err)

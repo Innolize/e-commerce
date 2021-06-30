@@ -42,6 +42,7 @@ export class UserRepository extends AbstractRepository {
     async createUser(user: IUserCreate): Promise<User> {
         try {
             const newUser = await this.userModel.create(user)
+            await newUser.createCart()
             return fromDbToUser(newUser)
         } catch (err) {
             if (err instanceof UniqueConstraintError) {
