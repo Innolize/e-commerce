@@ -1,28 +1,16 @@
-import {
-  Box,
-  Checkbox,
-  CircularProgress,
-  Container,
-  Input,
-  makeStyles,
-  MenuItem,
-  Typography,
-} from "@material-ui/core";
+import { Box, CircularProgress, Container, makeStyles, MenuItem, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import React, { useEffect, useState } from "react";
+import { Form, Formik } from "formik";
+import { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IDiskStorageForm } from "src/form_types";
-import { IGetBrands } from "src/hooks/types";
 import useCreate from "src/hooks/useCreate";
-import useGetAll from "src/hooks/useGetAll";
 import useGetById from "src/hooks/useGetById";
-import { DISK_TYPE, IBrand, IDiskStorage } from "src/types";
-import { DISK_STORAGE_ID } from "src/utils/categoriesIds";
+import { DISK_TYPE, IDiskStorage } from "src/types";
 import { diskStorageSchema } from "src/utils/yup.pcPickerValidations";
 import { v4 as uuidv4 } from "uuid";
 
@@ -51,7 +39,6 @@ interface Props {
 const EditDiskStorageForm = ({ id }: Props) => {
   const classes = useStyles();
   const createDiskStorage = useCreate<IDiskStorage>("disk-storage");
-  const queryBrands = useGetAll<IGetBrands>("brand");
   const queryDiskStorage = useGetById<IDiskStorage>("disk-storage", id);
   const [redirect, setRedirect] = useState(false);
 
@@ -67,14 +54,6 @@ const EditDiskStorageForm = ({ id }: Props) => {
 
   const mapDiskStorage = (diskStorage: IDiskStorage): IDiskStorageForm => {
     const diskStorageForm: IDiskStorageForm = {
-      id: diskStorage.id.toString(),
-      name: diskStorage.product!.name,
-      description: diskStorage.product!.description,
-      price: diskStorage.product!.price.toString(),
-      stock: diskStorage.product!.stock.toString(),
-      image: "",
-      brand: diskStorage.product!.brand.id.toString(),
-      category: DISK_STORAGE_ID.toString(),
       total_storage: diskStorage.total_storage.toString(),
       type: diskStorage.type,
       mbs: diskStorage.mbs.toString(),
@@ -112,13 +91,6 @@ const EditDiskStorageForm = ({ id }: Props) => {
             initialValues={mapDiskStorage(queryDiskStorage.data)}
             onSubmit={(data) => {
               const formData = new FormData();
-              formData.append("name", data.name);
-              formData.append("description", data.description);
-              formData.append("price", data.price);
-              formData.append("stock", data.stock);
-              formData.append("id_brand", data.brand);
-              formData.append("id_category", data.category);
-              formData.append("product_image", data.image);
               formData.append("type", data.type);
               formData.append("mbs", data.mbs);
               formData.append("total_storage", data.total_storage);
@@ -127,42 +99,16 @@ const EditDiskStorageForm = ({ id }: Props) => {
             }}
             validationSchema={diskStorageSchema}
           >
-            {({ setFieldValue }) => (
+            {() => (
               <Form className={classes.form} encType="multipart/form-data">
-                <Typography variant="h4">Edit a disk storage</Typography>
-
-                <Box>
-                  <InputField label="Name" placeholder="Name" name="name" />
+                <Box mb={2}>
+                  <Typography align="center" variant="h5">
+                    Edit specifications of
+                  </Typography>
+                  <Typography align="center" variant="h5">
+                    "{queryDiskStorage.data.product!.name}"
+                  </Typography>
                 </Box>
-
-                <Box>
-                  <InputField
-                    label="Description"
-                    placeholder="Description"
-                    name="description"
-                  />
-                </Box>
-
-                <Box>
-                  <InputField
-                    type="number"
-                    label="Price"
-                    placeholder="Price"
-                    name="price"
-                  />
-                </Box>
-
-                {queryBrands.isSuccess && (
-                  <SelectField name="brand" label="Brand">
-                    {queryBrands.data.results.map((brand: IBrand) => (
-                      <MenuItem key={uuidv4()} value={brand.id}>
-                        {brand.name}
-                      </MenuItem>
-                    ))}
-                  </SelectField>
-                )}
-
-                <Field hidden name="category" label="Category"></Field>
 
                 <Box>
                   <InputField
@@ -174,12 +120,7 @@ const EditDiskStorageForm = ({ id }: Props) => {
                 </Box>
 
                 <Box>
-                  <InputField
-                    type="number"
-                    label="MB/S"
-                    placeholder="MB/S"
-                    name="mbs"
-                  />
+                  <InputField type="number" label="MB/S" placeholder="MB/S" name="mbs" />
                 </Box>
 
                 <Box>
@@ -193,46 +134,12 @@ const EditDiskStorageForm = ({ id }: Props) => {
                 </Box>
 
                 <Box>
-                  <InputField
-                    type="number"
-                    label="Watts"
-                    placeholder="Watts"
-                    name="watts"
-                  />
-                </Box>
-
-                <Box display="flex" alignItems="center">
-                  <Typography>Stock:</Typography>
-                  <Field type="checkbox" name="stock" as={Checkbox} />
-                  <ErrorMessage
-                    component={Typography}
-                    className={classes.errorMsg}
-                    name="stock"
-                  />
-                </Box>
-
-                <Box my={3}>
-                  <Input
-                    type="file"
-                    placeholder="Image"
-                    name="image"
-                    fullWidth
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setFieldValue("image", e.target.files![0])
-                    }
-                  />
-                  <ErrorMessage
-                    component={Typography}
-                    className={classes.errorMsg}
-                    name="image"
-                  />
+                  <InputField type="number" label="Watts" placeholder="Watts" name="watts" />
                 </Box>
 
                 {createDiskStorage.isError && (
                   <Box my={2}>
-                    <Alert severity="error">
-                      {createDiskStorage.error?.message}
-                    </Alert>
+                    <Alert severity="error">{createDiskStorage.error?.message}</Alert>
                   </Box>
                 )}
 
