@@ -9,8 +9,10 @@ const ProtectedAdminRoute = ({ ...routeProps }: RouteProps) => {
 
   if (isAdmin(user)) {
     return <Route {...routeProps} />;
-  } else {
+  } else if (!user) {
     return <Redirect to={{ pathname: "/login", state: { from: location.pathname } }} />;
+  } else {
+    return <Redirect to={{ pathname: "/" }} />;
   }
 };
 

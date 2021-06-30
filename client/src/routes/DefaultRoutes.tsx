@@ -18,7 +18,6 @@ const DefaultRoutes = () => {
         <Route path="/products" component={Products} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
-        <Route path="/logout" component={Register} />
         <Route path="/cart" component={Cart} />
         <Route path="*" component={NoMatch} />
       </Switch>

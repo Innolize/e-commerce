@@ -19,6 +19,7 @@ import { CustomThemeContext } from "../../contexts/customThemeContext";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import { UserContext } from "src/contexts/UserContext";
 import { isAdmin } from "src/utils/isAdmin";
+import useLogoutUser from "src/hooks/useLogout";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,6 +52,11 @@ function Sidebar({ state, setState }: Props) {
   const theme = useTheme();
   const { user } = useContext(UserContext);
   const { currentTheme, setTheme } = useContext(CustomThemeContext);
+  const logout = useLogoutUser();
+
+  const handleLogout = () => {
+    logout.mutate();
+  };
 
   const handleThemeChange = () => {
     currentTheme === "light" ? setTheme!("dark") : setTheme!("light");
@@ -99,7 +105,12 @@ function Sidebar({ state, setState }: Props) {
           <Divider />
 
           {user ? (
-            <ListLink label="Logout" to="/logout" icon={<PersonIcon />} />
+            <ListItem onClick={handleLogout} button>
+              <ListItemIcon>
+                <PersonIcon />
+              </ListItemIcon>
+              <ListItemText>Logout</ListItemText>
+            </ListItem>
           ) : (
             <>
               <ListLink label="Login" to="/login" icon={<PersonIcon />} />

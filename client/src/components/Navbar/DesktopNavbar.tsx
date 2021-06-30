@@ -15,6 +15,7 @@ import ChangeThemeButton from "../ChangeThemeButton";
 import { Tabs } from "@material-ui/core";
 import { UserContext } from "src/contexts/UserContext";
 import { isAdmin } from "src/utils/isAdmin";
+import useLogoutUser from "src/hooks/useLogout";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -69,6 +70,11 @@ const useStyles = makeStyles((theme: Theme) =>
 const DesktopNavbar = React.memo(() => {
   const { user } = useContext(UserContext);
   const classes = useStyles();
+  const logout = useLogoutUser();
+
+  const handleLogout = () => {
+    logout.mutate();
+  };
 
   return (
     <AppBar color="default" position="static">
@@ -86,7 +92,7 @@ const DesktopNavbar = React.memo(() => {
           <Box className={classes.nowrap}>
             {user ? (
               <Box>
-                <Link className={classes.link} component={RouterLink} to="/logout">
+                <Link onClick={handleLogout} className={classes.link} component="button">
                   Logout
                 </Link>
                 <Link className={classes.linkIcon} component={RouterLink} to="/cart">
