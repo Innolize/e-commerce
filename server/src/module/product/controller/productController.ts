@@ -118,6 +118,9 @@ export class ProductController extends AbstractController {
             }
             const dto: IProductEdit = req.body
             const validatedDto = await bodyValidator(validateEditProductDto, dto)
+            if(!Object.keys(validatedDto).length){
+                throw new Error('Update form cannot be empty!')
+            }
             if (req.file) {
                 const { buffer, originalname } = req.file
                 const uploadedImage = await this.uploadService.uploadProduct(buffer, originalname)

@@ -1,4 +1,5 @@
 import { StatusCodes } from "http-status-codes"
+import { ForeignKeyConstraintError } from "sequelize/types"
 import { BaseError } from "../../common/error/BaseError"
 
 export class CartError extends BaseError {
@@ -25,5 +26,17 @@ export class CartError extends BaseError {
     }
     static CartItemProductNotIncluded(): CartError {
         return new CartError(this.name, StatusCodes.INTERNAL_SERVER_ERROR, 'Cart item product not included')
+    }
+    static InvalidProductId(): CartError {
+        return new CartError(this.name, StatusCodes.INTERNAL_SERVER_ERROR, `Invalid product id`)
+    }
+
+    static CreateErrorIfForeignKeyConstraintError(error: ForeignKeyConstraintError): void {
+        if (error.index.includes("product_id")) {
+            throw this.InvalidProductId()
+        }
+        if (error.index.includes("cart_id")) {
+            throw this.invalidCartId()
+        }
     }
 }

@@ -1,5 +1,5 @@
 import { decorate, injectable } from "inversify";
-import { Association, DataTypes, Sequelize } from "sequelize";
+import { Association, DataTypes, Sequelize, HasManyGetAssociationsMixin } from "sequelize";
 import { Model } from "sequelize";
 import { CategoryModel } from "../../category/module";
 import { IProduct } from "../interfaces/IProduct";
@@ -8,6 +8,7 @@ import { IProductCreate } from "../interfaces/IProductCreate";
 import { Product } from "../entity/Product";
 import { Category } from "../../category/entity/Category";
 import { Brand } from "../../brand/entity/Brand";
+import { CartItemModel } from "../../cart/module";
 
 decorate(injectable(), (Model))
 
@@ -37,7 +38,7 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
                 type: DataTypes.STRING,
                 allowNull: false,
                 validate: {
-                    len: [3,40]
+                    len: [3, 40]
                 }
             },
             image: {
@@ -48,7 +49,7 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
                 type: DataTypes.STRING,
                 allowNull: true,
                 validate: {
-                    len: [3,100]
+                    len: [3, 100]
                 }
             },
             price: {
@@ -70,12 +71,24 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
         },
             {
                 sequelize: database,
+                paranoid: true,
                 modelName: "Product",
-                createdAt: "creadoEn",
-                updatedAt: "modificadoEn"
+                hooks: {
+                    beforeBulkDestroy: function (options) {
+                        options.individualHooks = true;
+                    },
+                    afterDestroy: async (instance) => {
+                        const cartItemModels = await instance.getCartItems()
+                        cartItemModels.map(async (cartItem) => await cartItem.destroy())
+                        console.log(`Cart items associated with product ${instance.id} deleted`)
+                    }
+                }
             })
         return ProductModel
     }
+
+    public getCartItems!: HasManyGetAssociationsMixin<CartItemModel>
+
     static setupCategoryAssociation(model: typeof CategoryModel): void {
         ProductModel.belongsTo(model, {
             as: "category",
@@ -90,8 +103,18 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
         })
     }
 
+    static setupCartItemAssociation(model: typeof CartItemModel): void {
+        ProductModel.hasMany(model, {
+            as: "cartItems",
+            foreignKey: "product_id",
+            hooks: true,
+            onDelete: "CASCADE"
+        })
+    }
+
     public static associations: {
         category: Association<ProductModel, CategoryModel>,
-        brand: Association<ProductModel, CategoryModel>
+        brand: Association<ProductModel, CategoryModel>,
+        cartItems: Association<ProductModel, CartItemModel>
     }
 }

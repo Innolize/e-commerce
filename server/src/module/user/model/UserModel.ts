@@ -1,5 +1,5 @@
 import { injectable } from "inversify"
-import { Association, DataTypes, Model, Sequelize } from "sequelize"
+import { Association, DataTypes, HasOneCreateAssociationMixin, Model, Sequelize } from "sequelize"
 import { Role } from "../../authorization/entities/Role"
 import { RoleModel } from "../../authorization/module"
 import { Cart } from "../../cart/entities/Cart"
@@ -47,6 +47,9 @@ export class UserModel extends Model<User, IUserCreate> implements IUser {
         )
         return UserModel
     }
+
+    createCart!: HasOneCreateAssociationMixin<CartModel>
+
     static setupRoleAssociation(model: typeof RoleModel): typeof UserModel {
         UserModel.belongsTo(model, {
             foreignKey: {

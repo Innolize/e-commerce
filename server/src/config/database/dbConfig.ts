@@ -57,6 +57,7 @@ async function configureDatabase() {
             CartItemModel.setupCartAssociation(CartModel)
             UserModel.setupCartAssociation(CartModel)
             CartModel.setupUserAssociation(UserModel)
+            ProductModel.setupCartItemAssociation(CartItemModel)
         } catch (err) {
             console.log('config')
             console.log(err.message)
