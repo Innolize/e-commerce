@@ -27,7 +27,7 @@ const CategoryFilter = ({ categories, handleCategoryChange }: Props) => {
   };
 
   return (
-    <Box minWidth="20%" display="flex" flexDirection="column" my={4} mx={3}>
+    <Box minWidth="20%" display="flex" flexDirection="column" my={4} mr={1}>
       <List component="nav" aria-labelledby="nested-list-subheader">
         <ListItem button onClick={handleClick}>
           <ListItemText primaryTypographyProps={{ variant: "h5" }} primary="Category" />
