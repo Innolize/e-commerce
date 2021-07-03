@@ -3,6 +3,7 @@ import { WhereOptions } from "sequelize/types";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Cart } from "../../cart/entities/Cart";
+import { IGetAllResponse } from "../../common/interfaces/IGetAllResponseGeneric";
 import { Order } from "../entities/Order";
 import { fromDbToOrder, mapOrderItemsFromCart } from "../mapper/orderMapper";
 import { OrderItemModel } from "../model/OrderItemModel";
@@ -26,14 +27,14 @@ export class OrderRepository extends AbstractRepository {
         return currentOrder
     }
 
-    async getOrders(limit?: number, offset?: number, userId?: number): Promise<Order[]> {
+    async getOrders(limit?: number, offset?: number, userId?: number): Promise<IGetAllResponse<Order>> {
         const whereOptions: WhereOptions<Order> = {}
         userId ? whereOptions.user_id = userId : ''
-        const response = await this.orderModel.findAndCountAll(
+        const { count, rows } = await this.orderModel.findAndCountAll(
             { where: whereOptions, limit, offset, include: { association: OrderModel.associations.orderItems, include: [{ association: OrderItemModel.associations.product }] } }
         )
-        const { rows } = response
         const orders = rows.map(fromDbToOrder)
-        return orders
+        const response: IGetAllResponse<Order> = { count, results: orders }
+        return response
     }
 }
