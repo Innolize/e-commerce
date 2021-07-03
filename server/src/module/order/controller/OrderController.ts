@@ -27,7 +27,9 @@ export class OrderController extends AbstractController {
     async getOrders(req: Request, res: Response, next: NextFunction): Promise<void> {
         const user = req.user
         try {
-            const response = await this.orderService.getOrders()
+            const limit = 20
+            const offset = 40
+            const response = await this.orderService.getOrders(user, limit, offset,)
             res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)

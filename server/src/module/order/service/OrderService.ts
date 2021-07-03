@@ -19,8 +19,12 @@ export class OrderService extends AbstractService {
         return response
     }
 
-    async getOrders(): Promise<Order[]> {
-        const response = await this.orderRepository.getOrders()
-        return response
+    async getOrders(user: IUserWithAuthorization, limit?: number, offset?: number): Promise<Order[]> {
+        const ADMIN_ID = 1
+        if (user.id === ADMIN_ID) {
+            return await this.orderRepository.getOrders(limit, offset)
+        } else {
+            return await this.orderRepository.getOrders(limit, offset, user.id)
+        }
     }
 }

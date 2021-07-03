@@ -5,6 +5,7 @@ import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Cart } from "../../cart/entities/Cart";
 import { Order } from "../entities/Order";
 import { fromDbToOrder, mapOrderItemsFromCart } from "../mapper/orderMapper";
+import { OrderItemModel } from "../model/OrderItemModel";
 import { OrderModel } from "../model/OrderModel";
 
 @injectable()
@@ -25,9 +26,12 @@ export class OrderRepository extends AbstractRepository {
         return currentOrder
     }
 
-    async getOrders(): Promise<Order[]> {
+    async getOrders(limit?: number, offset?: number, userId?: number): Promise<Order[]> {
         const whereOptions: WhereOptions<Order> = {}
-        const response = await this.orderModel.findAndCountAll({ where: whereOptions, include: { association: OrderModel.associations.orderItems } })
+        userId ? whereOptions.user_id = userId : ''
+        const response = await this.orderModel.findAndCountAll(
+            { where: whereOptions, limit, offset, include: { association: OrderModel.associations.orderItems, include: [{ association: OrderItemModel.associations.product }] } }
+        )
         const { rows } = response
         const orders = rows.map(fromDbToOrder)
         return orders
