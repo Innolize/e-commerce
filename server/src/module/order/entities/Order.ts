@@ -6,7 +6,7 @@ export class Order implements IOrder {
         public user_id: number,
         public payment_id: number,
         public id?: number,
-        public cartItems?: IOrderItem[],
+        public orderItems?: IOrderItem[],
         public payment?: IPayment
     ) { }
 }

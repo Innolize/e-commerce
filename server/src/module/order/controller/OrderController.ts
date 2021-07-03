@@ -24,7 +24,6 @@ export class OrderController extends AbstractController {
 
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         const user = req.user
-
         try {
             if (!user.cart) {
                 throw new Error('12345667')
