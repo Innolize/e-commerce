@@ -3,6 +3,7 @@ import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Cart } from "../../cart/entities/Cart";
 import { Order } from "../entities/Order";
+import { OrderError } from "../error/OrderError";
 import { OrderItemModel } from "../model/OrderItemModel";
 import { OrderModel } from "../model/OrderModel";
 
@@ -16,11 +17,22 @@ export class OrderRepository extends AbstractRepository {
     }
 
     async create(cart: Cart, userId: number): Promise<Order> {
-        
         if (!cart.cartItems?.length) {
-            throw new Error("Impossible to create an order, no cart items in current cart")
+            throw OrderError.currentCartEmpty()
         }
-        const itemsArray = cart.cartItems.map(item => {
+
+        const orderItems = this.fromCartItemToOrderItem(cart)
+
+        const currentOrder = await this.orderModel.create(
+            { user_id: userId, payment_id: 1, orderItems },
+            { include: { association: OrderModel.associations.orderItems } })
+
+        return currentOrder
+
+    }
+
+    private fromCartItemToOrderItem = (cart: Cart) => {
+        const itemsArray = cart.cartItems!.map(item => {
             const { product_id, quantity, product } = item
             if (!product) {
                 throw new Error('Product not populated')
@@ -33,11 +45,6 @@ export class OrderRepository extends AbstractRepository {
             }
             return orderItem
         })
-
-        const currentOrder = await this.orderModel.create({ user_id: userId, payment_id: 1, orderItems: itemsArray },
-            { include: { association: OrderModel.associations.orderItems } })
-        console.log(currentOrder)
-        return currentOrder
-
+        return itemsArray
     }
 }
