@@ -1,4 +1,5 @@
 import { Application, NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
@@ -20,6 +21,17 @@ export class OrderController extends AbstractController {
     public configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE
         app.post(`/api${ROUTE}`, jwtAuthentication, this.create.bind(this))
+        app.get(`/api${ROUTE}`, jwtAuthentication, this.getOrders.bind(this))
+    }
+
+    async getOrders(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const user = req.user
+        try {
+            const response = await this.orderService.getOrders()
+            res.status(StatusCodes.OK).send(response)
+        } catch (err) {
+            next(err)
+        }
     }
 
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -35,7 +47,5 @@ export class OrderController extends AbstractController {
         } catch (err) {
             next(err)
         }
-
-
     }
 }

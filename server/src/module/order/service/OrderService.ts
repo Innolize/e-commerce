@@ -18,4 +18,9 @@ export class OrderService extends AbstractService {
         const response = await this.orderRepository.create(cart, user.id)
         return response
     }
+
+    async getOrders(): Promise<Order[]> {
+        const response = await this.orderRepository.getOrders()
+        return response
+    }
 }
