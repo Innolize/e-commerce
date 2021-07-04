@@ -103,5 +103,7 @@ export const TYPES = {
         Service: Symbol('OrderService'),
         Controller: Symbol('OrderController'),
     },
-    
+    Payment:{
+        Model: Symbol('PaymentModel')
+    }
 }

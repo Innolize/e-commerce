@@ -27,6 +27,7 @@ import { CartRepository } from "../module/cart/repository/CartRepository"
 import { CartService } from "../module/cart/service/CartService"
 import { OrderController, OrderItemModel, OrderModel, OrderRepository } from '../module/order/module'
 import { OrderService } from "../module/order/service/OrderService"
+import { PaymentModel } from "../module/payment/models/PaymentModel"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -128,6 +129,15 @@ function configOrderModel(container: Container): [typeof OrderModel, typeof Orde
     const orderModel = OrderModel.setup(container.get(TYPES.Common.Database))
     const orderItemModel = OrderItemModel.setup(container.get(TYPES.Common.Database))
     return [orderModel, orderItemModel]
+}
+
+function configPaymentModel(container: Container): typeof PaymentModel {
+    const database = container.get<Sequelize>(TYPES.Common.Database)
+    return PaymentModel.setup(database)
+}
+
+function configPaymentContainer(container: Container): void {
+    container.bind<typeof PaymentModel>(TYPES.Payment.Model).toConstantValue(configPaymentModel(container))
 }
 
 function configPermissionContainer(container: Container): void {
@@ -254,6 +264,7 @@ function configureDIC() {
     configureCartContainer(dependencyContainer)
     configureUserContainer(dependencyContainer)
     configureOrderContainer(dependencyContainer)
+    configPaymentContainer(dependencyContainer)
     associations(dependencyContainer)
 
     return dependencyContainer
@@ -281,6 +292,8 @@ function associations(container: Container) {
     OrderModel.setupUserAssociation(container.get(TYPES.User.Model))
     OrderItemModel.setupOrderAssociation(container.get(TYPES.Order.OrderModel))
     OrderItemModel.setupProductAssociation(container.get(TYPES.Product.Model))
+    OrderModel.setupPaymentAssociation(container.get(TYPES.Payment.Model))
+    PaymentModel.setupOrderAssociation(container.get(TYPES.Order.OrderModel))
 }
 const container = configureDIC()
 
