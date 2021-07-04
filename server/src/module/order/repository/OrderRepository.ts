@@ -20,11 +20,11 @@ export class OrderRepository extends AbstractRepository {
     async create(cart: Cart, userId: number): Promise<Order> {
         const orderItems = mapOrderItemsFromCart(cart)
 
-        const currentOrder = await this.orderModel.create(
+        const newOrder = await this.orderModel.create(
             { user_id: userId, payment_id: 1, orderItems },
             { include: { association: OrderModel.associations.orderItems } })
-
-        return currentOrder
+        const order = fromDbToOrder(newOrder)
+        return order
     }
 
     async getOrders(limit?: number, offset?: number, userId?: number): Promise<IGetAllResponse<Order>> {
