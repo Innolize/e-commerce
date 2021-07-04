@@ -104,4 +104,9 @@ export class CartRepository extends AbstractRepository {
             throw CartError.InvalidProductId()
         }
     }
+
+    async removeAllItemsFromCart(cartId: number): Promise<number> {
+        const cart_id = cartId
+        return await this.cartItemModel.destroy({ where: { cart_id } })
+    }
 }

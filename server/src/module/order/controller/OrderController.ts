@@ -4,6 +4,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
 import { jwtAuthentication } from "../../auth/util/passportMiddlewares";
+import { authorizationMiddleware } from "../../authorization/util/authorizationMiddleware";
 import { CartService } from "../../cart/service/CartService";
 import { bodyValidator } from "../../common/helpers/bodyValidator";
 import { validateGetOrderDto } from "../helpers/get_dto_validator";
@@ -23,8 +24,8 @@ export class OrderController extends AbstractController {
 
     public configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE
-        app.post(`/api${ROUTE}`, jwtAuthentication, this.create.bind(this))
-        app.get(`/api${ROUTE}`, jwtAuthentication, this.getOrders.bind(this))
+        app.post(`/api${ROUTE}`, jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Order' }), this.create.bind(this))
+        app.get(`/api${ROUTE}`, jwtAuthentication, authorizationMiddleware({ action: 'read', subject: 'Order' }), this.getOrders.bind(this))
     }
 
     async getOrders(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -32,7 +33,7 @@ export class OrderController extends AbstractController {
         const queries: IOrderGetAllQUeries = req.query
         try {
             const { limit, offset } = await bodyValidator(validateGetOrderDto, queries)
-            const response = await this.orderService.getOrders(user, limit, offset,)
+            const response = await this.orderService.getOrders(user, limit, offset)
             res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
@@ -48,7 +49,8 @@ export class OrderController extends AbstractController {
             const cartId = user.cart.id as number
             const cart = await this.cartService.getCart(cartId, user)
             const orderCreated = await this.orderService.create(cart, user)
-            res.status(200).send({ orderCreated })
+            await this.cartService.clearCartItems(cartId, user)
+            res.status(200).send(orderCreated)
         } catch (err) {
             next(err)
         }
