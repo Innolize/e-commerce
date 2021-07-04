@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 import { Association, DataTypes, Model, Sequelize } from "sequelize";
+import { PaymentModel } from "../../payment/models/PaymentModel";
 import { UserModel } from "../../user/module";
 import { Order } from "../entities/Order";
 import { IOrder, IPayment } from "../interfaces/IOrder";
@@ -38,24 +39,33 @@ export class OrderModel extends Model<Order, IOrderCreate> implements IOrder {
         return OrderModel
     }
 
-    static setupOrderItemAssociation(model: typeof OrderItemModel): typeof OrderItemModel {
+    static setupOrderItemAssociation(model: typeof OrderItemModel): typeof OrderModel {
         OrderModel.hasMany(model, {
             foreignKey: "order_id",
-            as:"orderItems"
+            as: "orderItems"
         })
-        return OrderItemModel
+        return OrderModel
     }
 
-    static setupUserAssociation(model: typeof UserModel): typeof OrderItemModel {
+    static setupUserAssociation(model: typeof UserModel): typeof OrderModel {
         OrderModel.belongsTo(model, {
             foreignKey: "user_id",
             as: 'user'
         })
-        return OrderItemModel
+        return OrderModel
+    }
+
+    static setupPaymentAssociation(model: typeof PaymentModel): typeof OrderModel {
+        OrderModel.hasOne(model, {
+            foreignKey: "order_id",
+            as: "payment"
+        })
+        return OrderModel
     }
 
     public static associations: {
         orderItems: Association<OrderModel, OrderItemModel>;
         user: Association<OrderModel, UserModel>;
+        payment: Association<OrderModel, PaymentModel>;
     };
 }

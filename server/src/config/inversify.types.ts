@@ -102,5 +102,6 @@ export const TYPES = {
         Repository: Symbol('OrderRepository'),
         Service: Symbol('OrderService'),
         Controller: Symbol('OrderController'),
-    }
+    },
+    
 }
