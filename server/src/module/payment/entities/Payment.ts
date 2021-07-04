@@ -9,5 +9,4 @@ export class Payment implements IPayment {
         public type: typeof PAYMENT_TYPE[number],
         public amount: number
     ) { }
-
 }
