@@ -18,6 +18,8 @@ import { PermissionModel, RoleModel } from '../../module/authorization/module';
 import { UserModel } from '../../module/user/module';
 import { hash } from 'bcrypt'
 import { CartItemModel, CartModel } from '../../module/cart/module';
+import { OrderModel } from '../../module/order/model/OrderModel';
+import { OrderItemModel } from '../../module/order/model/OrderItemModel';
 
 async function configureDatabase() {
 
@@ -41,6 +43,8 @@ async function configureDatabase() {
             UserModel.setup(database);
             CartModel.setup(database);
             CartItemModel.setup(database);
+            OrderModel.setup(database);
+            OrderItemModel.setup(database);
             ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.Category.Model));
             ProductModel.setupBrandAssociation(container.get<typeof BrandModel>(TYPES.Brand.Model));
             MotherboardModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
@@ -58,6 +62,10 @@ async function configureDatabase() {
             UserModel.setupCartAssociation(CartModel)
             CartModel.setupUserAssociation(UserModel)
             ProductModel.setupCartItemAssociation(CartItemModel)
+            OrderModel.setupUserAssociation(UserModel)
+            OrderModel.setupOrderItemAssociation(OrderItemModel)
+            OrderItemModel.setupOrderAssociation(OrderModel)
+            OrderItemModel.setupProductAssociation(ProductModel)
         } catch (err) {
             console.log('config')
             console.log(err.message)
@@ -85,14 +93,8 @@ async function configureDatabase() {
                 { cart_id: 1, product_id: 2, quantity: 3 },
                 { cart_id: 1, product_id: 4, quantity: 2 },
                 { cart_id: 1, product_id: 6, quantity: 3 }
-
-            ])
-            const test = await UserModel.findByPk(1, { include: 'cart' })
-            console.log(test?.toJSON())
-            const test2 = await CartModel.findByPk(1, { include: 'user' })
-            console.log(test2?.toJSON())
+            ])           
         } catch (err) {
-
             console.log(err)
         }
     }
@@ -194,6 +196,8 @@ const seedPermission = async () => {
     await PermissionModel.create({ action: "update", subject: "User", role_id: 2, condition: JSON.stringify({ id: "${id}" }) })
     await PermissionModel.create({ action: "delete", subject: "User", role_id: 2, condition: JSON.stringify({ id: "${id}" }) })
     await PermissionModel.create({ action: "manage", subject: "Cart", role_id: 2, condition: JSON.stringify({ user_id: "${id}" }) })
+    await PermissionModel.create({ action: "create", subject: "Order", role_id: 2 })
+    await PermissionModel.create({ action: "read", subject: "Order", role_id: 2, condition: JSON.stringify({ user_id: "${id}" }) })
     console.log('Permission seeded')
 }
 

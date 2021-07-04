@@ -95,5 +95,12 @@ export const TYPES = {
         Repository: Symbol('CartRepository'),
         Service: Symbol('CartService'),
         Controller: Symbol('CartController'),
+    },
+    Order: {
+        OrderModel: Symbol('OrderModel'),
+        OrderItemModel: Symbol('OrderItemModel'),
+        Repository: Symbol('OrderRepository'),
+        Service: Symbol('OrderService'),
+        Controller: Symbol('OrderController'),
     }
 }

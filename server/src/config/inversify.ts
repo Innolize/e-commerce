@@ -25,6 +25,8 @@ import { ImageUploadRepository } from "../module/imageUploader/repository/imageU
 import { CartController, CartItemModel, CartModel } from "../module/cart/module"
 import { CartRepository } from "../module/cart/repository/CartRepository"
 import { CartService } from "../module/cart/service/CartService"
+import { OrderController, OrderItemModel, OrderModel, OrderRepository } from '../module/order/module'
+import { OrderService } from "../module/order/service/OrderService"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -120,6 +122,12 @@ export function configRoleModel(container: Container): typeof RoleModel {
 
 export function configPermissionModel(container: Container): typeof PermissionModel {
     return PermissionModel.setup(container.get(TYPES.Common.Database))
+}
+
+function configOrderModel(container: Container): [typeof OrderModel, typeof OrderItemModel] {
+    const orderModel = OrderModel.setup(container.get(TYPES.Common.Database))
+    const orderItemModel = OrderItemModel.setup(container.get(TYPES.Common.Database))
+    return [orderModel, orderItemModel]
 }
 
 function configPermissionContainer(container: Container): void {
@@ -223,6 +231,16 @@ function configureImageUploaderContainer(container: Container): void {
     container.bind<ImageUploadRepository>(TYPES.ImageUploader.Repository).to(ImageUploadRepository)
 }
 
+function configureOrderContainer(container: Container): void {
+    const [orderModel, orderItemModel] = configOrderModel(container)
+    container.bind<typeof OrderModel>(TYPES.Order.OrderModel).toConstantValue(orderModel)
+    container.bind<typeof OrderItemModel>(TYPES.Order.OrderItemModel).toConstantValue(orderItemModel)
+    container.bind<OrderRepository>(TYPES.Order.Repository).to(OrderRepository)
+    container.bind<OrderService>(TYPES.Order.Service).to(OrderService)
+    container.bind<OrderController>(TYPES.Order.Controller).to(OrderController)
+}
+
+
 function configureDIC() {
     const dependencyContainer = new Container()
     configureCommonContainer(dependencyContainer)
@@ -235,6 +253,7 @@ function configureDIC() {
     configPermissionContainer(dependencyContainer)
     configureCartContainer(dependencyContainer)
     configureUserContainer(dependencyContainer)
+    configureOrderContainer(dependencyContainer)
     associations(dependencyContainer)
 
     return dependencyContainer
@@ -258,6 +277,10 @@ function associations(container: Container) {
     ProcessorModel.setupProductAssociation(container.get(TYPES.Product.Model))
     RamModel.setupProductAssociation(container.get(TYPES.Product.Model))
     ProductModel.setupCartItemAssociation(container.get(TYPES.Cart.CartItemModel))
+    OrderModel.setupOrderItemAssociation(container.get(TYPES.Order.OrderItemModel))
+    OrderModel.setupUserAssociation(container.get(TYPES.User.Model))
+    OrderItemModel.setupOrderAssociation(container.get(TYPES.Order.OrderModel))
+    OrderItemModel.setupProductAssociation(container.get(TYPES.Product.Model))
 }
 const container = configureDIC()
 

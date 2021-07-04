@@ -67,6 +67,12 @@ export class CartService extends AbstractService {
         await this.cartRepository.modifyCartItemQuantity(cartId, cartItemId, quantity)
         return await this.cartRepository.getCartItem(cartItemId)
     }
+
+    async clearCartItems(cartId: number, user: IUserWithAuthorization): Promise<void> {
+        const cart = await this.cartRepository.getCart(cartId, user.id)
+        ForbiddenError.from<appAbility>(user.role).throwUnlessCan('delete', cart)
+        await this.cartRepository.removeAllItemsFromCart(cartId)
+    }
 }
 
 
