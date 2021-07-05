@@ -1,5 +1,6 @@
-import { DataTypes, Model, Sequelize } from "sequelize";
+import { DataTypes, Model, Sequelize, Association } from "sequelize";
 import { PAYMENT_STATUS, PAYMENT_TYPE } from "../../../config/constants/pcbuilder";
+import { Order } from "../../order/entities/Order";
 import { OrderModel } from "../../order/module";
 import { Payment } from "../entities/Payment";
 import { IPayment } from "../interfaces/IPayment";
@@ -11,6 +12,7 @@ export class PaymentModel extends Model<Payment, IPaymentCreate> implements IPay
     status: typeof PAYMENT_STATUS[number];
     type: typeof PAYMENT_TYPE[number];
     amount: number;
+    order: Order;
 
     static setup(database: Sequelize): typeof PaymentModel {
         PaymentModel.init({
@@ -44,8 +46,13 @@ export class PaymentModel extends Model<Payment, IPaymentCreate> implements IPay
 
     static setupOrderAssociation(model: typeof OrderModel): typeof PaymentModel {
         PaymentModel.belongsTo(model, {
-            foreignKey: "order_id"
+            foreignKey: "order_id",
+            as: "order"
         })
         return PaymentModel
+    }
+
+    static associations: {
+        order: Association<PaymentModel, OrderModel>
     }
 }
