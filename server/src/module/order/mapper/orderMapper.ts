@@ -8,9 +8,9 @@ import { IOrderItemAssociated } from "../interfaces/IOrderCreate"
 import { IOrderItem } from "../interfaces/IOrderItem"
 
 export const fromDbToOrder = (model: IOrder): Order => {
-    const { payment_id, orderItems, user_id, id } = model
+    const { orderItems, user_id, id, payment } = model
     const orderItems_order = orderItems ? orderItems.map(fromDbToOrderItem) : undefined
-    return new Order(user_id, payment_id, id, orderItems_order)
+    return new Order(user_id, id, orderItems_order, payment)
 }
 
 export const fromDbToOrderItem = (model: IOrderItem): OrderItem => {

@@ -5,6 +5,7 @@ import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Cart } from "../../cart/entities/Cart";
 import { IGetAllResponse } from "../../common/interfaces/IGetAllResponseGeneric";
 import { Order } from "../entities/Order";
+import { IOrderPaymentAssociated } from "../interfaces/IOrderCreate";
 import { fromDbToOrder, mapOrderItemsFromCart } from "../mapper/orderMapper";
 import { OrderItemModel } from "../model/OrderItemModel";
 import { OrderModel } from "../model/OrderModel";
@@ -19,10 +20,19 @@ export class OrderRepository extends AbstractRepository {
 
     async create(cart: Cart, userId: number): Promise<Order> {
         const orderItems = mapOrderItemsFromCart(cart)
+        const total = orderItems.reduce((total, currentItem) => {
+            const orderItemTotal = currentItem.price_per_unit * currentItem.quantity
+            return total + orderItemTotal
+        }, 0)
+
+        const payment: IOrderPaymentAssociated = {
+            amount: total,
+            type: 'CASH'
+        }
 
         const newOrder = await this.orderModel.create(
-            { user_id: userId, payment_id: 1, orderItems },
-            { include: { association: OrderModel.associations.orderItems } })
+            { user_id: userId, orderItems, payment },
+            { include: [{ association: OrderModel.associations.orderItems }, { association: OrderModel.associations.payment }] })
         const order = fromDbToOrder(newOrder)
         return order
     }
@@ -31,7 +41,7 @@ export class OrderRepository extends AbstractRepository {
         const whereOptions: WhereOptions<Order> = {}
         userId ? whereOptions.user_id = userId : ''
         const { count, rows } = await this.orderModel.findAndCountAll(
-            { where: whereOptions, limit, offset, include: { association: OrderModel.associations.orderItems, include: [{ association: OrderItemModel.associations.product }] } }
+            { where: whereOptions, limit, offset, include: [{ association: OrderModel.associations.orderItems, include: [{ association: OrderItemModel.associations.product }] }, { association: OrderModel.associations.payment }] }
         )
         const orders = rows.map(fromDbToOrder)
         const response: IGetAllResponse<Order> = { count, results: orders }
