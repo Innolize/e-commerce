@@ -28,6 +28,9 @@ import { CartService } from "../module/cart/service/CartService"
 import { OrderController, OrderItemModel, OrderModel, OrderRepository } from '../module/order/module'
 import { OrderService } from "../module/order/service/OrderService"
 import { PaymentModel } from "../module/payment/models/PaymentModel"
+import { PaymentService } from "../module/payment/service/PaymentService"
+import { PaymentRepository } from "../module/payment/repository/PaymentRepository"
+import { PaymentController } from "../module/payment/controller/PaymentController"
 
 function configureUploadMiddleware() {
     const storage = memoryStorage()
@@ -138,6 +141,9 @@ function configPaymentModel(container: Container): typeof PaymentModel {
 
 function configPaymentContainer(container: Container): void {
     container.bind<typeof PaymentModel>(TYPES.Payment.Model).toConstantValue(configPaymentModel(container))
+    container.bind<PaymentRepository>(TYPES.Payment.Repository).to(PaymentRepository)
+    container.bind<PaymentService>(TYPES.Payment.Service).to(PaymentService)
+    container.bind<PaymentController>(TYPES.Payment.Controller).to(PaymentController)
 }
 
 function configPermissionContainer(container: Container): void {

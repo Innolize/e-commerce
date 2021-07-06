@@ -103,7 +103,10 @@ export const TYPES = {
         Service: Symbol('OrderService'),
         Controller: Symbol('OrderController'),
     },
-    Payment:{
-        Model: Symbol('PaymentModel')
+    Payment: {
+        Model: Symbol('PaymentModel'),
+        Repository: Symbol('PaymentRepository'),
+        Service: Symbol('PaymentService'),
+        Controller: Symbol('PaymentController')
     }
 }
