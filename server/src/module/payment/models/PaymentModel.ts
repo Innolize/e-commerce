@@ -3,14 +3,14 @@ import { PAYMENT_STATUS, PAYMENT_TYPE } from "../../../config/constants/pcbuilde
 import { Order } from "../../order/entities/Order";
 import { OrderModel } from "../../order/module";
 import { Payment } from "../entities/Payment";
-import { IPayment } from "../interfaces/IPayment";
+import { IPayment, IPaymentStatus, IPaymentType } from "../interfaces/IPayment";
 import { IPaymentCreate } from "../interfaces/IPaymentCreate";
 
 export class PaymentModel extends Model<Payment, IPaymentCreate> implements IPayment {
     id: number;
     order_id: number;
-    status: typeof PAYMENT_STATUS[number];
-    type: typeof PAYMENT_TYPE[number];
+    status: IPaymentStatus;
+    type: IPaymentType;
     amount: number;
     order: Order;
 

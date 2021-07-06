@@ -5,7 +5,6 @@ export const VIDEO_CARD_VERSION = ["DDR4", "DDR5", "DDR6"] as const
 export const PWS_CERTIFICATION = ['GENERIC', 'PLUS', 'PLUS SILVER', 'PLUS GOLD', 'PLUS PLATINUM'] as const
 export const DISK_TYPE = ["SSD", "HDD"] as const
 
-
 //PAYMENT TYPES
 export const PAYMENT_STATUS = ["PAID", "PENDING"] as const
 export const PAYMENT_TYPE = ["CASH", "DEBIT CARD", "CREDIT CARD", "OTHER"] as const

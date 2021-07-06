@@ -1,13 +1,14 @@
-import { PAYMENT_STATUS, PAYMENT_TYPE } from "../../../config/constants/pcbuilder";
-import { IPayment } from "../interfaces/IPayment";
+import { Order } from "../../order/entities/Order";
+import { IPayment, IPaymentStatus, IPaymentType } from "../interfaces/IPayment";
 
 export class Payment implements IPayment {
     static readonly modelName = 'Payment'
     constructor(
         public id: number,
         public order_id: number,
-        public status: typeof PAYMENT_STATUS[number],
-        public type: typeof PAYMENT_TYPE[number],
-        public amount: number
+        public status: IPaymentStatus,
+        public type: IPaymentType,
+        public amount: number,
+        public order?: Order
     ) { }
 }
