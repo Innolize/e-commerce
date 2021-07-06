@@ -26,6 +26,8 @@ export class OrderController extends AbstractController {
         const ROUTE = this.ROUTE
         app.post(`/api${ROUTE}`, jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Order' }), this.create.bind(this))
         app.get(`/api${ROUTE}`, jwtAuthentication, authorizationMiddleware({ action: 'read', subject: 'Order' }), this.getOrders.bind(this))
+        app.get(`/api${ROUTE}/:id`, jwtAuthentication, authorizationMiddleware({ action: 'read', subject: 'Order' }), this.getSingle.bind(this))
+        app.delete(`/api${ROUTE}/:id`, jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Order' }), this.delete.bind(this))
     }
 
     async getOrders(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -51,6 +53,29 @@ export class OrderController extends AbstractController {
             const orderCreated = await this.orderService.create(cart, user)
             await this.cartService.clearCartItems(cartId, user)
             res.status(200).send(orderCreated)
+        } catch (err) {
+            next(err)
+        }
+    }
+
+    async getSingle(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const { id } = req.params
+        try {
+            console.log(Number(id))
+            const response = await this.orderService.getSingleOrder(Number(id))
+            res.status(200).send(response)
+        } catch (err) {
+            next(err)
+        }
+    }
+
+    async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const { id } = req.params
+        const user = req.user
+        try {
+            const idNumber = Number(id)
+            const response = await this.orderService.removeOrder(idNumber, user)
+            res.status(200).send(response)
         } catch (err) {
             next(err)
         }

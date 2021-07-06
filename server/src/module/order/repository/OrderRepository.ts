@@ -5,7 +5,7 @@ import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Cart } from "../../cart/entities/Cart";
 import { IGetAllResponse } from "../../common/interfaces/IGetAllResponseGeneric";
 import { Order } from "../entities/Order";
-import { IOrderPaymentAssociated } from "../interfaces/IOrderCreate";
+import { IOrderItemAssociated, IOrderPaymentAssociated } from "../interfaces/IOrderCreate";
 import { fromDbToOrder, mapOrderItemsFromCart } from "../mapper/orderMapper";
 import { OrderItemModel } from "../model/OrderItemModel";
 import { OrderModel } from "../model/OrderModel";
@@ -20,15 +20,7 @@ export class OrderRepository extends AbstractRepository {
 
     async create(cart: Cart, userId: number): Promise<Order> {
         const orderItems = mapOrderItemsFromCart(cart)
-        const total = orderItems.reduce((total, currentItem) => {
-            const orderItemTotal = currentItem.price_per_unit * currentItem.quantity
-            return total + orderItemTotal
-        }, 0)
-
-        const payment: IOrderPaymentAssociated = {
-            amount: total,
-            type: 'CASH'
-        }
+        const payment = this.createOrderPaymentAssociation(orderItems)
 
         const newOrder = await this.orderModel.create(
             { user_id: userId, orderItems, payment },
@@ -46,5 +38,41 @@ export class OrderRepository extends AbstractRepository {
         const orders = rows.map(fromDbToOrder)
         const response: IGetAllResponse<Order> = { count, results: orders }
         return response
+    }
+
+
+
+    async getSingleOrder(id: number): Promise<Order> {
+        const response = await this.orderModel.findByPk(id, { include: [{ association: OrderModel.associations.orderItems }, { association: OrderModel.associations.payment }] })
+        if (!response) {
+            throw new Error("Order not found!")
+        }
+
+        const order = fromDbToOrder(response)
+        return order
+    }
+
+    async deleteOrder(id: number): Promise<true> {
+        console.log(12345)
+        const response = await this.orderModel.destroy({ where: { id } })
+
+        if (!response) {
+            throw new Error("Order not found")
+        }
+        return true
+    }
+
+    private createOrderPaymentAssociation(orderItems: IOrderItemAssociated[]): IOrderPaymentAssociated {
+        const total = orderItems.reduce((total, currentItem) => {
+            const { price_per_unit, quantity } = currentItem
+            const orderItemTotal = price_per_unit * quantity
+            return total + orderItemTotal
+        }, 0)
+
+        const payment: IOrderPaymentAssociated = {
+            amount: total,
+            type: 'CASH'
+        }
+        return payment
     }
 }

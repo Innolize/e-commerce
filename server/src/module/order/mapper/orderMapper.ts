@@ -1,4 +1,5 @@
 import { Cart } from "../../cart/entities/Cart"
+import { fromDbToPayment } from "../../payment/mapper/paymentMapper"
 import { fromDbToProduct } from "../../product/mapper/productMapper"
 import { Order } from "../entities/Order"
 import { OrderItem } from "../entities/OrderItem"
@@ -10,7 +11,8 @@ import { IOrderItem } from "../interfaces/IOrderItem"
 export const fromDbToOrder = (model: IOrder): Order => {
     const { orderItems, user_id, id, payment } = model
     const orderItems_order = orderItems ? orderItems.map(fromDbToOrderItem) : undefined
-    return new Order(user_id, id, orderItems_order, payment)
+    const payment_order = payment ? fromDbToPayment(payment) : undefined
+    return new Order(user_id, id, orderItems_order, payment_order)
 }
 
 export const fromDbToOrderItem = (model: IOrderItem): OrderItem => {
