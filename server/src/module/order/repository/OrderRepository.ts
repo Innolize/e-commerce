@@ -48,7 +48,6 @@ export class OrderRepository extends AbstractRepository {
         if (!response) {
             throw OrderError.notFound()
         }
-
         const order = fromDbToOrder(response)
         return order
     }
