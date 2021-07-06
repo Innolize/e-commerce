@@ -21,6 +21,7 @@ export class PaymentController extends AbstractController {
         const ROUTE = this.ROUTE
         app.get(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: "read", subject: "Payment" })], this.getAll.bind(this));
         app.get(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: "read", subject: "Payment" })], this.getSingle.bind(this));
+        app.put(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: "update", subject: "Payment" })], this.updateAsPaid.bind(this));
     }
 
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -34,13 +35,27 @@ export class PaymentController extends AbstractController {
 
     async getSingle(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { id } = req.params
-        const idNumber = Number(id)
-        if (!idNumber) {
-            throw BaseError.idParamNotDefined()
-        }
         try {
+            const idNumber = Number(id)
+            if (!idNumber) {
+                throw BaseError.idParamNotDefined()
+            }
             const response = await this.paymentService.getSingle(idNumber)
             res.status(StatusCodes.OK).send(response)
+        } catch (err) {
+            next(err)
+        }
+    }
+
+    async updateAsPaid(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const { id } = req.params
+        try {
+            const idNumber = Number(id)
+            if (!idNumber) {
+                throw BaseError.idParamNotDefined()
+            }
+            await this.paymentService.updateAsPaid(idNumber)
+            res.status(StatusCodes.OK).send({ message: `Payment with id ${idNumber} updated` })
         } catch (err) {
             next(err)
         }

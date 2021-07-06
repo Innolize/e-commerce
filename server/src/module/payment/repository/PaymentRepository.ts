@@ -47,4 +47,15 @@ export class PaymentRepository extends AbstractRepository {
         }
         return fromDbToPayment(dbResponse)
     }
+
+    async modifyPayment(paymentId: number, newStatus: IPaymentStatus): Promise<Payment> {
+        const paymentPartial: Partial<Payment> = {}
+        paymentPartial.status = newStatus
+        const [rows, paymentArray] = await this.paymentModel.update(paymentPartial, { where: { id: paymentId } })
+        if (!rows) {
+            throw new Error("Payment not found")
+        }
+        const updatedPayment = paymentArray[0]
+        return fromDbToPayment(updatedPayment)
+    }
 }

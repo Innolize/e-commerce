@@ -20,4 +20,8 @@ export class PaymentService extends AbstractService {
     async getSingle(id: number): Promise<Payment> {
         return await this.paymentRepository.getSingle(id)
     }
+
+    async updateAsPaid(paymentId: number): Promise<Payment> {
+        return await this.paymentRepository.modifyPayment(paymentId, "PAID")
+    }
 }
