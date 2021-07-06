@@ -30,7 +30,7 @@ export const mapOrderItemsFromCart = (cart: Cart): IOrderItemAssociated[] => {
     const itemsArray = cart.cartItems.map(item => {
 
         if (!item.product) {
-            throw new Error('Product not populated')
+            throw OrderError.productNotPopulated()
         }
         const { product_id, quantity, product } = item
 

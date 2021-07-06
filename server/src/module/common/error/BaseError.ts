@@ -13,4 +13,8 @@ export class BaseError extends Error {
         this.message = message
         Error.captureStackTrace(this)
     }
+
+    static idParamNotDefined(): BaseError {
+        return new BaseError(this.name, StatusCodes.BAD_REQUEST, "Invalid id param.")
+    }
 }

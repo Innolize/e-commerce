@@ -7,6 +7,7 @@ import { appAbility } from "../../authorization/util/abilityBuilder";
 import { Cart } from "../../cart/entities/Cart";
 import { IGetAllResponse } from "../../common/interfaces/IGetAllResponseGeneric";
 import { Order } from "../entities/Order";
+import { OrderError } from "../error/OrderError";
 import { OrderRepository } from "../repository/OrderRepository";
 
 @injectable()
@@ -38,8 +39,8 @@ export class OrderService extends AbstractService {
     async removeOrder(orderId: number, user: IUserWithAuthorization): Promise<true> {
         const order = await this.getSingleOrder(orderId)
         ForbiddenError.from<appAbility>(user.role).throwUnlessCan('delete', order)
-        if(order.payment?.status === 'PAID'){
-            throw new Error("Cannot delete a paid order!")
+        if (order.payment?.status === 'PAID') {
+            throw OrderError.deletePaidOrder()
         }
         await this.orderRepository.deleteOrder(orderId)
         return true

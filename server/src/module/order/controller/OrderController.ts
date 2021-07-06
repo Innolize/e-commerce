@@ -6,6 +6,7 @@ import { AbstractController } from "../../abstractClasses/abstractController";
 import { jwtAuthentication } from "../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../authorization/util/authorizationMiddleware";
 import { CartService } from "../../cart/service/CartService";
+import { BaseError } from "../../common/error/BaseError";
 import { bodyValidator } from "../../common/helpers/bodyValidator";
 import { validateGetOrderDto } from "../helpers/get_dto_validator";
 import { IOrderGetAllQUeries } from "../interfaces/IOrderGetallQueries";
@@ -60,9 +61,12 @@ export class OrderController extends AbstractController {
 
     async getSingle(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { id } = req.params
+        const idParam = Number(id)
+        if (!id || !idParam) {
+            throw BaseError.idParamNotDefined()
+        }
         try {
-            console.log(Number(id))
-            const response = await this.orderService.getSingleOrder(Number(id))
+            const response = await this.orderService.getSingleOrder(idParam)
             res.status(200).send(response)
         } catch (err) {
             next(err)
@@ -73,8 +77,11 @@ export class OrderController extends AbstractController {
         const { id } = req.params
         const user = req.user
         try {
-            const idNumber = Number(id)
-            const response = await this.orderService.removeOrder(idNumber, user)
+            const idParam = Number(id)
+            if (!id || !idParam) {
+                throw BaseError.idParamNotDefined()
+            }
+            const response = await this.orderService.removeOrder(idParam, user)
             res.status(200).send(response)
         } catch (err) {
             next(err)

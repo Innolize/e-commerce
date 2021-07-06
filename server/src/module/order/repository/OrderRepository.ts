@@ -5,6 +5,7 @@ import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Cart } from "../../cart/entities/Cart";
 import { IGetAllResponse } from "../../common/interfaces/IGetAllResponseGeneric";
 import { Order } from "../entities/Order";
+import { OrderError } from "../error/OrderError";
 import { IOrderItemAssociated, IOrderPaymentAssociated } from "../interfaces/IOrderCreate";
 import { fromDbToOrder, mapOrderItemsFromCart } from "../mapper/orderMapper";
 import { OrderItemModel } from "../model/OrderItemModel";
@@ -45,7 +46,7 @@ export class OrderRepository extends AbstractRepository {
     async getSingleOrder(id: number): Promise<Order> {
         const response = await this.orderModel.findByPk(id, { include: [{ association: OrderModel.associations.orderItems }, { association: OrderModel.associations.payment }] })
         if (!response) {
-            throw new Error("Order not found!")
+            throw OrderError.notFound()
         }
 
         const order = fromDbToOrder(response)
@@ -53,11 +54,9 @@ export class OrderRepository extends AbstractRepository {
     }
 
     async deleteOrder(id: number): Promise<true> {
-        console.log(12345)
         const response = await this.orderModel.destroy({ where: { id } })
-
         if (!response) {
-            throw new Error("Order not found")
+            throw OrderError.notFound()
         }
         return true
     }
