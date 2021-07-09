@@ -4,6 +4,7 @@ import { TYPES } from "../../../config/inversify.types";
 import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Cart } from "../../cart/entities/Cart";
 import { IGetAllResponse } from "../../common/interfaces/IGetAllResponseGeneric";
+import { IPaymentType } from "../../payment/interfaces/IPayment";
 import { Order } from "../entities/Order";
 import { OrderError } from "../error/OrderError";
 import { IOrderItemAssociated, IOrderPaymentAssociated } from "../interfaces/IOrderCreate";
@@ -19,9 +20,9 @@ export class OrderRepository extends AbstractRepository {
         super()
     }
 
-    async create(cart: Cart, userId: number): Promise<Order> {
+    async create(cart: Cart, userId: number, paymentType: IPaymentType): Promise<Order> {
         const orderItems = mapOrderItemsFromCart(cart)
-        const payment = this.createOrderPaymentAssociation(orderItems)
+        const payment = this.createOrderPaymentAssociation(orderItems, paymentType)
 
         const newOrder = await this.orderModel.create(
             { user_id: userId, orderItems, payment },
@@ -60,7 +61,7 @@ export class OrderRepository extends AbstractRepository {
         return true
     }
 
-    private createOrderPaymentAssociation(orderItems: IOrderItemAssociated[]): IOrderPaymentAssociated {
+    private createOrderPaymentAssociation(orderItems: IOrderItemAssociated[], paymentType: IPaymentType): IOrderPaymentAssociated {
         const total = orderItems.reduce((total, currentItem) => {
             const { price_per_unit, quantity } = currentItem
             const orderItemTotal = price_per_unit * quantity
@@ -69,7 +70,7 @@ export class OrderRepository extends AbstractRepository {
 
         const payment: IOrderPaymentAssociated = {
             amount: total,
-            type: 'CASH'
+            type: paymentType
         }
         return payment
     }

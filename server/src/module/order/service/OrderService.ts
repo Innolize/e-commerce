@@ -6,6 +6,7 @@ import { IUserWithAuthorization } from "../../authorization/interfaces/IUserWith
 import { appAbility } from "../../authorization/util/abilityBuilder";
 import { Cart } from "../../cart/entities/Cart";
 import { IGetAllResponse } from "../../common/interfaces/IGetAllResponseGeneric";
+import { IPaymentType } from "../../payment/interfaces/IPayment";
 import { Order } from "../entities/Order";
 import { OrderError } from "../error/OrderError";
 import { OrderRepository } from "../repository/OrderRepository";
@@ -18,8 +19,8 @@ export class OrderService extends AbstractService {
         super()
     }
 
-    async create(cart: Cart, user: IUserWithAuthorization): Promise<Order> {
-        const response = await this.orderRepository.create(cart, user.id)
+    async create(cart: Cart, user: IUserWithAuthorization, paymentType: IPaymentType): Promise<Order> {
+        const response = await this.orderRepository.create(cart, user.id, paymentType)
         return response
     }
 

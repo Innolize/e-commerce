@@ -1,6 +1,7 @@
 import { Application, NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { inject, injectable } from "inversify";
+import { Multer } from "multer";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
 import { jwtAuthentication } from "../../auth/util/passportMiddlewares";
@@ -8,7 +9,9 @@ import { authorizationMiddleware } from "../../authorization/util/authorizationM
 import { CartService } from "../../cart/service/CartService";
 import { BaseError } from "../../common/error/BaseError";
 import { bodyValidator } from "../../common/helpers/bodyValidator";
+import { validateCreateOrderDto } from "../helpers/create_dto_validator";
 import { validateGetOrderDto } from "../helpers/get_dto_validator";
+import { IOrderCreateDto } from "../interfaces/IOrderCreate";
 import { IOrderGetAllQUeries } from "../interfaces/IOrderGetallQueries";
 import { OrderService } from "../service/OrderService";
 
@@ -17,7 +20,8 @@ export class OrderController extends AbstractController {
     private ROUTE: string
     constructor(
         @inject(TYPES.Order.Service) private orderService: OrderService,
-        @inject(TYPES.Cart.Service) private cartService: CartService
+        @inject(TYPES.Cart.Service) private cartService: CartService,
+        @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer
     ) {
         super()
         this.ROUTE = '/order'
@@ -25,7 +29,7 @@ export class OrderController extends AbstractController {
 
     public configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE
-        app.post(`/api${ROUTE}`, jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Order' }), this.create.bind(this))
+        app.post(`/api${ROUTE}`, this.uploadMiddleware.none(), jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Order' }), this.create.bind(this))
         app.get(`/api${ROUTE}`, jwtAuthentication, authorizationMiddleware({ action: 'read', subject: 'Order' }), this.getOrders.bind(this))
         app.get(`/api${ROUTE}/:id`, jwtAuthentication, authorizationMiddleware({ action: 'read', subject: 'Order' }), this.getSingle.bind(this))
         app.delete(`/api${ROUTE}/:id`, jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Order' }), this.delete.bind(this))
@@ -45,13 +49,15 @@ export class OrderController extends AbstractController {
 
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         const user = req.user
+        const dto: IOrderCreateDto = req.body
         try {
             if (!user.cart) {
                 throw new Error('12345667')
             }
+            const { paymentType } = await bodyValidator(validateCreateOrderDto, dto)
             const cartId = user.cart.id as number
             const cart = await this.cartService.getCart(cartId, user)
-            const orderCreated = await this.orderService.create(cart, user)
+            const orderCreated = await this.orderService.create(cart, user, paymentType)
             await this.cartService.clearCartItems(cartId, user)
             res.status(200).send(orderCreated)
         } catch (err) {
