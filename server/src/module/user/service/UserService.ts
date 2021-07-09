@@ -3,19 +3,19 @@ import { TYPES } from "../../../config/inversify.types";
 import { AbstractService } from "../../abstractClasses/abstractService";
 import { User } from "../entities/User";
 import { IUserEdit } from "../interfaces/IUserEdit";
-import { UserRepository } from "../repository/UserRepository";
 import bcrypt from "bcrypt"
 import { UserError } from "../error/UserError";
 import { GetUsersDto } from "../dto/getUsersDto";
 import { GetUserReqDto } from "../dto/getUsersReqDto";
 import { IUserCreate } from "../interfaces/IUserCreate";
+import { IUserService } from "../interfaces/IUserService";
+import { IUserRepository } from "../interfaces/IUserRepository";
 
 @injectable()
-export class UserService extends AbstractService {
-    private userRepository: UserRepository
+export class UserService extends AbstractService implements IUserService {
     private encryption: typeof bcrypt
     constructor(
-        @inject(TYPES.User.Repository) userRepository: UserRepository,
+        @inject(TYPES.User.Repository) private userRepository: IUserRepository,
         @inject(TYPES.Common.Encryption) encryption: typeof bcrypt
     ) {
         super()
@@ -53,11 +53,11 @@ export class UserService extends AbstractService {
         return await this.userRepository.findUserByMail(mail)
     }
 
-    async modifyUser(user: IUserEdit): Promise<User | Error> {
+    async modifyUser(user: IUserEdit): Promise<User> {
         return await this.userRepository.modifyUser(user)
     }
 
-    async deleteUser(id: number): Promise<true | Error> {
+    async deleteUser(id: number): Promise<true> {
         return await this.userRepository.deleteUser(id)
     }
 }

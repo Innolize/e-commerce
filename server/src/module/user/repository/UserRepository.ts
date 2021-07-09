@@ -11,9 +11,10 @@ import { UserModel } from "../model/UserModel";
 import { GetUsersDto } from '../dto/getUsersDto'
 import { GetUserReqDto } from "../dto/getUsersReqDto";
 import { IUserCreate } from "../interfaces/IUserCreate";
+import { IUserRepository } from "../interfaces/IUserRepository";
 
 @injectable()
-export class UserRepository extends AbstractRepository {
+export class UserRepository extends AbstractRepository implements IUserRepository {
     private userModel: typeof UserModel
     constructor(
         @inject(TYPES.User.Model) userModel: typeof UserModel
@@ -61,7 +62,7 @@ export class UserRepository extends AbstractRepository {
         return fromDbToUser(user)
     }
 
-    async modifyUser(user: IUserEdit): Promise<User | Error> {
+    async modifyUser(user: IUserEdit): Promise<User> {
 
         const [userEdited, userArray] = await this.userModel.update(user, { where: { id: user.id }, returning: true })
         // update returns an array, first argument is the number of elements updated in the
@@ -75,7 +76,7 @@ export class UserRepository extends AbstractRepository {
 
     }
 
-    async deleteUser(id: number): Promise<true | Error> {
+    async deleteUser(id: number): Promise<true> {
         try {
             const response = await this.userModel.destroy({ where: { id } })
             if (!response) {

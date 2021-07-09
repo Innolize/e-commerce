@@ -12,17 +12,16 @@ import { UserError } from "../error/UserError";
 import { validateCreateUserDto } from "../helper/create_dto_validator";
 import { validateEditUserDto } from "../helper/edit_dto_validator";
 import { validateGetUsersDto } from "../helper/get_dto_validator";
+import { IUserController } from "../interfaces/IUserController";
 import { IUserCreate } from "../interfaces/IUserCreate";
 import { IUserEdit } from "../interfaces/IUserEdit";
-import { UserService } from "../service/UserService";
+import { IUserService } from "../interfaces/IUserService";
 
-
-export class UserController extends AbstractController {
+export class UserController extends AbstractController implements IUserController {
     private ROUTE_BASE: string
-    private userService: UserService
     private uploadMiddleware: Multer
     constructor(
-        @inject(TYPES.User.Service) userService: UserService,
+        @inject(TYPES.User.Service) private userService: IUserService,
         @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer
     ) {
         super()
@@ -39,41 +38,41 @@ export class UserController extends AbstractController {
         app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'User' })], this.deleteUser.bind(this))
     }
 
-    async getUsers(req: Request, res: Response, next: NextFunction) {
+    async getUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
         const dto: IUserGetUsers = req.query
         try {
             const { limit, offset } = await bodyValidator(validateGetUsersDto, dto)
             const searchParam = new GetUserReqDto(limit, offset)
             const response = await this.userService.getUsers(searchParam)
-            return res.status(StatusCodes.OK).send(response)
+            res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
         }
     }
 
-    async getSingleUser(req: Request, res: Response, next: NextFunction) {
+    async getSingleUser(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params
             const response = await this.userService.getSingleUser(Number(id))
-            return res.status(StatusCodes.OK).send(response)
+            res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
         }
 
     }
 
-    async createUser(req: Request, res: Response, next: NextFunction) {
+    async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const dto: IUserCreate = req.body
             const validatedDto = await bodyValidator(validateCreateUserDto, dto)
             const createdUser = await this.userService.createUser(validatedDto)
-            return res.status(StatusCodes.CREATED).send(createdUser)
+            res.status(StatusCodes.CREATED).send(createdUser)
         } catch (err) {
             next(err)
         }
     }
 
-    async deleteUser(req: Request, res: Response, next: NextFunction) {
+    async deleteUser(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { id } = req.params
         try {
             const idNumber = Number(id)
@@ -81,18 +80,18 @@ export class UserController extends AbstractController {
                 throw UserError.invalidId()
             }
             const response = await this.userService.deleteUser(idNumber)
-            return res.status(StatusCodes.OK).send(response)
+            res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
         }
     }
 
-    async editUser(req: Request, res: Response, next: NextFunction) {
+    async editUser(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const dto: IUserEdit = req.body
             const validDto = await bodyValidator(validateEditUserDto, dto)
             const editedUser = await this.userService.modifyUser(validDto)
-            return res.status(200).send(editedUser)
+            res.status(200).send(editedUser)
         } catch (err) {
             next(err)
         }

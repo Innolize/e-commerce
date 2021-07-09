@@ -15,7 +15,6 @@ const sequelizeInstance = new Sequelize(<string>process.env.TEST_DATABASE_URL, {
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
     dialect: 'postgres'
-
 })
 
 let brand: typeof BrandModel
@@ -31,7 +30,6 @@ let repository: ProductRepository
 beforeEach(async (done) => {
 
     await sequelizeInstance.drop()
-
     brand = BrandModel.setup(sequelizeInstance)
     category = CategoryModel.setup(sequelizeInstance)
     product = ProductModel.setup(sequelizeInstance)
@@ -42,61 +40,61 @@ beforeEach(async (done) => {
     done();
 });
 
-const sampleProduct = new Product(
-    "new-product",
-    null,
-    "new-product-description",
-    1,
-    true,
-    1,
-    200,
-)
+// const sampleProduct = new Product(
+//     "new-product",
+//     null,
+//     "new-product-description",
+//     1,
+//     true,
+//     1,
+//     200,
+// )
 
-const sampleBrand = new Brand(
-    "test-brand",
-    "test-brand-logo"
-)
+// const sampleBrand = new Brand(
+//     "test-brand",
+//     "test-brand-logo"
+// )
 
-const sampleCategory = new Category(
-    "test-category"
-)
+// const sampleCategory = new Category(
+//     "test-category"
+// )
 
-test('Creates a product with id 1', async () => {
-    await brand.create(sampleBrand)
-    await category.create(sampleCategory)
-    const newProduct = await repository.createProduct(sampleProduct) as Product
+// test('Creates a product with id 1', async () => {
+//     await brand.create(sampleBrand)
+//     await category.create(sampleCategory)
+//     const newProduct = await repository.createProduct(sampleProduct) as Product
 
-    expect(newProduct.id).toBe(1)
-})
+//     expect(newProduct.id).toBe(1)
+// })
 
-describe('Get a product by id', () => {
-    it("get product with correct id", async () => {
-        await brand.create(sampleBrand)
-        await category.create(sampleCategory)
-        await repository.createProduct(sampleProduct) as Product
+// describe('Get a product by id', () => {
+//     it("get product with correct id", async () => {
+//         await brand.create(sampleBrand)
+//         await category.create(sampleCategory)
+//         await repository.createProduct(sampleProduct) as Product
 
-        const result = await repository.getById(1) as Product
-        expect(result).toBeInstanceOf(Product)
-        expect(result.id).toEqual(1)
-    })
-    it("returns error if product was not found", async () => {
-        await expect(repository.getById(123)).rejects.toThrow("product not found")
-    })
+//         const result = await repository.getById(1) as Product
+//         expect(result).toBeInstanceOf(Product)
+//         expect(result.id).toEqual(1)
+//     })
+//     it("returns error if product was not found", async () => {
+//         await expect(repository.getById(123)).rejects.toThrow("product not found")
+//     })
 
-})
+// })
 
-describe('Delete a product', () => {
-    it("delete a product by id", async () => {
-        await brand.create(sampleBrand)
-        await category.create(sampleCategory)
-        await repository.createProduct(sampleProduct)
+// describe('Delete a product', () => {
+//     it("delete a product by id", async () => {
+//         await brand.create(sampleBrand)
+//         await category.create(sampleCategory)
+//         await repository.createProduct(sampleProduct)
 
-        await expect(repository.deleteProduct(1)).resolves.toBe(true)
-    })
-    it("throw error when trying to delete an inexistent product", async () => {
-        await expect(repository.deleteProduct(123)).rejects.toThrowError()
-    })
-})
+//         await expect(repository.deleteProduct(1)).resolves.toBe(true)
+//     })
+//     it("throw error when trying to delete an inexistent product", async () => {
+//         await expect(repository.deleteProduct(123)).rejects.toThrowError()
+//     })
+// })
 
 // describe("Modify a product", () => {
 //     it("modify a product by id", async () => {
