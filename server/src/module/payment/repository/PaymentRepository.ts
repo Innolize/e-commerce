@@ -5,7 +5,9 @@ import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { IGetAllResponse } from "../../common/interfaces/IGetAllResponseGeneric";
 import { OrderModel } from "../../order/module";
 import { Payment } from "../entities/Payment";
+import { PaymentError } from "../error/PaymentError";
 import { IPaymentStatus } from "../interfaces/IPayment";
+import { IPaymentGetAllQueries } from "../interfaces/IPaymentGetAllQueries";
 import { fromDbToPayment } from "../mapper/paymentMapper";
 import { PaymentModel } from "../models/PaymentModel";
 
@@ -17,9 +19,11 @@ export class PaymentRepository extends AbstractRepository {
         super()
     }
 
-    async getAll(paymentStatus?: IPaymentStatus, limit?: number, offset?: number): Promise<IGetAllResponse<Payment>> {
+    async getAll(getAllQueries: IPaymentGetAllQueries): Promise<IGetAllResponse<Payment>> {
         const where: WhereOptions<Payment> = {}
-        paymentStatus ? where.status = paymentStatus : ""
+        const { limit, offset, status } = getAllQueries
+        status ? where.status = status : ""
+
         const { count, rows } = await this.paymentModel.findAndCountAll({
             where,
             limit,
@@ -43,7 +47,7 @@ export class PaymentRepository extends AbstractRepository {
             }
         })
         if (!dbResponse) {
-            throw new Error('Payment not found')
+            throw PaymentError.notFound()
         }
         return fromDbToPayment(dbResponse)
     }
@@ -53,7 +57,7 @@ export class PaymentRepository extends AbstractRepository {
         paymentPartial.status = newStatus
         const [rows, paymentArray] = await this.paymentModel.update(paymentPartial, { where: { id: paymentId } })
         if (!rows) {
-            throw new Error("Payment not found")
+            throw PaymentError.notFound()
         }
         const updatedPayment = paymentArray[0]
         return fromDbToPayment(updatedPayment)

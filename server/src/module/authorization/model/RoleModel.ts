@@ -6,10 +6,11 @@ import { Role } from "../entities/Role";
 import { IRoleCreate } from "../interfaces/IRoleCreate";
 import { IRole } from "../interfaces/IRole";
 import { PermissionModel } from "./PermissionModel";
+import { IRoleName } from "../interfaces/IRole";
 
 @injectable()
 export class RoleModel extends Model<Role, IRoleCreate> implements IRole {
-    name: string;
+    name: IRoleName;
     id!: number;
     permissions!: Permission[]
     static setup(database: Sequelize): typeof RoleModel {

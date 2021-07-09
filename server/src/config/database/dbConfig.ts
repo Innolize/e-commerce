@@ -190,8 +190,8 @@ const seedVideoCard = async (): Promise<void> => {
 }
 
 const seedRole = async () => {
-    await RoleModel.create({ name: 'admin' })
-    await RoleModel.create({ name: 'client' })
+    await RoleModel.create({ name: 'ADMIN' })
+    await RoleModel.create({ name: 'CLIENT' })
     console.log('Role seeded')
 }
 

@@ -38,7 +38,7 @@ export class OrderService extends AbstractService {
 
     async removeOrder(orderId: number, user: IUserWithAuthorization): Promise<true> {
         const order = await this.getSingleOrder(orderId)
-        ForbiddenError.from<appAbility>(user.role).throwUnlessCan('delete', order)
+        ForbiddenError.from<appAbility>(user.role.permissions).throwUnlessCan('delete', order)
         if (order.payment?.status === 'PAID') {
             throw OrderError.deletePaidOrder()
         }

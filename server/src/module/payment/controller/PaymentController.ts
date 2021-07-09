@@ -6,6 +6,9 @@ import { AbstractController } from "../../abstractClasses/abstractController";
 import { jwtAuthentication } from "../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../authorization/util/authorizationMiddleware";
 import { BaseError } from "../../common/error/BaseError";
+import { bodyValidator } from "../../common/helpers/bodyValidator";
+import { validateGetAllQueriesPaymentDto } from "../helper/get_all_query_dto_validator";
+import { IPaymentGetAllQueries } from "../interfaces/IPaymentGetAllQueries";
 import { PaymentService } from "../service/PaymentService";
 
 export class PaymentController extends AbstractController {
@@ -25,8 +28,10 @@ export class PaymentController extends AbstractController {
     }
 
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const queriesDto: IPaymentGetAllQueries = req.query
         try {
-            const response = await this.paymentService.getAll()
+            const validDto = await bodyValidator(validateGetAllQueriesPaymentDto, queriesDto)
+            const response = await this.paymentService.getAll(validDto)
             res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
