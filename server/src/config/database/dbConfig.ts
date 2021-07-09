@@ -20,6 +20,7 @@ import { hash } from 'bcrypt'
 import { CartItemModel, CartModel } from '../../module/cart/module';
 import { OrderModel } from '../../module/order/model/OrderModel';
 import { OrderItemModel } from '../../module/order/model/OrderItemModel';
+import { PaymentModel } from '../../module/payment/models/PaymentModel';
 
 async function configureDatabase() {
 
@@ -45,6 +46,7 @@ async function configureDatabase() {
             CartItemModel.setup(database);
             OrderModel.setup(database);
             OrderItemModel.setup(database);
+            PaymentModel.setup(database);
             ProductModel.setupCategoryAssociation(container.get<typeof CategoryModel>(TYPES.Category.Model));
             ProductModel.setupBrandAssociation(container.get<typeof BrandModel>(TYPES.Brand.Model));
             MotherboardModel.setupProductAssociation(container.get<typeof ProductModel>(TYPES.Product.Model))
@@ -64,8 +66,11 @@ async function configureDatabase() {
             ProductModel.setupCartItemAssociation(CartItemModel)
             OrderModel.setupUserAssociation(UserModel)
             OrderModel.setupOrderItemAssociation(OrderItemModel)
+            OrderModel.setupPaymentAssociation(PaymentModel)
             OrderItemModel.setupOrderAssociation(OrderModel)
             OrderItemModel.setupProductAssociation(ProductModel)
+            PaymentModel.setupOrderAssociation(OrderModel)
+
         } catch (err) {
             console.log('config')
             console.log(err.message)
@@ -93,7 +98,7 @@ async function configureDatabase() {
                 { cart_id: 1, product_id: 2, quantity: 3 },
                 { cart_id: 1, product_id: 4, quantity: 2 },
                 { cart_id: 1, product_id: 6, quantity: 3 }
-            ])           
+            ])
         } catch (err) {
             console.log(err)
         }
@@ -185,8 +190,8 @@ const seedVideoCard = async (): Promise<void> => {
 }
 
 const seedRole = async () => {
-    await RoleModel.create({ name: 'admin' })
-    await RoleModel.create({ name: 'client' })
+    await RoleModel.create({ name: 'ADMIN' })
+    await RoleModel.create({ name: 'CLIENT' })
     console.log('Role seeded')
 }
 
@@ -198,6 +203,7 @@ const seedPermission = async () => {
     await PermissionModel.create({ action: "manage", subject: "Cart", role_id: 2, condition: JSON.stringify({ user_id: "${id}" }) })
     await PermissionModel.create({ action: "create", subject: "Order", role_id: 2 })
     await PermissionModel.create({ action: "read", subject: "Order", role_id: 2, condition: JSON.stringify({ user_id: "${id}" }) })
+    await PermissionModel.create({ action: "delete", subject: "Order", role_id: 2, condition: JSON.stringify({ payment: { user_id: "${id}" } }) })
     console.log('Permission seeded')
 }
 

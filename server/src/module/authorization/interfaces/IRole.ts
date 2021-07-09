@@ -1,7 +1,9 @@
 import { Permission } from "../entities/Permission";
 
-export interface IRole{
-    name: string
+export type IRoleName = "ADMIN" | "CLIENT"
+
+export interface IRole {
+    name: IRoleName
     id?: number
     permissions?: Permission[]
 }

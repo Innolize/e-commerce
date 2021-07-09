@@ -21,7 +21,7 @@ export class CartService extends AbstractService {
     }
 
     async getCarts(queryParams: ICartGetAllQuery, user: IUserWithAuthorization): Promise<GetCartsDto> {
-        ForbiddenError.from<appAbility>(user.role).throwUnlessCan('read', 'all')
+        ForbiddenError.from<appAbility>(user.role.permissions).throwUnlessCan('read', 'all')
         return await this.cartRepository.getAll(queryParams)
     }
 
@@ -33,14 +33,14 @@ export class CartService extends AbstractService {
         } else {
             cart = await this.cartRepository.getCart(id, user.id)
         }
-        ForbiddenError.from<appAbility>(user.role).throwUnlessCan('read', cart)
+        ForbiddenError.from<appAbility>(user.role.permissions).throwUnlessCan('read', cart)
         return cart
     }
 
     async addCartItem(cartId: number, newCartItem: ICartItemCreateFromCartModel, user: IUserWithAuthorization): Promise<Cart> {
         const cart = await this.cartRepository.getCart(cartId, user.id)
 
-        ForbiddenError.from<appAbility>(user.role).throwUnlessCan('update', cart)
+        ForbiddenError.from<appAbility>(user.role.permissions).throwUnlessCan('update', cart)
         const cartItemExists = cart.cartItems?.find(x => x.product_id === newCartItem.product_id)
         if (cartItemExists) {
             const cartItemId = cartItemExists.id as number
@@ -57,7 +57,7 @@ export class CartService extends AbstractService {
 
     async removeCartItem(cartId: number, cartItemId: number, user: IUserWithAuthorization): Promise<Cart> {
         const cart = await this.cartRepository.getCart(cartId, user.id)
-        ForbiddenError.from<appAbility>(user.role).throwUnlessCan('delete', cart)
+        ForbiddenError.from<appAbility>(user.role.permissions).throwUnlessCan('delete', cart)
         await this.cartRepository.removeCartItem(cartId, cartItemId)
         const updatedCart = await this.cartRepository.getCart(cartId, user.id)
         return updatedCart
@@ -70,7 +70,7 @@ export class CartService extends AbstractService {
 
     async clearCartItems(cartId: number, user: IUserWithAuthorization): Promise<void> {
         const cart = await this.cartRepository.getCart(cartId, user.id)
-        ForbiddenError.from<appAbility>(user.role).throwUnlessCan('delete', cart)
+        ForbiddenError.from<appAbility>(user.role.permissions).throwUnlessCan('delete', cart)
         await this.cartRepository.removeAllItemsFromCart(cartId)
     }
 }

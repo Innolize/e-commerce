@@ -10,7 +10,7 @@ export const authorizationMiddleware = (permission: IAbility): (req: Request, re
             return next(new Error('Unauthorized role'))
 
         }
-        if (user.role.can(action, subject)) {
+        if (user.role.permissions.can(action, subject)) {
             return next()
 
         }

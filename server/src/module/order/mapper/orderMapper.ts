@@ -1,5 +1,7 @@
 import { Cart } from "../../cart/entities/Cart"
+import { fromDbToPayment } from "../../payment/mapper/paymentMapper"
 import { fromDbToProduct } from "../../product/mapper/productMapper"
+import { fromDbToUser } from "../../user/mapper/userMapper"
 import { Order } from "../entities/Order"
 import { OrderItem } from "../entities/OrderItem"
 import { OrderError } from "../error/OrderError"
@@ -8,9 +10,11 @@ import { IOrderItemAssociated } from "../interfaces/IOrderCreate"
 import { IOrderItem } from "../interfaces/IOrderItem"
 
 export const fromDbToOrder = (model: IOrder): Order => {
-    const { payment_id, orderItems, user_id, id } = model
+    const { orderItems, user_id, id, payment, user } = model
     const orderItems_order = orderItems ? orderItems.map(fromDbToOrderItem) : undefined
-    return new Order(user_id, payment_id, id, orderItems_order)
+    const payment_order = payment ? fromDbToPayment(payment) : undefined
+    const user_order = user ? fromDbToUser(user) : undefined
+    return new Order(user_id, id, orderItems_order, payment_order, user_order)
 }
 
 export const fromDbToOrderItem = (model: IOrderItem): OrderItem => {
@@ -28,7 +32,7 @@ export const mapOrderItemsFromCart = (cart: Cart): IOrderItemAssociated[] => {
     const itemsArray = cart.cartItems.map(item => {
 
         if (!item.product) {
-            throw new Error('Product not populated')
+            throw OrderError.productNotPopulated()
         }
         const { product_id, quantity, product } = item
 

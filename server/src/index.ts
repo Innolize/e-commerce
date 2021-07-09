@@ -12,6 +12,7 @@ import { init as initPCBuilderModule } from "./module/PCBuilder/module"
 import { init as initAuth } from './module/auth/module'
 import { init as initCart } from './module/cart/module'
 import { init as initOrder } from './module/order/module'
+import { init as initPayment } from './module/payment/module'
 import { MulterError } from "multer";
 import { StatusCodes } from "http-status-codes";
 import passport from "passport";
@@ -40,6 +41,7 @@ initPCBuilderModule(app, container)
 initAuth(app, container)
 initCart(app, container)
 initOrder(app, container)
+initPayment(app, container)
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

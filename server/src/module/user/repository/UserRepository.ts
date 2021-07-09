@@ -36,6 +36,7 @@ export class UserRepository extends AbstractRepository {
             throw UserError.notFound()
         }
         const response = fromDbToUser(user)
+        console.log(response)
         return response
     }
 
