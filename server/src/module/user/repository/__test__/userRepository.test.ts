@@ -112,3 +112,103 @@ describe("Test findUserByMail ", () => {
         expect(response).toBe(false)
     });
 })
+
+describe('Test modifyUser', () => {
+    it('Modify an existent user ', async () => {
+        const newUser: IUserCreate = {
+            mail: "testmail@gmail.com",
+            password: "testpassword",
+            role_id: 1
+        }
+        await userModel.create(newUser)
+        const response = await repository.modifyUser({ id: 1, mail: "new-password" })
+        expect(response.mail).toBe("new-password")
+    });
+    it('Returns error if no user was updated', async () => {
+        try {
+            const INEXISTENT_USER_ID = 555
+            await repository.modifyUser({ id: INEXISTENT_USER_ID, mail: "new-password" })
+        } catch (err) {
+            expect(err).toBeInstanceOf(UserError)
+        }
+    });
+});
+
+describe('Test deleteUser', () => {
+    it('Deletes an existent user from DB', async () => {
+        const newUser: IUserCreate = {
+            mail: "testmail@gmail.com",
+            password: "testpassword",
+            role_id: 1
+        }
+        await userModel.create(newUser)
+        const response = await repository.deleteUser(1)
+        expect(response).toBe(true)
+    });
+    it('Returns error if no user is found with selected id', async () => {
+        const INEXISTENT_USER_ID = 555
+
+        const newUser: IUserCreate = {
+            mail: "testmail@gmail.com",
+            password: "testpassword",
+            role_id: 1
+        }
+        try {
+            await userModel.create(newUser)
+            await repository.deleteUser(INEXISTENT_USER_ID)
+        } catch (err) {
+            expect(err).toBeInstanceOf(UserError)
+        }
+    });
+})
+
+describe('Test getSingleUser', () => {
+    it('Retrieves an user successfuly ', async () => {
+        const newUser: IUserCreate = {
+            mail: "testmail@gmail.com",
+            password: "testpassword",
+            role_id: 1
+        }
+        await userModel.create(newUser)
+        const response = await repository.getSingleUser(1)
+        expect(response).toBeInstanceOf(User)
+        expect(response.mail).toBe(newUser.mail)
+        expect(response.password).toBe(newUser.password)
+    });
+    it('Returns error if user was not found', async () => {
+        const INEXISTENT_USER_ID = 555
+        expect.assertions(1)
+        try {
+            await repository.getSingleUser(INEXISTENT_USER_ID)
+        } catch (err) {
+            expect(err).toBeInstanceOf(UserError)
+        }
+    });
+});
+
+describe('Test getUsers', () => {
+    it('Retrieves count and array of users', async () => {
+        const newUser: IUserCreate = {
+            mail: "testUser1@gmail.com",
+            password: "testUser1password",
+            role_id: 1
+        }
+        const newUser2: IUserCreate = {
+            mail: "testUser2@gmail.com",
+            password: "testUser2password",
+            role_id: 1
+        }
+        const newUser3: IUserCreate = {
+            mail: "testUser3@gmail.com",
+            password: "testUser3password",
+            role_id: 1
+        }
+        await userModel.bulkCreate([newUser, newUser2, newUser3])
+        const response = await repository.getUsers({ limit: 3, offset: 0 })
+        expect(response.count).toBe(3)
+        expect(response.results[0].mail).toBe(newUser.mail)
+        expect(response.results[0].password).toBe(newUser.password)
+        expect(response.results[0].role_id).toBe(newUser.role_id)
+        expect(response.results.length).toBe(3)
+    });
+});

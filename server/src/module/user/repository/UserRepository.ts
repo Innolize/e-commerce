@@ -37,7 +37,6 @@ export class UserRepository extends AbstractRepository implements IUserRepositor
             throw UserError.notFound()
         }
         const response = fromDbToUser(user)
-        console.log(response)
         return response
     }
 
@@ -50,7 +49,7 @@ export class UserRepository extends AbstractRepository implements IUserRepositor
             if (err instanceof UniqueConstraintError) {
                 throw UserError.mailAlreadyInUse()
             }
-            throw Error(err)
+            throw err
         }
     }
 
@@ -77,15 +76,11 @@ export class UserRepository extends AbstractRepository implements IUserRepositor
     }
 
     async deleteUser(id: number): Promise<true> {
-        try {
-            const response = await this.userModel.destroy({ where: { id } })
-            if (!response) {
-                throw UserError.notFound()
-            }
-            return true
-        } catch (err) {
-            throw Error(err.message)
+        const response = await this.userModel.destroy({ where: { id } })
+        if (!response) {
+            throw UserError.notFound()
         }
+        return true
     }
 
 }
