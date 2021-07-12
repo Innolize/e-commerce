@@ -17,7 +17,7 @@ export class BrandService extends AbstractService {
         this.brandRepository = brandRepository
     }
 
-    async getAllCategories(queryParams: GetBrandsReqDto): Promise<Error | GetBrandsDto> {
+    async getAllCategories(queryParams: GetBrandsReqDto): Promise<GetBrandsDto> {
         return await this.brandRepository.getAllBrands(queryParams)
     }
 

@@ -10,12 +10,7 @@ import { BrandModel } from "../../../brand/module";
 import { Brand } from "../../../brand/entity/Brand";
 import { Category } from "../../../category/entity/Category";
 
-const sequelizeInstance = new Sequelize(<string>process.env.TEST_DATABASE_URL, {
-    logging: false,
-    username: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
-    dialect: 'postgres'
-})
+let sequelizeInstance: Sequelize
 
 let brand: typeof BrandModel
 let category: typeof CategoryModel
@@ -27,8 +22,13 @@ let repository: ProductRepository
 
 // })
 
-beforeEach(async (done) => {
-
+beforeAll(async (done) => {
+    sequelizeInstance = new Sequelize(<string>process.env.TEST_DATABASE_URL, {
+        logging: false,
+        username: process.env.DATABASE_USERNAME,
+        password: process.env.DATABASE_PASSWORD,
+        dialect: 'postgres'
+    });
     await sequelizeInstance.drop()
     brand = BrandModel.setup(sequelizeInstance)
     category = CategoryModel.setup(sequelizeInstance)
@@ -40,32 +40,43 @@ beforeEach(async (done) => {
     done();
 });
 
-// const sampleProduct = new Product(
-//     "new-product",
-//     null,
-//     "new-product-description",
-//     1,
-//     true,
-//     1,
-//     200,
-// )
+beforeEach(async (done) => {
+    repository = new ProductRepository(product);
+    await sequelizeInstance.sync({ force: true });
+    done();
+})
 
-// const sampleBrand = new Brand(
-//     "test-brand",
-//     "test-brand-logo"
-// )
+afterAll(async () => {
+    await sequelizeInstance.drop({ cascade: true });
+    await sequelizeInstance.close();
+});
 
-// const sampleCategory = new Category(
-//     "test-category"
-// )
+const sampleProduct = new Product(
+    "new-product",
+    null,
+    "new-product-description",
+    1,
+    true,
+    1,
+    1,
+)
 
-// test('Creates a product with id 1', async () => {
-//     await brand.create(sampleBrand)
-//     await category.create(sampleCategory)
-//     const newProduct = await repository.createProduct(sampleProduct) as Product
+const sampleBrand = new Brand(
+    "test-brand",
+    "test-brand-logo"
+)
 
-//     expect(newProduct.id).toBe(1)
-// })
+const sampleCategory = new Category(
+    "test-category"
+)
+
+test('Creates a product with id 1', async () => {
+    await brand.create(sampleBrand)
+    await category.create(sampleCategory)
+    const newProduct = await repository.createProduct(sampleProduct) as Product
+
+    expect(newProduct.id).toBe(1)
+})
 
 // describe('Get a product by id', () => {
 //     it("get product with correct id", async () => {

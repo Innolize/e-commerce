@@ -21,7 +21,7 @@ export class BrandRepository extends AbstractRepository {
         this.brandModel = brandModel
     }
 
-    public async getAllBrands(queryParams: GetBrandsReqDto): Promise<Error | GetBrandsDto> {
+    public async getAllBrands(queryParams: GetBrandsReqDto): Promise<GetBrandsDto> {
         const { name, offset, limit } = queryParams
         const whereOptions: WhereOptions<Brand> = {}
         name ? whereOptions.name = { [Op.substring]: name } : ''
@@ -42,17 +42,12 @@ export class BrandRepository extends AbstractRepository {
         return fromDbToBrand(response)
     }
 
-    public async createBrand(brand: Brand): Promise<Error | Brand> {
-        try {
-            const response = await this.brandModel.create(brand)
-            return fromDbToBrand(response)
-        }
-        catch (err) {
-            throw err
-        }
+    public async createBrand(brand: Brand): Promise<Brand> {
+        const response = await this.brandModel.create(brand)
+        return fromDbToBrand(response)
     }
 
-    public async deleteBrand(id: number): Promise<Error | boolean> {
+    public async deleteBrand(id: number): Promise<boolean> {
         if (id <= 0) {
             throw BrandError.invalidId()
         }
@@ -64,19 +59,14 @@ export class BrandRepository extends AbstractRepository {
     }
 
     public async modifyBrand(brand: IEditableBrand): Promise<Error | Brand> {
-        try {
-            const [brandEdited, brandArray] = await this.brandModel.update(brand, { where: { id: brand.id }, returning: true })
-            // update returns an array, first argument is the number of elements updated in the
-            // database. Second argument are the array of elements. Im updating by id so there is only 
-            // one element in the array.
-            if (!brandEdited) {
-                throw BrandError.notFound()
-            }
-            const newProduct = fromDbToBrand(brandArray[0])
-            return newProduct
+        const [brandEdited, brandArray] = await this.brandModel.update(brand, { where: { id: brand.id }, returning: true })
+        // update returns an array, first argument is the number of elements updated in the
+        // database. Second argument are the array of elements. Im updating by id so there is only 
+        // one element in the array.
+        if (!brandEdited) {
+            throw BrandError.notFound()
         }
-        catch (err) {
-            throw err
-        }
+        const newProduct = fromDbToBrand(brandArray[0])
+        return newProduct
     }
 }
