@@ -1,25 +1,23 @@
 import CssBaseline from "@material-ui/core/CssBaseline";
-import CustomThemeProvider from "./contexts/customThemeContext";
 import Routes from "./routes/Routes";
 import { QueryClient, QueryClientProvider } from "react-query";
-import UserProvider from "./contexts/UserContext";
+import MainContextProvider from "./contexts/MainContext";
+import { SnackbarProvider } from "notistack";
 import WithAxios from "./services/WithAxios";
-import { ReactQueryDevtools } from "react-query/devtools";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <UserProvider>
-        <CustomThemeProvider>
+      <MainContextProvider>
+        <SnackbarProvider autoHideDuration={2500}>
           <CssBaseline />
           <WithAxios>
             <Routes />
           </WithAxios>
-        </CustomThemeProvider>
-      </UserProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
+        </SnackbarProvider>
+      </MainContextProvider>
     </QueryClientProvider>
   );
 };
