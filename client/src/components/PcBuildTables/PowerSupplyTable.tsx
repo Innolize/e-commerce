@@ -8,12 +8,16 @@ import {
 } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
+import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
+import { apiOptions } from "src/hooks/apiOptions";
 import { IGetPowerSupplies } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IPowerSupply } from "src/types";
 import currencyFormatter from "src/utils/formatCurrency";
+import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import CustomNoRowsOverlay from "../CustomNoRowsOverlay";
 import CustomToolbar from "../CustomToolbar";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "../SnackbarAlert";
@@ -25,6 +29,8 @@ const PowerSupplyContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
   const deletePowerSupply = useDelete<IPowerSupply>("power-supply");
   const queryPowerSupply = useGetAll<IGetPowerSupplies>("power-supply", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiOptions["power-supply"].cacheString);
+  const isMutating = useIsMutating();
 
   const handlePageChange = (params: GridPageChangeParams) => {
     setOffset(params.page * PAGE_SIZE);
@@ -66,7 +72,7 @@ const PowerSupplyContainer = () => {
           pageSize={PAGE_SIZE}
           rowCount={queryPowerSupply.isSuccess ? queryPowerSupply.data.count : undefined}
           onPageChange={handlePageChange}
-          loading={queryPowerSupply.isLoading}
+          loading={queryPowerSupply.isLoading || !!isFetching || !!isMutating}
           columns={
             [
               { field: "id", type: "number", hide: true },
@@ -130,6 +136,8 @@ const PowerSupplyContainer = () => {
           }
           components={{
             Toolbar: CustomToolbar,
+            NoRowsOverlay: CustomNoRowsOverlay,
+            LoadingOverlay: CustomLoadingOverlay,
           }}
         />
       </Box>

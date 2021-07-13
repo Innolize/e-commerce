@@ -8,12 +8,16 @@ import {
 } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
+import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
+import { apiOptions } from "src/hooks/apiOptions";
 import { IGetProcessors } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IProcessor } from "src/types";
 import currencyFormatter from "src/utils/formatCurrency";
+import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import CustomNoRowsOverlay from "../CustomNoRowsOverlay";
 import CustomToolbar from "../CustomToolbar";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "../SnackbarAlert";
@@ -25,6 +29,8 @@ const ProcessorContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteProcessor = useDelete<IProcessor>("processor");
   const queryProcessors = useGetAll<IGetProcessors>("processor", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiOptions.processor.cacheString);
+  const isMutating = useIsMutating();
 
   const handlePageChange = (params: GridPageChangeParams) => {
     setOffset(params.page * PAGE_SIZE);
@@ -66,7 +72,7 @@ const ProcessorContainer = () => {
           pageSize={PAGE_SIZE}
           rowCount={queryProcessors.isSuccess ? queryProcessors.data.count : undefined}
           onPageChange={handlePageChange}
-          loading={queryProcessors.isLoading}
+          loading={queryProcessors.isLoading || !!isFetching || !!isMutating}
           columns={
             [
               { field: "id", type: "number", hide: true },
@@ -148,6 +154,8 @@ const ProcessorContainer = () => {
           }
           components={{
             Toolbar: CustomToolbar,
+            NoRowsOverlay: CustomNoRowsOverlay,
+            LoadingOverlay: CustomLoadingOverlay,
           }}
         />
       </Box>

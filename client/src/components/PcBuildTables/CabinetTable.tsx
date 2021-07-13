@@ -8,12 +8,16 @@ import {
 } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
+import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
+import { apiOptions } from "src/hooks/apiOptions";
 import { IGetCabinets } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { ICabinet } from "src/types";
 import currencyFormatter from "src/utils/formatCurrency";
+import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import CustomNoRowsOverlay from "../CustomNoRowsOverlay";
 import CustomToolbar from "../CustomToolbar";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "../SnackbarAlert";
@@ -25,6 +29,8 @@ const CabinetContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteCabinet = useDelete<ICabinet>("cabinet");
   const queryCabinet = useGetAll<IGetCabinets>("cabinet", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiOptions.cabinet.cacheString);
+  const isMutating = useIsMutating();
 
   const handlePageChange = (params: GridPageChangeParams) => {
     setOffset(params.page * PAGE_SIZE);
@@ -66,7 +72,7 @@ const CabinetContainer = () => {
           pageSize={PAGE_SIZE}
           rowCount={queryCabinet.isSuccess ? queryCabinet.data.count : undefined}
           onPageChange={handlePageChange}
-          loading={queryCabinet.isLoading}
+          loading={queryCabinet.isLoading || !!isFetching || !!isMutating}
           columns={
             [
               { field: "id", type: "number", hide: true },
@@ -123,6 +129,8 @@ const CabinetContainer = () => {
           }
           components={{
             Toolbar: CustomToolbar,
+            NoRowsOverlay: CustomNoRowsOverlay,
+            LoadingOverlay: CustomLoadingOverlay,
           }}
         />
       </Box>

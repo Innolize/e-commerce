@@ -8,13 +8,18 @@ import {
 } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useCallback, useState } from "react";
+import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
+import CustomLoadingOverlay from "src/components/CustomLoadingOverlay";
+import CustomNoRowsOverlay from "src/components/CustomNoRowsOverlay";
 import CustomToolbar from "src/components/CustomToolbar";
 import DeleteDialog from "src/components/DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "src/components/SnackbarAlert";
+import { apiOptions } from "src/hooks/apiOptions";
 import useDelete from "src/hooks/useDelete";
 import useGetProducts from "src/hooks/useGetProducts";
 import { IProduct } from "src/types";
+import { convertText } from "src/utils/convertText";
 import currencyFormatter from "src/utils/formatCurrency";
 
 const Products = () => {
@@ -24,6 +29,8 @@ const Products = () => {
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteProduct = useDelete<IProduct>("product");
+  const isFetching = useIsFetching(apiOptions.product.cacheString);
+  const isMutating = useIsMutating();
   const queryProducts = useGetProducts(page, null, name, PAGE_SIZE);
 
   const onFilterChange = useCallback((params) => {
@@ -76,7 +83,7 @@ const Products = () => {
           rowCount={queryProducts.isSuccess ? queryProducts.data.count : undefined}
           onPageChange={handlePageChange}
           onFilterModelChange={onFilterChange}
-          loading={queryProducts.isLoading}
+          loading={queryProducts.isLoading || !!isFetching || !!isMutating}
           columns={
             [
               { field: "id", type: "number", hide: true, filterable: false },
@@ -121,13 +128,15 @@ const Products = () => {
                   description: product.description,
                   price: product.price,
                   stock: product.stock ? "Yes" : "No",
-                  category: product.category?.name || "Not found",
+                  category: convertText(product.category?.name) || "Not found",
                   brand: product.brand?.name || "Not found",
                 }))
               : []
           }
           components={{
             Toolbar: CustomToolbar,
+            NoRowsOverlay: CustomNoRowsOverlay,
+            LoadingOverlay: CustomLoadingOverlay,
           }}
         />
       </Box>

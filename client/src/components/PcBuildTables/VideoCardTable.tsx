@@ -8,12 +8,16 @@ import {
 } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
+import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
+import { apiOptions } from "src/hooks/apiOptions";
 import { IGetVideoCards } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IVideoCard } from "src/types";
 import currencyFormatter from "src/utils/formatCurrency";
+import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import CustomNoRowsOverlay from "../CustomNoRowsOverlay";
 import CustomToolbar from "../CustomToolbar";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "../SnackbarAlert";
@@ -25,6 +29,8 @@ const VideoCardContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteVideoCard = useDelete<IVideoCard>("video-card");
   const queryVideoCards = useGetAll<IGetVideoCards>("video-card", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiOptions["video-card"].cacheString);
+  const isMutating = useIsMutating();
 
   const handlePageChange = (params: GridPageChangeParams) => {
     setOffset(params.page * PAGE_SIZE);
@@ -66,7 +72,7 @@ const VideoCardContainer = () => {
           pageSize={PAGE_SIZE}
           rowCount={queryVideoCards.isSuccess ? queryVideoCards.data.count : undefined}
           onPageChange={handlePageChange}
-          loading={queryVideoCards.isLoading}
+          loading={queryVideoCards.isLoading || !!isFetching || !!isMutating}
           columns={
             [
               { field: "id", type: "number", hide: true },
@@ -146,6 +152,8 @@ const VideoCardContainer = () => {
           }
           components={{
             Toolbar: CustomToolbar,
+            NoRowsOverlay: CustomNoRowsOverlay,
+            LoadingOverlay: CustomLoadingOverlay,
           }}
         />
       </Box>

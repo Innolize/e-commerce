@@ -8,12 +8,16 @@ import {
 } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
+import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
+import { apiOptions } from "src/hooks/apiOptions";
 import { IGetMotherboards } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IMotherboard } from "src/types";
 import currencyFormatter from "src/utils/formatCurrency";
+import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import CustomNoRowsOverlay from "../CustomNoRowsOverlay";
 import CustomToolbar from "../CustomToolbar";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "../SnackbarAlert";
@@ -25,6 +29,8 @@ const MotherboardContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteMotherboard = useDelete<IMotherboard>("motherboard");
   const queryMotherboards = useGetAll<IGetMotherboards>("motherboard", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiOptions.motherboard.cacheString);
+  const isMutating = useIsMutating();
 
   const handlePageChange = (params: GridPageChangeParams) => {
     setOffset(params.page * PAGE_SIZE);
@@ -67,7 +73,7 @@ const MotherboardContainer = () => {
           pageSize={PAGE_SIZE}
           rowCount={queryMotherboards.isSuccess ? queryMotherboards.data.count : undefined}
           onPageChange={handlePageChange}
-          loading={queryMotherboards.isLoading}
+          loading={queryMotherboards.isLoading || !!isFetching || !!isMutating}
           columns={
             [
               { field: "id", type: "number", hide: true },
@@ -146,6 +152,8 @@ const MotherboardContainer = () => {
           }
           components={{
             Toolbar: CustomToolbar,
+            NoRowsOverlay: CustomNoRowsOverlay,
+            LoadingOverlay: CustomLoadingOverlay,
           }}
         />
       </Box>
