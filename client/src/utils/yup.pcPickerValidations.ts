@@ -9,7 +9,7 @@ const productSchema = yup.object({
     .string()
     .required("Name is required.")
     .min(3, "Name length cannot be less than 3 characters.")
-    .max(20, "Name length cannot have more than 20 characters"),
+    .max(40, "Name length cannot have more than 40 characters"),
   image: yup
     .mixed()
     .test("fileSize", "File size is too large", (value) => !value || value.size <= FILE_SIZE)
@@ -17,7 +17,7 @@ const productSchema = yup.object({
   description: yup
     .string()
     .required("Description is required.")
-    .max(20, "Description length cannot have more than 30 characters"),
+    .max(100, "Description length cannot have more than 100 characters"),
   price: yup.number().required("Price is required."),
   stock: yup.boolean().required("Stock is required."),
   brand: yup.string().required("Brand is required."),
