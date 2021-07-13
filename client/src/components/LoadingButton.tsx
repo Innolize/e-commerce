@@ -34,14 +34,35 @@ interface LoadingButtonProps {
   isSubmitting?: boolean;
   isSuccess?: boolean;
   name: string;
+  onClick?: () => void;
+  size?: "large" | "medium" | "small";
 }
 
-const LoadingButton = ({ isSubmitting, isSuccess, name }: LoadingButtonProps) => {
+const LoadingButton = ({ isSubmitting, isSuccess, name, onClick, size }: LoadingButtonProps) => {
   const classes = useStyles();
+
+  if (isSuccess) {
+    return (
+      <div className={classes.btnWrapper}>
+        <Button
+          disabled
+          className={classes.submitBtn}
+          endIcon={<CheckIcon />}
+          size={size}
+          type="submit"
+          variant="contained"
+        >
+          {name}
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className={classes.btnWrapper}>
       <Button
+        onClick={onClick}
+        size={size}
         className={classes.submitBtn}
         type="submit"
         variant="contained"
@@ -51,7 +72,6 @@ const LoadingButton = ({ isSubmitting, isSuccess, name }: LoadingButtonProps) =>
         {name}
       </Button>
       {isSubmitting && <CircularProgress size={24} className={classes.buttonProgress} />}
-      {isSuccess && <CheckIcon className={classes.buttonCheck} />}
     </div>
   );
 };
