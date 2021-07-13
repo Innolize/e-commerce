@@ -1,26 +1,33 @@
 import {
   Box,
-  Button,
   CircularProgress,
   Container,
   Divider,
+  InputLabel,
   Link,
   makeStyles,
+  MenuItem,
   Paper,
+  Select,
   Typography,
 } from "@material-ui/core";
+import FormControl from "@material-ui/core/FormControl";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import LocalShippingIcon from "@material-ui/icons/LocalShipping";
+import SecurityIcon from "@material-ui/icons/Security";
 import Image from "material-ui-image";
-import { useParams } from "react-router-dom";
-import { Link as RouterLink } from "react-router-dom";
+import { useSnackbar } from "notistack";
+import { useContext, useState } from "react";
+import { Link as RouterLink, useHistory, useLocation, useParams } from "react-router-dom";
+import LoadingButton from "src/components/LoadingButton";
+import { UserContext } from "src/contexts/UserContext";
 import useGetById from "src/hooks/useGetById";
+import useGetCart from "src/hooks/useGetCart";
+import useUpdateCart from "src/hooks/useUpdateCart";
 import { IProduct } from "src/types";
 import { convertText } from "src/utils/convertText";
 import currencyFormatter from "src/utils/formatCurrency";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import LocalShippingIcon from "@material-ui/icons/LocalShipping";
-import SecurityIcon from "@material-ui/icons/Security";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
 
 const useStyles = makeStyles((theme) => ({
   product: {
@@ -68,7 +75,15 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   price: {
+    display: "flex",
+    alignItems: "center",
     marginLeft: "8px",
+    justifyContent: "space-between",
+    "@media (max-width:768px)": {
+      marginTop: "20px",
+      display: "block",
+      textAlign: "center",
+    },
   },
   highlight: {
     color: theme.palette.success.main,
@@ -82,17 +97,66 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     width: "100%",
   },
+  form: {
+    width: "45%",
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    marginTop: "20px",
+    "@media (max-width:768px)": {
+      width: "100%",
+      marginLeft: "0",
+    },
+  },
+  input: {
+    marginTop: "5px",
+    width: "95%",
+    margin: "auto",
+  },
 }));
 
 const IndividualProduct = () => {
+  const { user } = useContext(UserContext);
   const { id } = useParams<{ id: string }>();
   const { isSuccess, data, isLoading, isError } = useGetById<IProduct>("product", id);
   const classes = useStyles();
+  const location = useLocation();
+  const history = useHistory();
+  const cartQuery = useGetCart(user?.userInfo.id);
+  const updateCart = useUpdateCart();
+  const { enqueueSnackbar } = useSnackbar();
+  const [quantity, setQuantity] = useState(1);
+
+  const STOCK = 20;
+
+  const handleAddItem = (productId: number, quantity: number) => {
+    if (!user) {
+      history.push("/login", { from: location.pathname });
+    } else {
+      // If we have that item in the cart we sum the quantities..
+      const cartItem = cartQuery.data?.cartItems.find((item) => item.productId === productId);
+      if (cartItem) {
+        const totalQuantity = quantity + cartItem.quantity;
+        // and if the sum is higher than the stock we show an error
+        if (totalQuantity > STOCK) {
+          enqueueSnackbar("There is not enough quantity on stock for this purchase.", { variant: "error" });
+          return;
+        }
+        updateCart.mutate({ productId, quantity: totalQuantity, userId: user!.userInfo.id, action: "add" });
+      } else {
+        updateCart.mutate({ productId, quantity, userId: user!.userInfo.id, action: "add" });
+      }
+    }
+  };
+
+  const handleQuantityChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setQuantity(Number(event.target.value));
+  };
 
   return (
     <Container>
       {isLoading ? (
-        <Box mt={3}>
+        <Box display="flex" justifyContent="center" mt={6}>
           <CircularProgress color="secondary"></CircularProgress>
         </Box>
       ) : isError ? (
@@ -165,14 +229,37 @@ const IndividualProduct = () => {
                   </Box>
                 </Box>
                 <Divider className={classes.divider}></Divider>
-                <Box display="flex" alignItems="center" my={4}>
-                  <Typography className={classes.price} variant="h4" color="textPrimary">
-                    {currencyFormatter.format(data!.price)}
-                  </Typography>
-                  <Box ml={3}>
-                    <Button startIcon={<AddShoppingCartIcon />} variant="contained" size="large" color="secondary">
-                      Add to cart
-                    </Button>
+                <Box className={classes.price}>
+                  <Box>
+                    <Typography variant="h4" color="textPrimary">
+                      {currencyFormatter.format(data!.price)}
+                    </Typography>
+                  </Box>
+                  <Box className={classes.form}>
+                    <FormControl className={classes.input}>
+                      <InputLabel>Quantity</InputLabel>
+                      <Select label="Quantity" value={quantity} onChange={handleQuantityChange}>
+                        {[...Array(STOCK)].map((e, i) => (
+                          <MenuItem key={i + 1} value={i + 1}>
+                            {i + 1}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <Typography variant="caption" color="textSecondary">
+                        {STOCK} available in stock.
+                      </Typography>
+                    </FormControl>
+                    <Box>
+                      {updateCart.isLoading ? (
+                        <LoadingButton size="large" isSubmitting name="Adding to cart..." />
+                      ) : (
+                        <LoadingButton
+                          size="large"
+                          onClick={() => handleAddItem(Number(data!.id), quantity)}
+                          name="Add to cart"
+                        />
+                      )}
+                    </Box>
                   </Box>
                 </Box>
               </Box>

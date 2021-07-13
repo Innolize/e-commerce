@@ -1,21 +1,22 @@
-import React, { useContext } from "react";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Tabs } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import { Link as RouterLink } from "react-router-dom";
-import Link from "@material-ui/core/Link";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import Tab from "@material-ui/core/Tab";
 import Badge from "@material-ui/core/Badge";
 import Box from "@material-ui/core/Box";
 import Container from "@material-ui/core/Container";
-import SearchBar from "./SearchBar";
-import ChangeThemeButton from "../ChangeThemeButton";
-import { Tabs } from "@material-ui/core";
+import Link from "@material-ui/core/Link";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import Tab from "@material-ui/core/Tab";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import React, { useContext } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { UserContext } from "src/contexts/UserContext";
-import { isAdmin } from "src/utils/isAdmin";
+import useGetCart from "src/hooks/useGetCart";
 import useLogoutUser from "src/hooks/useLogout";
+import { isAdmin } from "src/utils/isAdmin";
+import ChangeThemeButton from "../ChangeThemeButton";
+import SearchBar from "./SearchBar";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,9 +24,8 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.primary.dark,
     },
     link: {
-      color: theme.palette.text.primary,
+      color: theme.palette.secondary.main,
       margin: "0 10px",
-      fontSize: "0.9rem",
     },
     linkIcon: {
       color: theme.palette.text.primary,
@@ -71,6 +71,7 @@ const DesktopNavbar = React.memo(() => {
   const { user } = useContext(UserContext);
   const classes = useStyles();
   const logout = useLogoutUser();
+  const getCart = useGetCart(user?.userInfo.id);
 
   const handleLogout = () => {
     logout.mutate();
@@ -91,22 +92,33 @@ const DesktopNavbar = React.memo(() => {
           <SearchBar />
           <Box className={classes.nowrap}>
             {user ? (
-              <Box>
-                <Link onClick={handleLogout} className={classes.link} component="button">
+              <Box display="flex" alignItems="center">
+                {user && (
+                  <Typography color="textSecondary" variant="caption">
+                    {user.userInfo.mail}
+                  </Typography>
+                )}
+                <Link onClick={handleLogout} className={classes.link} component="button" variant="body1">
                   Logout
                 </Link>
                 <Link className={classes.linkIcon} component={RouterLink} to="/cart">
-                  <Badge badgeContent={2} color="secondary">
-                    <ShoppingCartIcon />
-                  </Badge>
+                  {getCart.data?.cartItems?.length ? (
+                    <Badge badgeContent={getCart.data?.cartItems?.length} color="secondary">
+                      <ShoppingCartIcon fontSize="large" />
+                    </Badge>
+                  ) : (
+                    <Badge color="secondary">
+                      <ShoppingCartIcon fontSize="large" />
+                    </Badge>
+                  )}
                 </Link>
               </Box>
             ) : (
               <>
-                <Link className={classes.link} component={RouterLink} to="/login">
+                <Link className={classes.link} component={RouterLink} to="/login" variant="body1">
                   Login
                 </Link>
-                <Link className={classes.link} component={RouterLink} to="/register">
+                <Link className={classes.link} component={RouterLink} to="/register" variant="body1">
                   Register
                 </Link>
               </>
@@ -124,7 +136,7 @@ const DesktopNavbar = React.memo(() => {
           </Tabs>
           <ChangeThemeButton className={classes.autoMarginLeft} />
           {isAdmin(user) && (
-            <Link className={classes.link} component={RouterLink} to="/admin">
+            <Link className={classes.link} component={RouterLink} to="/admin" variant="body1">
               Admin panel
             </Link>
           )}
