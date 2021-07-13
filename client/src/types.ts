@@ -100,13 +100,58 @@ export interface ServerError {
   errors?: ErrorsObject[];
 }
 
-export interface IUser {
-  id: string;
-  mail: string;
-  role_id: number;
+export interface ICartItem {
+  id: number;
+  cartId: number;
+  productId: number;
+  product: IProduct;
+  quantity: number;
 }
 
-export interface IUserResponse {
-  user: IUser;
+export interface ICart {
+  userId: number;
+  id: number;
+  cartItems: ICartItem[] | [];
+}
+
+export interface IUserInfo {
+  id: number;
+  mail: string;
+  roleId: number;
+  cart: {
+    userId: number;
+    id: number;
+  };
+}
+
+export interface IUser {
+  userInfo: IUserInfo;
+  accessToken: string;
+}
+
+export interface IServerUserResponse {
+  user: {
+    id: number;
+    mail: string;
+    role_id: number;
+    cart: {
+      user_id: number;
+      id: number;
+    };
+  };
   access_token: string;
+}
+
+export interface IServerCartResponse {
+  user_id: number;
+  id: number;
+  cart_items:
+    | {
+        id: number;
+        cart_id: number;
+        product_id: number;
+        product: IProduct;
+        quantity: number;
+      }[]
+    | [];
 }
