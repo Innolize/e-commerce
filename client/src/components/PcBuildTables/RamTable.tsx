@@ -8,12 +8,16 @@ import {
 } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
+import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
+import { apiOptions } from "src/hooks/apiOptions";
 import { IGetRams } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IRam } from "src/types";
 import currencyFormatter from "src/utils/formatCurrency";
+import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import CustomNoRowsOverlay from "../CustomNoRowsOverlay";
 import CustomToolbar from "../CustomToolbar";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "../SnackbarAlert";
@@ -25,6 +29,8 @@ const RamTableContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteRam = useDelete<IRam>("ram");
   const queryRams = useGetAll<IGetRams>("ram", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiOptions.ram.cacheString);
+  const isMutating = useIsMutating();
 
   const handlePageChange = (params: GridPageChangeParams) => {
     setOffset(params.page * PAGE_SIZE);
@@ -66,7 +72,7 @@ const RamTableContainer = () => {
           pageSize={PAGE_SIZE}
           rowCount={queryRams.isSuccess ? queryRams.data.count : undefined}
           onPageChange={handlePageChange}
-          loading={queryRams.isLoading}
+          loading={queryRams.isLoading || !!isFetching || !!isMutating}
           columns={
             [
               { field: "id", type: "number", hide: true },
@@ -136,6 +142,8 @@ const RamTableContainer = () => {
           }
           components={{
             Toolbar: CustomToolbar,
+            NoRowsOverlay: CustomNoRowsOverlay,
+            LoadingOverlay: CustomLoadingOverlay,
           }}
         />
       </Box>

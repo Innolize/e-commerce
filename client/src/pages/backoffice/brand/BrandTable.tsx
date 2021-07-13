@@ -2,10 +2,13 @@ import { Box, Button, ButtonGroup, Container, Typography } from "@material-ui/co
 import { DataGrid, GridCellParams, GridColDef, GridPageChangeParams } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
+import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
+import CustomLoadingOverlay from "src/components/CustomLoadingOverlay";
 import CustomNoRowsOverlay from "src/components/CustomNoRowsOverlay";
 import CustomToolbar from "src/components/CustomToolbar";
 import SnackbarAlert from "src/components/SnackbarAlert";
+import { apiOptions } from "src/hooks/apiOptions";
 import { IGetBrands } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
@@ -16,6 +19,8 @@ const BrandTable = () => {
   const PAGE_SIZE = 12;
   const [offset, setOffset] = useState(0);
   const [deleteId, setDeleteId] = useState<string>("");
+  const isFetching = useIsFetching(apiOptions.brand.cacheString);
+  const isMutating = useIsMutating();
   const [open, setOpen] = useState(false);
   const deleteBrand = useDelete<IBrand>("brand");
   const queryBrands = useGetAll<IGetBrands>("brand", offset, PAGE_SIZE);
@@ -65,7 +70,7 @@ const BrandTable = () => {
           pageSize={PAGE_SIZE}
           rowCount={queryBrands.isSuccess ? queryBrands.data.count : undefined}
           onPageChange={handlePageChange}
-          loading={queryBrands.isLoading}
+          loading={queryBrands.isLoading || !!isFetching || !!isMutating}
           columns={
             [
               { field: "id", type: "number", headerName: "ID", hide: true },
@@ -97,6 +102,7 @@ const BrandTable = () => {
           components={{
             Toolbar: CustomToolbar,
             NoRowsOverlay: CustomNoRowsOverlay,
+            LoadingOverlay: CustomLoadingOverlay,
           }}
         />
       </Box>

@@ -1,4 +1,4 @@
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createMuiTheme, responsiveFontSizes } from "@material-ui/core/styles";
 
 const theme = createMuiTheme({
   palette: {
@@ -18,6 +18,9 @@ const theme = createMuiTheme({
       main: "#F70000",
     },
   },
+  typography: {
+    fontSize: 14,
+  },
   overrides: {
     MuiCssBaseline: {
       "@global": {
@@ -31,4 +34,6 @@ const theme = createMuiTheme({
   },
 });
 
-export default theme;
+const responsiveTheme = responsiveFontSizes(theme);
+
+export default responsiveTheme;

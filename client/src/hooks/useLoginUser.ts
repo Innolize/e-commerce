@@ -3,7 +3,8 @@ import { useContext } from "react";
 import { useMutation } from "react-query";
 import { UserContext } from "src/contexts/UserContext";
 import api from "src/services/api";
-import { IUserResponse, ServerError } from "src/types";
+import { IServerUserResponse, ServerError } from "src/types";
+import userMapper from "src/utils/userMapper";
 
 interface ILoginData {
   mail: string;
@@ -17,7 +18,10 @@ export default function useLoginUser() {
     (values: ILoginData) =>
       api
         .post("api/auth", values)
-        .then((res: AxiosResponse<IUserResponse>) => res.data)
+        .then((res: AxiosResponse<IServerUserResponse>) => {
+          // converts the response to a IUser entity
+          return userMapper(res.data);
+        })
         .catch((error: AxiosError<ServerError | string>) => {
           if (error.response) {
             if (typeof error.response.data === "string") {
@@ -33,11 +37,9 @@ export default function useLoginUser() {
         }),
     {
       retry: false,
-      onSuccess: (user: IUserResponse) => {
-        setUser!(user);
-      },
-      onError: (e: AxiosError) => {
-        console.log(e);
+      onSuccess: (user) => {
+        localStorage.setItem("token", user.accessToken);
+        setUser(user);
       },
     }
   );

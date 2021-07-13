@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import { createContext, useState } from "react";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { getTheme } from "../utils/getTheme";
 import { PaletteType } from "@material-ui/core";
 
-interface CustomThemeTypes {
+interface ThemeTypes {
   currentTheme: string;
   setTheme: null | ((name: string) => void);
 }
 
-export const CustomThemeContext = React.createContext<CustomThemeTypes>({
+export const ThemeContext = createContext<ThemeTypes>({
   currentTheme: "light",
   setTheme: null,
 });
@@ -30,9 +30,9 @@ const CustomThemeProvider = (props: any) => {
   };
 
   return (
-    <CustomThemeContext.Provider value={contextValue}>
+    <ThemeContext.Provider value={contextValue}>
       <ThemeProvider theme={theme}>{children}</ThemeProvider>
-    </CustomThemeContext.Provider>
+    </ThemeContext.Provider>
   );
 };
 

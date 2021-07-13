@@ -8,12 +8,16 @@ import {
 } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
+import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
+import { apiOptions } from "src/hooks/apiOptions";
 import { IGetDiskStorages } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IDiskStorage } from "src/types";
 import currencyFormatter from "src/utils/formatCurrency";
+import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import CustomNoRowsOverlay from "../CustomNoRowsOverlay";
 import CustomToolbar from "../CustomToolbar";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "../SnackbarAlert";
@@ -25,6 +29,8 @@ const DiskStorageContainer = () => {
   const [open, setOpen] = useState(false);
   const deleteDiskStorage = useDelete<IDiskStorage>("disk-storage");
   const queryDiskStorages = useGetAll<IGetDiskStorages>("disk-storage", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiOptions["disk-storage"].cacheString);
+  const isMutating = useIsMutating();
 
   const handlePageChange = (params: GridPageChangeParams) => {
     setOffset(params.page * PAGE_SIZE);
@@ -67,7 +73,7 @@ const DiskStorageContainer = () => {
           pageSize={PAGE_SIZE}
           rowCount={queryDiskStorages.isSuccess ? queryDiskStorages.data.count : undefined}
           onPageChange={handlePageChange}
-          loading={queryDiskStorages.isLoading}
+          loading={queryDiskStorages.isLoading || !!isFetching || !!isMutating}
           columns={
             [
               { field: "id", type: "number", hide: true },
@@ -161,6 +167,8 @@ const DiskStorageContainer = () => {
           }
           components={{
             Toolbar: CustomToolbar,
+            NoRowsOverlay: CustomNoRowsOverlay,
+            LoadingOverlay: CustomLoadingOverlay,
           }}
         />
       </Box>

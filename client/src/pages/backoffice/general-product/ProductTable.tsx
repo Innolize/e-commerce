@@ -7,27 +7,38 @@ import {
   ValueFormatterParams,
 } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
+import CustomLoadingOverlay from "src/components/CustomLoadingOverlay";
+import CustomNoRowsOverlay from "src/components/CustomNoRowsOverlay";
 import CustomToolbar from "src/components/CustomToolbar";
 import DeleteDialog from "src/components/DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "src/components/SnackbarAlert";
-import { IGetProducts } from "src/hooks/types";
+import { apiOptions } from "src/hooks/apiOptions";
 import useDelete from "src/hooks/useDelete";
-import useGetAll from "src/hooks/useGetAll";
+import useGetProducts from "src/hooks/useGetProducts";
 import { IProduct } from "src/types";
+import { convertText } from "src/utils/convertText";
 import currencyFormatter from "src/utils/formatCurrency";
 
 const Products = () => {
   const PAGE_SIZE = 12;
-  const [offset, setOffset] = useState(0);
+  const [page, setPage] = useState("");
+  const [name, setName] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteProduct = useDelete<IProduct>("product");
-  const queryProducts = useGetAll<IGetProducts>("product", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiOptions.product.cacheString);
+  const isMutating = useIsMutating();
+  const queryProducts = useGetProducts(page, null, name, PAGE_SIZE);
+
+  const onFilterChange = useCallback((params) => {
+    setName(params.filterModel.items[0].value);
+  }, []);
 
   const handlePageChange = (params: GridPageChangeParams) => {
-    setOffset(params.page * PAGE_SIZE);
+    setPage((params.page + 1).toString());
   };
 
   const handleClickDeleteBtn = (id: string) => {
@@ -64,20 +75,21 @@ const Products = () => {
         </Button>
       </Box>
 
-      <Box width="100%" height="500px" marginBottom="50px">
+      <Box width="100%" height="525px" marginBottom="50px">
         <DataGrid
           pagination
           paginationMode="server"
           pageSize={PAGE_SIZE}
           rowCount={queryProducts.isSuccess ? queryProducts.data.count : undefined}
           onPageChange={handlePageChange}
-          loading={queryProducts.isLoading}
+          onFilterModelChange={onFilterChange}
+          loading={queryProducts.isLoading || !!isFetching || !!isMutating}
           columns={
             [
-              { field: "id", type: "number", hide: true },
+              { field: "id", type: "number", hide: true, filterable: false },
               { field: "name", width: 200, headerName: "Product name" },
-              { field: "description", width: 200, headerName: "Description" },
-              { field: "category", width: 150, headerName: "Category" },
+              { field: "description", width: 200, headerName: "Description", filterable: false },
+              { field: "category", width: 150, headerName: "Category", filterable: false },
               {
                 field: "price",
                 width: 140,
@@ -85,10 +97,11 @@ const Products = () => {
                 headerAlign: "center",
                 align: "left",
                 type: "number",
+                filterable: false,
                 valueFormatter: (params: ValueFormatterParams) => currencyFormatter.format(Number(params.value)),
               },
-              { field: "stock", width: 100, headerName: "Stock" },
-              { field: "brand", width: 100, headerName: "Brand" },
+              { field: "stock", width: 100, headerName: "Stock", filterable: false },
+              { field: "brand", width: 100, headerName: "Brand", filterable: false },
               {
                 field: "Edit options",
                 sortable: false,
@@ -115,13 +128,15 @@ const Products = () => {
                   description: product.description,
                   price: product.price,
                   stock: product.stock ? "Yes" : "No",
-                  category: product.category?.name || "Not found",
+                  category: convertText(product.category?.name) || "Not found",
                   brand: product.brand?.name || "Not found",
                 }))
               : []
           }
           components={{
             Toolbar: CustomToolbar,
+            NoRowsOverlay: CustomNoRowsOverlay,
+            LoadingOverlay: CustomLoadingOverlay,
           }}
         />
       </Box>

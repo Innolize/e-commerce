@@ -1,12 +1,4 @@
-import {
-  Box,
-  Checkbox,
-  Container,
-  Input,
-  makeStyles,
-  MenuItem,
-  Typography,
-} from "@material-ui/core";
+import { Box, Checkbox, Container, Input, makeStyles, MenuItem, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
@@ -102,19 +94,10 @@ const CabinetForm = () => {
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
               <Box>
-                <InputField
-                  label="Description"
-                  placeholder="Description"
-                  name="description"
-                />
+                <InputField rows={5} multiline label="Description" placeholder="Description" name="description" />
               </Box>
               <Box>
-                <InputField
-                  type="number"
-                  label="Price"
-                  placeholder="Price"
-                  name="price"
-                />
+                <InputField type="number" label="Price" placeholder="Price" name="price" />
               </Box>
 
               {queryBrands.isSuccess && (
@@ -142,21 +125,13 @@ const CabinetForm = () => {
               <Box display="flex" alignItems="center">
                 <Typography>Generic PWS:</Typography>
                 <Field type="checkbox" name="generic_pws" as={Checkbox} />
-                <ErrorMessage
-                  component={Typography}
-                  className={classes.errorMsg}
-                  name="generic_pws"
-                />
+                <ErrorMessage component={Typography} className={classes.errorMsg} name="generic_pws" />
               </Box>
 
               <Box display="flex" alignItems="center">
                 <Typography>Stock:</Typography>
                 <Field type="checkbox" name="stock" as={Checkbox} />
-                <ErrorMessage
-                  component={Typography}
-                  className={classes.errorMsg}
-                  name="stock"
-                />
+                <ErrorMessage component={Typography} className={classes.errorMsg} name="stock" />
               </Box>
 
               <Box my={3}>
@@ -165,22 +140,14 @@ const CabinetForm = () => {
                   placeholder="Image"
                   name="image"
                   fullWidth
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFieldValue("image", e.target.files![0])
-                  }
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldValue("image", e.target.files![0])}
                 />
-                <ErrorMessage
-                  component={Typography}
-                  className={classes.errorMsg}
-                  name="image"
-                />
+                <ErrorMessage component={Typography} className={classes.errorMsg} name="image" />
               </Box>
 
               {createCabinet.isError && (
                 <Box my={2}>
-                  <Alert severity="error">
-                    {createCabinet.error?.message || "Something went wrong"}
-                  </Alert>
+                  <Alert severity="error">{createCabinet.error?.message || "Something went wrong"}</Alert>
                 </Box>
               )}
 

@@ -3,7 +3,8 @@ import { useContext } from "react";
 import { useMutation } from "react-query";
 import { UserContext } from "src/contexts/UserContext";
 import api from "src/services/api";
-import { IUser, ServerError } from "src/types";
+import { IServerUserResponse, ServerError } from "src/types";
+import userMapper from "src/utils/userMapper";
 
 interface ICreateUserData {
   mail: string;
@@ -17,7 +18,9 @@ export default function useCreateUser() {
     (values: ICreateUserData) =>
       api
         .post("api/auth/signup", values)
-        .then((res: AxiosResponse<IUser>) => res.data)
+        .then((res: AxiosResponse<IServerUserResponse>) => {
+          return userMapper(res.data);
+        })
         .catch((error: AxiosError<ServerError | string>) => {
           if (error.response) {
             if (typeof error.response.data === "string") {
@@ -33,15 +36,9 @@ export default function useCreateUser() {
         }),
     {
       retry: false,
-      onSuccess: (user: IUser) => {
-        console.log(user);
-        setUser!({
-          user: user,
-          access_token: "",
-        });
-      },
-      onError: (e: AxiosError) => {
-        console.log(e);
+      onSuccess: (user) => {
+        localStorage.setItem("token", user.accessToken);
+        setUser(user);
       },
     }
   );

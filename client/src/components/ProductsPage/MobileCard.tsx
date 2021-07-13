@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-computed-key */
 import { Card, CardActionArea, CardContent, CardMedia, makeStyles, Typography } from "@material-ui/core";
+import { Link } from "react-router-dom";
 import noLogoFound from "src/images/no-logo.png";
 import { IProduct } from "src/types";
 import currencyFormatter from "src/utils/formatCurrency";
@@ -38,19 +39,21 @@ const MobileCard = ({ products }: Props) => {
   return (
     <>
       {products.map((product: IProduct) => (
-        <Card key={product.id} className={classes.cardContainer}>
-          <CardActionArea className={classes.card}>
-            <CardMedia className={classes.media} image={product.image || noLogoFound} />
-            <CardContent className={classes.content}>
-              <Typography gutterBottom variant="h5" component="h2">
-                {product.name}
-              </Typography>
-              <Typography className={classes.price} variant="body2" color="textSecondary" component="p">
-                {currencyFormatter.format(product.price)}
-              </Typography>
-            </CardContent>
-          </CardActionArea>
-        </Card>
+        <Link key={product.id} to={`/products/${product.id}`} style={{ textDecoration: "none" }}>
+          <Card className={classes.cardContainer}>
+            <CardActionArea className={classes.card}>
+              <CardMedia className={classes.media} image={product.image || noLogoFound} />
+              <CardContent className={classes.content}>
+                <Typography gutterBottom variant="h5" component="h2">
+                  {product.name}
+                </Typography>
+                <Typography className={classes.price} variant="body2" color="textSecondary" component="p">
+                  {currencyFormatter.format(product.price)}
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Link>
       ))}
     </>
   );

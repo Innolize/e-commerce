@@ -6,8 +6,10 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import MenuIcon from "@material-ui/icons/Menu";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
+import { UserContext } from "src/contexts/UserContext";
+import useGetCart from "src/hooks/useGetCart";
 import Sidebar from "../Sidebar/Sidebar";
 import SearchBar from "./SearchBar";
 
@@ -23,13 +25,15 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: "0 10px",
       fontSize: "10px",
       "&:hover": {
-        color: theme.palette.primary.dark,
+        color: theme.palette.secondary.dark,
       },
     },
   })
 );
 
-const DesktopNavbar = React.memo(() => {
+const MobileNavbar = React.memo(() => {
+  const { user } = useContext(UserContext);
+  const getCart = useGetCart(user?.userInfo.id);
   const classes = useStyles();
   const [state, setState] = useState(false);
 
@@ -41,11 +45,19 @@ const DesktopNavbar = React.memo(() => {
     <>
       <AppBar color="default" position="static">
         <Toolbar className={classes.toolbar}>
-          <Link className={classes.linkIcon} component={RouterLink} to="/cart">
-            <Badge badgeContent={2} color="secondary">
-              <ShoppingCartIcon />
-            </Badge>
-          </Link>
+          {user && (
+            <Link className={classes.linkIcon} component={RouterLink} to="/cart">
+              {getCart.data?.cartItems?.length ? (
+                <Badge badgeContent={getCart.data?.cartItems.length} color="secondary">
+                  <ShoppingCartIcon />
+                </Badge>
+              ) : (
+                <Badge color="secondary">
+                  <ShoppingCartIcon />
+                </Badge>
+              )}
+            </Link>
+          )}
           <SearchBar />
           <IconButton onClick={toggleDrawer(true)} edge="start" color="inherit" aria-label="open drawer">
             <MenuIcon />
@@ -57,4 +69,4 @@ const DesktopNavbar = React.memo(() => {
   );
 });
 
-export default DesktopNavbar;
+export default MobileNavbar;

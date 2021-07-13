@@ -4,12 +4,14 @@ import Alert from "@material-ui/lab/Alert";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import Image from "material-ui-image";
 import React, { useEffect } from "react";
+import { useQueryClient } from "react-query";
 import { useHistory, useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IGeneralProductForm } from "src/form_types";
+import { apiOptions } from "src/hooks/apiOptions";
 import { IGetBrands, IGetCategories } from "src/hooks/types";
 import useEdit from "src/hooks/useEdit";
 import useGetAll from "src/hooks/useGetAll";
@@ -61,6 +63,7 @@ const EditProduct = () => {
   const editProduct = useEdit<IProduct>("product", id);
   const classes = useStyles();
   const history = useHistory();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -122,7 +125,17 @@ const EditProduct = () => {
               formData.append("id_brand", data.brand);
               formData.append("id_category", data.category);
               formData.append("product_image", data.image);
-              editProduct.mutate(formData);
+              editProduct.mutate(formData, {
+                onSuccess: () => {
+                  // If the category is one of the pc-build categories...
+                  // we invalidate the query for the pc-build table.
+                  // Otherwise the pc-build tables would show the data from before the mutation
+                  if (BUILD_CATEGORIES_IDS.includes(Number(queryProduct.data.category.id))) {
+                    const category = queryProduct.data.category.name;
+                    queryClient.invalidateQueries(apiOptions[category].cacheString);
+                  }
+                },
+              });
             }}
             validationSchema={editProductSchema}
           >
@@ -132,7 +145,7 @@ const EditProduct = () => {
                   <InputField label="Name" placeholder="Name" name="name" />
                 </Box>
                 <Box>
-                  <InputField label="Description" placeholder="Description" name="description" />
+                  <InputField rows={5} multiline label="Description" placeholder="Description" name="description" />
                 </Box>
                 <Box>
                   <InputField type="number" label="Price" placeholder="Price" name="price" />

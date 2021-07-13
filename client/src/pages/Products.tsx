@@ -1,7 +1,5 @@
 import { Box, CircularProgress, Container, makeStyles } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import { useEffect } from "react";
-import { useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import Filters from "src/components/ProductsPage/Filters";
 import ProductsContainer from "src/components/ProductsPage/ProductsContainer";
@@ -29,26 +27,16 @@ const Products = () => {
   const queryParam = useQuery();
   const history = useHistory();
   const queryProducts = useGetProducts(
-    queryParam.get("offset"),
+    queryParam.get("page"),
     queryParam.get("category"),
     queryParam.get("name"),
     LIMIT
   );
   const queryCategories = useGetAll<IGetCategories>("category");
-  const [page, setPage] = useState(1);
-  const offsetParam = queryParam.get("offset");
-
-  useEffect(() => {
-    if (!offsetParam) {
-      setPage(1);
-    }
-  }, [offsetParam]);
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     window.scrollTo({ top: 0 });
-    setPage(value);
-    const offset = (value - 1) * LIMIT;
-    queryParam.set("offset", offset.toString());
+    queryParam.set("page", value.toString());
     history.push("/products?" + queryParam.toString());
   };
 
@@ -60,7 +48,7 @@ const Products = () => {
         <Box display="flex" justifyContent="space-between" flexDirection="column" flexGrow="1">
           {queryProducts.isSuccess ? (
             <ProductsContainer
-              page={page}
+              page={Number(queryParam.get("page")) || 1}
               handlePageChange={handlePageChange}
               LIMIT={LIMIT}
               productData={queryProducts.data}

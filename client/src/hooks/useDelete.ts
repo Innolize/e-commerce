@@ -5,6 +5,7 @@ import { apiOptions, ApiOptions } from "./apiOptions";
 
 export default function useDelete<T>(option: ApiOptions) {
   const queryClient = useQueryClient();
+
   return useMutation(
     (id: string) =>
       api

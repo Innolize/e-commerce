@@ -96,12 +96,15 @@ const RamForm = () => {
           {({ setFieldValue }) => (
             <Form className={classes.form} encType="multipart/form-data">
               <Typography variant="h4">Create a ram</Typography>
+
               <Box>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
+
               <Box>
-                <InputField label="Description" placeholder="Description" name="description" />
+                <InputField rows={5} multiline label="Description" placeholder="Description" name="description" />
               </Box>
+
               <Box>
                 <InputField type="number" label="Price" placeholder="Price" name="price" />
               </Box>

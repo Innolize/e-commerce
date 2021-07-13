@@ -8,6 +8,7 @@ import Register from "src/pages/Register";
 import { DefaultLayout } from "../components/layouts/DefaultLayout";
 import NoMatch from "src/pages/NoMatch";
 import { Switch } from "react-router-dom";
+import IndividualProduct from "src/pages/IndividualProduct";
 
 const DefaultRoutes = () => {
   return (
@@ -15,6 +16,7 @@ const DefaultRoutes = () => {
       <Switch>
         <Route path="/" exact component={Home} />
         <Route path="/build" component={Build} />
+        <Route path="/products/:id" component={IndividualProduct} />
         <Route path="/products" component={Products} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
