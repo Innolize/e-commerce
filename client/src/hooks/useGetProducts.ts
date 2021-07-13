@@ -28,7 +28,7 @@ export default function useGetProducts(
     () => api.get(apiOptions.product.route + "/", { params }).then((res: AxiosResponse<IGetProducts>) => res.data),
     {
       retry: false,
-      staleTime: 60 * 1000, // 1 minute
+      staleTime: 60 * 5 * 1000, // 5 minutes
       onError: (e: AxiosError) => {
         console.log(e);
       },
