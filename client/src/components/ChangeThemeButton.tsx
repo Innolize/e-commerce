@@ -3,7 +3,7 @@ import { useTheme } from "@material-ui/core/styles";
 import NightsStayIcon from "@material-ui/icons/NightsStay";
 import WbSunnyIcon from "@material-ui/icons/WbSunny";
 import { useContext } from "react";
-import { CustomThemeContext } from "../contexts/customThemeContext";
+import { ThemeContext } from "../contexts/CustomThemeContext";
 
 interface Props {
   className?: string;
@@ -11,7 +11,7 @@ interface Props {
 
 const ChangeThemeButton = (props: Props) => {
   const theme = useTheme();
-  const { currentTheme, setTheme } = useContext(CustomThemeContext);
+  const { currentTheme, setTheme } = useContext(ThemeContext);
 
   const handleThemeChange = () => {
     currentTheme === "light" ? setTheme!("dark") : setTheme!("light");

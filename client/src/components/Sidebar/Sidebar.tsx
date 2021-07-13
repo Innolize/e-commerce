@@ -15,11 +15,11 @@ import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import WbSunnyIcon from "@material-ui/icons/WbSunny";
 import NightsStayIcon from "@material-ui/icons/NightsStay";
 import ListLink from "./ListLink";
-import { CustomThemeContext } from "../../contexts/customThemeContext";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import { UserContext } from "src/contexts/UserContext";
 import { isAdmin } from "src/utils/isAdmin";
 import useLogoutUser from "src/hooks/useLogout";
+import { ThemeContext } from "src/contexts/CustomThemeContext";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,7 +51,7 @@ function Sidebar({ state, setState }: Props) {
   const classes = useStyles();
   const theme = useTheme();
   const { user } = useContext(UserContext);
-  const { currentTheme, setTheme } = useContext(CustomThemeContext);
+  const { currentTheme, setTheme } = useContext(ThemeContext);
   const logout = useLogoutUser();
 
   const handleLogout = () => {

@@ -7,6 +7,9 @@ import currencyFormatter from "src/utils/formatCurrency";
 const useStyles = makeStyles({
   cardContainer: {
     height: "350px",
+    "&:hover": {
+      transform: "scale(1.05)",
+    },
   },
   card: {
     height: "350px",
@@ -46,7 +49,7 @@ const DesktopCard = ({ products }: Props) => {
                   <Typography align="center" gutterBottom variant="h5" component="h2">
                     {product.name}
                   </Typography>
-                  <Typography align="center" variant="subtitle1" color="textSecondary" component="p">
+                  <Typography align="center" variant="h6" color="textSecondary" component="p">
                     {currencyFormatter.format(product.price)}
                   </Typography>
                 </CardContent>

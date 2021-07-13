@@ -80,22 +80,14 @@ const CreateBrand = () => {
                   placeholder="Logo"
                   name="logo"
                   fullWidth
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFieldValue("logo", e.target.files![0])
-                  }
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldValue("logo", e.target.files![0])}
                 />
-                <ErrorMessage
-                  component={Typography}
-                  className={classes.errorMsg}
-                  name="logo"
-                />
+                <ErrorMessage component={Typography} className={classes.errorMsg} name="logo" />
               </Box>
 
               {createBrand.isError && (
                 <Box my={2}>
-                  <Alert severity="error">
-                    {createBrand.error?.message || "Something went wrong."}
-                  </Alert>
+                  <Alert severity="error">{createBrand.error?.message || "Something went wrong."}</Alert>
                 </Box>
               )}
 
