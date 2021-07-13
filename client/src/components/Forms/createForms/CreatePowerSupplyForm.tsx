@@ -1,12 +1,4 @@
-import {
-  Box,
-  Checkbox,
-  Container,
-  Input,
-  makeStyles,
-  MenuItem,
-  Typography,
-} from "@material-ui/core";
+import { Box, Checkbox, Container, Input, makeStyles, MenuItem, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
@@ -101,20 +93,13 @@ const PowerSupplyForm = () => {
               <Box>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
+
               <Box>
-                <InputField
-                  label="Description"
-                  placeholder="Description"
-                  name="description"
-                />
+                <InputField rows={5} multiline label="Description" placeholder="Description" name="description" />
               </Box>
+
               <Box>
-                <InputField
-                  type="number"
-                  label="Price"
-                  placeholder="Price"
-                  name="price"
-                />
+                <InputField type="number" label="Price" placeholder="Price" name="price" />
               </Box>
 
               {queryBrands.isSuccess && (
@@ -132,28 +117,21 @@ const PowerSupplyForm = () => {
               <Box>
                 <SelectField label="Certification" name="certification">
                   {PWS_CERTIFICATION.map((certification: string) => (
-                    <MenuItem value={certification}>{certification}</MenuItem>
+                    <MenuItem key={certification} value={certification}>
+                      {certification}
+                    </MenuItem>
                   ))}
                 </SelectField>
               </Box>
 
               <Box>
-                <InputField
-                  type="number"
-                  label="Watts"
-                  placeholder="Watts"
-                  name="watts"
-                />
+                <InputField type="number" label="Watts" placeholder="Watts" name="watts" />
               </Box>
 
               <Box display="flex" alignItems="center">
                 <Typography>Stock:</Typography>
                 <Field type="checkbox" name="stock" as={Checkbox} />
-                <ErrorMessage
-                  component={Typography}
-                  className={classes.errorMsg}
-                  name="stock"
-                />
+                <ErrorMessage component={Typography} className={classes.errorMsg} name="stock" />
               </Box>
 
               <Box my={3}>
@@ -162,22 +140,14 @@ const PowerSupplyForm = () => {
                   placeholder="Image"
                   name="image"
                   fullWidth
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFieldValue("image", e.target.files![0])
-                  }
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldValue("image", e.target.files![0])}
                 />
-                <ErrorMessage
-                  component={Typography}
-                  className={classes.errorMsg}
-                  name="image"
-                />
+                <ErrorMessage component={Typography} className={classes.errorMsg} name="image" />
               </Box>
 
               {createPowerSupply.isError && (
                 <Box my={2}>
-                  <Alert severity="error">
-                    {createPowerSupply.error?.message}
-                  </Alert>
+                  <Alert severity="error">{createPowerSupply.error?.message}</Alert>
                 </Box>
               )}
 

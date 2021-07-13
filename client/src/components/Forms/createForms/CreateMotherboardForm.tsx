@@ -1,12 +1,4 @@
-import {
-  Box,
-  Checkbox,
-  Container,
-  Input,
-  makeStyles,
-  MenuItem,
-  Typography,
-} from "@material-ui/core";
+import { Box, Checkbox, Container, Input, makeStyles, MenuItem, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
@@ -110,23 +102,17 @@ const MotherboardForm = () => {
           {({ setFieldValue }) => (
             <Form className={classes.form} encType="multipart/form-data">
               <Typography variant="h4">Create a Motherboard</Typography>
+
               <Box>
                 <InputField label="Name" placeholder="Name" name="name" />
               </Box>
+
               <Box>
-                <InputField
-                  label="Description"
-                  placeholder="Description"
-                  name="description"
-                />
+                <InputField rows={5} multiline label="Description" placeholder="Description" name="description" />
               </Box>
+
               <Box>
-                <InputField
-                  type="number"
-                  label="Price"
-                  placeholder="Price"
-                  name="price"
-                />
+                <InputField type="number" label="Price" placeholder="Price" name="price" />
               </Box>
 
               {queryBrands.isSuccess && (
@@ -142,30 +128,18 @@ const MotherboardForm = () => {
               <Field hidden name="category" label="Category"></Field>
 
               <Box>
-                <InputField
-                  label="CPU Socket"
-                  placeholder="CPU Socket"
-                  name="cpu_socket"
-                />
+                <InputField label="CPU Socket" placeholder="CPU Socket" name="cpu_socket" />
               </Box>
 
               <Box>
-                <SelectField
-                  label="CPU Brand"
-                  placeholder="CPU Brand"
-                  name="cpu_brand"
-                >
+                <SelectField label="CPU Brand" placeholder="CPU Brand" name="cpu_brand">
                   <MenuItem value="INTEL">INTEL</MenuItem>
                   <MenuItem value="AMD">AMD</MenuItem>
                 </SelectField>
               </Box>
 
               <Box>
-                <SelectField
-                  label="RAM Version"
-                  placeholder="RAM Version"
-                  name="ram_version"
-                >
+                <SelectField label="RAM Version" placeholder="RAM Version" name="ram_version">
                   {RAM_VERSION.map((ram: string) => (
                     <MenuItem key={uuidv4()} value={ram}>
                       {ram}
@@ -175,37 +149,19 @@ const MotherboardForm = () => {
               </Box>
 
               <Box>
-                <InputField
-                  type="number"
-                  label="Max Frequency"
-                  placeholder="Max Frequency"
-                  name="max_frec"
-                />
+                <InputField type="number" label="Max Frequency" placeholder="Max Frequency" name="max_frec" />
               </Box>
 
               <Box>
-                <InputField
-                  type="number"
-                  label="Min Frequency"
-                  placeholder="Min Frequency"
-                  name="min_frec"
-                />
+                <InputField type="number" label="Min Frequency" placeholder="Min Frequency" name="min_frec" />
               </Box>
 
               <Box>
-                <InputField
-                  label="Video Socket"
-                  placeholder="Video Socket"
-                  name="video_socket"
-                />
+                <InputField label="Video Socket" placeholder="Video Socket" name="video_socket" />
               </Box>
 
               <Box>
-                <SelectField
-                  label="Model Size"
-                  placeholder="Model Size"
-                  name="model_size"
-                >
+                <SelectField label="Model Size" placeholder="Model Size" name="model_size">
                   {SIZE.map((size: string) => (
                     <MenuItem key={uuidv4()} value={size}>
                       {size}
@@ -215,22 +171,13 @@ const MotherboardForm = () => {
               </Box>
 
               <Box>
-                <InputField
-                  type="number"
-                  label="Watts"
-                  placeholder="Watts"
-                  name="watts"
-                />
+                <InputField type="number" label="Watts" placeholder="Watts" name="watts" />
               </Box>
 
               <Box display="flex" alignItems="center">
                 <Typography>Stock:</Typography>
                 <Field type="checkbox" name="stock" as={Checkbox} />
-                <ErrorMessage
-                  component={Typography}
-                  className={classes.errorMsg}
-                  name="stock"
-                />
+                <ErrorMessage component={Typography} className={classes.errorMsg} name="stock" />
               </Box>
 
               <Box my={3}>
@@ -239,22 +186,14 @@ const MotherboardForm = () => {
                   placeholder="Image"
                   name="image"
                   fullWidth
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFieldValue("image", e.target.files![0])
-                  }
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldValue("image", e.target.files![0])}
                 />
-                <ErrorMessage
-                  component={Typography}
-                  className={classes.errorMsg}
-                  name="image"
-                />
+                <ErrorMessage component={Typography} className={classes.errorMsg} name="image" />
               </Box>
 
               {createMotherboard.isError && (
                 <Box my={2}>
-                  <Alert severity="error">
-                    {createMotherboard.error?.message}
-                  </Alert>
+                  <Alert severity="error">{createMotherboard.error?.message}</Alert>
                 </Box>
               )}
 
