@@ -1,4 +1,4 @@
-interface IUserGetUsers {
+export interface IUserGetUsers {
     limit?: number
     offset?: number
 }

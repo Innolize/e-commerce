@@ -31,14 +31,17 @@ export class AuthController extends AbstractController {
         app.post(`/api${ROUTE}`, this.uploadMiddleware.none(), localAuthentication, this.login.bind(this))
         app.post(`/api${ROUTE}/refresh`, this.refresh.bind(this))
         app.post(`/api${ROUTE}/logout`, this.logOut.bind(this))
-        app.post(`/api${ROUTE}/signup`,this.uploadMiddleware.none(), this.signup.bind(this))
+        app.post(`/api${ROUTE}/signup`, this.uploadMiddleware.none(), this.signup.bind(this))
     }
 
     async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const user = req.user
         try {
             const dto: IUserCreate = req.body
             const validatedDto = await bodyValidator(validateCreateUserDto, dto)
-            const { id } = await this.userService.createUser(validatedDto)
+
+            const rolename = user.role.name
+            const { id } = await this.userService.createUser(validatedDto,rolename)
             const { refresh_token, ...clientResponse } = await this.authService.login(id)
             res.cookie("refresh", refresh_token)
             res.status(200).send(clientResponse)

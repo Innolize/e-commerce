@@ -204,7 +204,7 @@ describe('Test getUsers', () => {
             role_id: 1
         }
         await userModel.bulkCreate([newUser, newUser2, newUser3])
-        const response = await repository.getUsers({ limit: 3, offset: 0 })
+        const response = await repository.getUsers(3, 0)
         expect(response.count).toBe(3)
         expect(response.results[0].mail).toBe(newUser.mail)
         expect(response.results[0].password).toBe(newUser.password)

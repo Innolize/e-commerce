@@ -15,6 +15,7 @@ import { validateGetUsersDto } from "../helper/get_dto_validator";
 import { IUserController } from "../interfaces/IUserController";
 import { IUserCreate } from "../interfaces/IUserCreate";
 import { IUserEdit } from "../interfaces/IUserEdit";
+import { IUserGetUsers } from "../interfaces/IUserGetUsers";
 import { IUserService } from "../interfaces/IUserService";
 
 export class UserController extends AbstractController implements IUserController {

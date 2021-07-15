@@ -9,9 +9,9 @@ import { IUserEdit } from "../interfaces/IUserEdit";
 import { fromDbToUser } from "../mapper/userMapper";
 import { UserModel } from "../model/UserModel";
 import { GetUsersDto } from '../dto/getUsersDto'
-import { GetUserReqDto } from "../dto/getUsersReqDto";
 import { IUserCreate } from "../interfaces/IUserCreate";
 import { IUserRepository } from "../interfaces/IUserRepository";
+import { IUserGetUsers } from "../interfaces/IUserGetUsers";
 
 @injectable()
 export class UserRepository extends AbstractRepository implements IUserRepository {
@@ -23,8 +23,7 @@ export class UserRepository extends AbstractRepository implements IUserRepositor
         this.userModel = userModel
     }
 
-    async getUsers(queryParams: GetUserReqDto): Promise<GetUsersDto> {
-        const { offset, limit } = queryParams
+    async getUsers(limit?: number, offset?: number): Promise<GetUsersDto> {
         const { count, rows } = await this.userModel.findAndCountAll({ limit, offset })
         const usersList = rows.map(fromDbToUser)
         const response = new GetUsersDto(count, usersList)

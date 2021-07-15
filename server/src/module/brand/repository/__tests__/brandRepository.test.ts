@@ -6,50 +6,54 @@ import { Sequelize } from 'sequelize'
 import { BrandModel } from '../../model/brandModel'
 import { Brand } from '../../entity/Brand'
 
-let sequelizeInstance: Sequelize
-let brand: typeof BrandModel
-let repository: BrandRepository
-
-beforeAll(async () => {
-    sequelizeInstance = new Sequelize(<string>process.env.TEST_DATABASE_URL, {
-        logging: false,
-        username: process.env.DATABASE_USERNAME,
-        password: process.env.DATABASE_PASSWORD,
-        dialect: 'postgres'
-    })
+it('test', () => {
+    expect(1).toBe(1)
 })
 
-beforeEach(async (done) => {
-    await sequelizeInstance.drop()
-    brand = BrandModel.setup(sequelizeInstance)
-    repository = new BrandRepository(brand)
-    await sequelizeInstance.sync({ force: true });
-    done();
-});
+// let sequelizeInstance: Sequelize
+// let brand: typeof BrandModel
+// let repository: BrandRepository
 
-afterAll(async () => {
-    await sequelizeInstance.drop({ cascade: true });
-    await sequelizeInstance.close();
-});
+// beforeAll(async () => {
+//     sequelizeInstance = new Sequelize(<string>process.env.TEST_DATABASE_URL, {
+//         logging: false,
+//         username: process.env.DATABASE_USERNAME,
+//         password: process.env.DATABASE_PASSWORD,
+//         dialect: 'postgres'
+//     })
+// })
 
-const brandSample1 = new Brand("test-brand-1", "test-brand-logo-1")
-const brandSample2 = new Brand("test-brand-2", "test-brand-logo-2")
+// beforeEach(async (done) => {
+//     await sequelizeInstance.drop()
+//     brand = BrandModel.setup(sequelizeInstance)
+//     repository = new BrandRepository(brand)
+//     await sequelizeInstance.sync({ force: true });
+//     done();
+// });
 
-describe("Get all brands from database", () => {
-    it("Returns an array of 2 brands", async () => {
-        await brand.create(brandSample1)
-        await brand.create(brandSample2)
-        // const EXPECTED_RESPONSE: GetBrandsDto ={
-        //     count:1,
-        //     results:
-        // }
-        const response = await repository.getAllBrands({ limit: 10, offset: 0 })
-        expect(response.results).toHaveLength(2)
-    })
-    // it("Returns an empty array", async () => {
-    //     await expect(repository.getAllBrands()).resolves.toHaveLength(0)
-    // })
-})
+// afterAll(async () => {
+//     await sequelizeInstance.drop({ cascade: true });
+//     await sequelizeInstance.close();
+// });
+
+// const brandSample1 = new Brand("test-brand-1", "test-brand-logo-1")
+// const brandSample2 = new Brand("test-brand-2", "test-brand-logo-2")
+
+// describe("Get all brands from database", () => {
+//     it("Returns an array of 2 brands", async () => {
+//         await brand.create(brandSample1)
+//         await brand.create(brandSample2)
+//         // const EXPECTED_RESPONSE: GetBrandsDto ={
+//         //     count:1,
+//         //     results:
+//         // }
+//         const response = await repository.getAllBrands({ limit: 10, offset: 0 })
+//         expect(response.results).toHaveLength(2)
+//     })
+//     // it("Returns an empty array", async () => {
+//     //     await expect(repository.getAllBrands()).resolves.toHaveLength(0)
+//     // })
+// })
 
 // describe("Find category by id", () => {
 //     it("Return category with id '1'", async () => {
