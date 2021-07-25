@@ -121,13 +121,13 @@ describe('Test modifyUser', () => {
             role_id: 1
         }
         await userModel.create(newUser)
-        const response = await repository.modifyUser({ id: 1, mail: "new-password" })
+        const response = await repository.modifyUser(1, { mail: "new-password" })
         expect(response.mail).toBe("new-password")
     });
     it('Returns error if no user was updated', async () => {
         try {
             const INEXISTENT_USER_ID = 555
-            await repository.modifyUser({ id: INEXISTENT_USER_ID, mail: "new-password" })
+            await repository.modifyUser(INEXISTENT_USER_ID, { mail: "new-password" })
         } catch (err) {
             expect(err).toBeInstanceOf(UserError)
         }

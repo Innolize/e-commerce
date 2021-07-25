@@ -12,7 +12,7 @@ import { IDiskStorage_Product } from "../interface/IDiskStorageCreate";
 import { IDiskStorageGetAllQuery } from "../interface/IDiskStorageGetAllQuery";
 import { IDiskStorageEdit } from '../interface/IDiskStorageEdit'
 import { DiskStorageService } from "../service/DiskStorageService";
-import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
+import { numberParamOrError } from "../../../common/helpers/numberParamOrError";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
@@ -66,8 +66,8 @@ export class DiskStorageController extends AbstractController {
 
     getSingleDisk = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
+            const params = req.params
+            const validId = numberParamOrError(params, "id")
             const response = await this.diskStorageService.getSingleDisk(validId) as DiskStorage
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
@@ -105,8 +105,8 @@ export class DiskStorageController extends AbstractController {
 
     edit = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
+            const params = req.params
+            const validId = numberParamOrError(params, "id")
             const dto: IDiskStorageEdit = req.body
             const validatedDto = await bodyValidator(validateDiskStorageEditDto, dto)
             const modifieddisk = await this.diskStorageService.modifyDisk(validId, validatedDto) as DiskStorage

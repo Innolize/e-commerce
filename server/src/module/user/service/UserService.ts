@@ -11,6 +11,9 @@ import { IUserService } from "../interfaces/IUserService";
 import { IUserRepository } from "../interfaces/IUserRepository";
 import { IUserGetUsers } from "../interfaces/IUserGetUsers";
 import { IRoleName } from "../../authorization/interfaces/IRole";
+import { ForbiddenError } from "@casl/ability";
+import { IUserWithAuthorization } from "../../authorization/interfaces/IUserWithAuthorization";
+import { appAbility } from "../../authorization/util/abilityBuilder";
 
 @injectable()
 export class UserService extends AbstractService implements IUserService {
@@ -30,19 +33,19 @@ export class UserService extends AbstractService implements IUserService {
         return response
     }
 
-    async getSingleUser(id: number): Promise<User> {
-        return await this.userRepository.getSingleUser(id)
+    async getSingleUser(id: number, user: IUserWithAuthorization): Promise<User> {
+        const foundUser = await this._findUser(id)
+        ForbiddenError.from<appAbility>(user.role.permissions).throwUnlessCan("read", foundUser)
+        return foundUser
     }
 
-    async createUser(user: IUserCreate, rolename?: IRoleName): Promise<User> {
-        const DEFAULT_ROLE_ID = 2
+    async createUser(user: IUserCreate, currentUserRole?: IRoleName): Promise<User> {
         const mailInUse = await this.userRepository.findUserByMail(user.mail)
         if (mailInUse) {
             throw UserError.mailAlreadyInUse()
         }
-
-        const role_id = rolename === "ADMIN" ? user.role_id : DEFAULT_ROLE_ID
-        const hashedPassword = await this.encryption.hash(user.password, Number(<string>process.env.BCRYPT_SALT_NUMBER))
+        const role_id = this._setNewUserRole(user.role_id, currentUserRole)
+        const hashedPassword = await this._hashPassword(user.password)
         const userHashed: IUserCreate = { ...user, password: hashedPassword, role_id }
         return await this.userRepository.createUser(userHashed)
     }
@@ -51,11 +54,28 @@ export class UserService extends AbstractService implements IUserService {
         return await this.userRepository.findUserByMail(mail)
     }
 
-    async modifyUser(user: IUserEdit): Promise<User> {
-        return await this.userRepository.modifyUser(user)
+    async modifyUser(id: number, userDTO: IUserEdit, user: IUserWithAuthorization): Promise<User> {
+        const foundUser = await this._findUser(id)
+        ForbiddenError.from<appAbility>(user.role.permissions).throwUnlessCan("update", foundUser)
+        return await this.userRepository.modifyUser(id, userDTO)
     }
 
-    async deleteUser(id: number): Promise<true> {
+    async deleteUser(id: number, user: IUserWithAuthorization): Promise<true> {
+        const foundUser = await this._findUser(id)
+        ForbiddenError.from<appAbility>(user.role.permissions).throwUnlessCan("delete", foundUser)
         return await this.userRepository.deleteUser(id)
+    }
+
+    private async _findUser(id: number) {
+        return await this.userRepository.getSingleUser(id)
+    }
+
+    private _setNewUserRole(roleId: number, role?: IRoleName) {
+        const DEFAULT_ROLE_ID = 2
+        return role === "ADMIN" ? roleId : DEFAULT_ROLE_ID
+    }
+
+    private async _hashPassword(password: string): Promise<string> {
+        return await this.encryption.hash(password, Number(<string>process.env.BCRYPT_SALT_NUMBER))
     }
 }

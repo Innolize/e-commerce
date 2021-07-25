@@ -12,7 +12,7 @@ import { IVideoCard_Product } from "../interface/IVideoCardCreate";
 import { IVideoCardGetAllQuery } from "../interface/IVideoCardGetAllQuery";
 import { IVideoCardEdit } from '../interface/IVideoCardEdit'
 import { VideoCardService } from "../service/VideoCardService";
-import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
+import { numberParamOrError } from "../../../common/helpers/numberParamOrError";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
@@ -64,8 +64,8 @@ export class VideoCardController extends AbstractController {
 
     getSingleRam = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
+            const params = req.params
+            const validId = numberParamOrError(params, "id")
             const response = await this.videoCardService.getSingleVideoCard(validId) as VideoCard
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
@@ -104,8 +104,8 @@ export class VideoCardController extends AbstractController {
     edit = async (req: Request, res: Response, next: NextFunction) => {
         let ram: VideoCard | undefined
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
+            const params = req.params
+            const validId = numberParamOrError(params, "id")
             const dto: IVideoCardEdit = req.body
             const validatedDto = await bodyValidator(validateVideoCardEditDto, dto)
             ram = await this.videoCardService.modifyVideoCard(validId, validatedDto) as VideoCard

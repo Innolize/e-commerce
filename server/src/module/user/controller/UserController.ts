@@ -4,6 +4,7 @@ import { inject } from "inversify";
 import { Multer } from "multer";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
+import { AuthenticationError } from "../../auth/error/AuthenticationError";
 import { jwtAuthentication } from "../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../authorization/util/authorizationMiddleware";
 import { bodyValidator } from "../../common/helpers/bodyValidator";
@@ -20,10 +21,9 @@ import { IUserService } from "../interfaces/IUserService";
 
 export class UserController extends AbstractController implements IUserController {
     private ROUTE_BASE: string
-    private uploadMiddleware: Multer
     constructor(
         @inject(TYPES.User.Service) private userService: IUserService,
-        @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer
+        @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer
     ) {
         super()
         this.ROUTE_BASE = "/user"
@@ -33,9 +33,10 @@ export class UserController extends AbstractController implements IUserControlle
 
     configureRoutes(app: Application): void {
         const ROUTE = this.ROUTE_BASE
-        app.get(`/api${ROUTE}`, this.getUsers.bind(this))
-        app.get(`/api${ROUTE}/:id`, this.getSingleUser.bind(this))
-        app.post(`/api${ROUTE}`, this.uploadMiddleware.none(), this.createUser.bind(this))
+        app.get(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'read', subject: 'User' })], this.getUsers.bind(this))
+        app.get(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'read', subject: 'User' })], this.getSingleUser.bind(this))
+        app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'User' })], this.uploadMiddleware.none(), this.createUser.bind(this))
+        app.put(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'User' })], this.uploadMiddleware.none(), this.editUser.bind(this))
         app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'User' })], this.deleteUser.bind(this))
     }
 
@@ -53,8 +54,16 @@ export class UserController extends AbstractController implements IUserControlle
 
     async getSingleUser(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { id } = req.params
-            const response = await this.userService.getSingleUser(Number(id))
+            const user = req.user
+            if (!user) {
+                throw AuthenticationError.notLogged()
+            }
+            const { id: idParam } = req.params
+            const id = Number(idParam)
+            if (!id) {
+                throw UserError.idParamNotDefined()
+            }
+            const response = await this.userService.getSingleUser(id, user)
             res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
@@ -74,13 +83,17 @@ export class UserController extends AbstractController implements IUserControlle
     }
 
     async deleteUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-        const { id } = req.params
         try {
-            const idNumber = Number(id)
-            if (!idNumber || idNumber <= 0) {
+            const user = req.user
+            if (!user) {
+                throw AuthenticationError.notLogged()
+            }
+            const { id: idParam } = req.params
+            const id = Number(idParam)
+            if (!id || id <= 0) {
                 throw UserError.invalidId()
             }
-            const response = await this.userService.deleteUser(idNumber)
+            const response = await this.userService.deleteUser(id, user)
             res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
@@ -89,9 +102,18 @@ export class UserController extends AbstractController implements IUserControlle
 
     async editUser(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            const user = req.user
+            if (!user) {
+                throw AuthenticationError.notLogged()
+            }
+            const { id: idParam } = req.params
+            const id = Number(idParam)
+            if (!id || id <= 0) {
+                throw UserError.invalidId()
+            }
             const dto: IUserEdit = req.body
             const validDto = await bodyValidator(validateEditUserDto, dto)
-            const editedUser = await this.userService.modifyUser(validDto)
+            const editedUser = await this.userService.modifyUser(id, validDto, user)
             res.status(200).send(editedUser)
         } catch (err) {
             next(err)

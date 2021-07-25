@@ -39,9 +39,8 @@ export class AuthController extends AbstractController {
         try {
             const dto: IUserCreate = req.body
             const validatedDto = await bodyValidator(validateCreateUserDto, dto)
-
-            const rolename = user.role.name
-            const { id } = await this.userService.createUser(validatedDto,rolename)
+            const rolename = 'CLIENT'
+            const { id } = await this.userService.createUser(validatedDto, rolename)
             const { refresh_token, ...clientResponse } = await this.authService.login(id)
             res.cookie("refresh", refresh_token)
             res.status(200).send(clientResponse)
@@ -53,6 +52,7 @@ export class AuthController extends AbstractController {
     async login(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const user = req.user
+            console.log(user)
             const { refresh_token, ...clientResponse } = await this.authService.login(user.id)
             res.cookie("refresh", refresh_token)
             res.status(200).send(clientResponse)

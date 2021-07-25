@@ -15,7 +15,7 @@ import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToMotherboard } from "../mapper/motherboardMapper";
-import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
+import { numberParamOrError } from "../../../common/helpers/numberParamOrError";
 import { MotherboardError } from '../error/MotherboardError'
 import { ProductService } from "../../../product/module";
 import { IMotherboardGetAllQueries } from "../interface/IMotherboardGetAllQueries";
@@ -65,8 +65,8 @@ export class MotherboardController extends AbstractController {
 
     getSingleMotherboard = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
+            const params = req.params
+            const validId = numberParamOrError(params, "id")
             const response = await this.motherboardService.getSingleMotherboards(validId) as Motherboard
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {

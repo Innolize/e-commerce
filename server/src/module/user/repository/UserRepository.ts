@@ -11,7 +11,6 @@ import { UserModel } from "../model/UserModel";
 import { GetUsersDto } from '../dto/getUsersDto'
 import { IUserCreate } from "../interfaces/IUserCreate";
 import { IUserRepository } from "../interfaces/IUserRepository";
-import { IUserGetUsers } from "../interfaces/IUserGetUsers";
 
 @injectable()
 export class UserRepository extends AbstractRepository implements IUserRepository {
@@ -60,9 +59,9 @@ export class UserRepository extends AbstractRepository implements IUserRepositor
         return fromDbToUser(user)
     }
 
-    async modifyUser(user: IUserEdit): Promise<User> {
+    async modifyUser(id: number, user: IUserEdit): Promise<User> {
 
-        const [userEdited, userArray] = await this.userModel.update(user, { where: { id: user.id }, returning: true })
+        const [userEdited, userArray] = await this.userModel.update(user, { where: { id }, returning: true })
         // update returns an array, first argument is the number of elements updated in the
         // database. Second argument are the array of elements. Im updating by id so there is only 
         // one element in the array.

@@ -11,7 +11,7 @@ import { validateRamAndProductDto, validateRamEditDto, validateRamQuerySchema } 
 import { IRam_Product } from "../interface/IRamCreate";
 import { IRamEdit } from '../interface/IRamEdit'
 import { RamService } from "../service/ramService";
-import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
+import { numberParamOrError } from "../../../common/helpers/numberParamOrError";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
@@ -65,8 +65,8 @@ export class RamController extends AbstractController {
 
     getSingleRam = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
+            const params = req.params
+            const validId = numberParamOrError(params, "id")
             const response = await this.ramService.getSingleRam(validId) as Ram
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
@@ -104,8 +104,8 @@ export class RamController extends AbstractController {
     edit = async (req: Request, res: Response, next: NextFunction) => {
         let ram: Ram | undefined
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
+            const params = req.params
+            const validId = numberParamOrError(params, "id")
             const dto: IRamEdit = req.body
             const validatedDto = await bodyValidator(validateRamEditDto, dto)
             ram = await this.ramService.modifyRam(validId, validatedDto) as Ram

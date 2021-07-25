@@ -12,7 +12,7 @@ import { ICabinet_Product } from "../interface/ICabinetCreate";
 import { ICabinetGetCabinets } from "../interface/ICabinetGetCabinets";
 import { ICabinetEdit } from '../interface/ICabinetEdit'
 import { CabinetService } from "../service/CabinetService";
-import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
+import { numberParamOrError } from "../../../common/helpers/numberParamOrError";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
@@ -63,8 +63,8 @@ export class CabinetController extends AbstractController {
 
     getSingleCabinet = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
+            const params = req.params
+            const validId = numberParamOrError(params, "id")
             const response = await this.cabinetService.getSingleCabinet(validId) as Cabinet
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
@@ -101,8 +101,8 @@ export class CabinetController extends AbstractController {
 
     edit = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
+            const params = req.params
+            const validId = numberParamOrError(params, "id")
             const dto: ICabinetEdit = req.body
             const validatedDto = await bodyValidator(validateCabinetEditDto, dto)
             const cabinet = await this.cabinetService.modifyCabinet(validId, validatedDto) as Cabinet

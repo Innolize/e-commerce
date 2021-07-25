@@ -36,7 +36,9 @@ const appAbility = Ability as AbilityClass<appAbility>
 export const buildAbility = (role: Role): Ability<Abilities, MongoQuery> => {
     const { can, build } = new AbilityBuilder(appAbility)
     role.permissions?.map(permission => {
-        can(permission.action, permission.subject, permission.condition)
+        const { action, subject, condition } = permission
+        const test = condition ? JSON.parse(condition) : undefined
+        can(action, subject, undefined, test)
     })
     return build()
 }

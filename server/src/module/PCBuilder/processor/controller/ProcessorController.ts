@@ -12,7 +12,7 @@ import { IProcessor_Product } from "../interface/IProcessorCreate";
 import { IProcessorGetAllQuery } from "../interface/IProcessorQuery";
 import { IProcessorEdit } from '../interface/IProcessorEdit'
 import { ProcessorService } from "../service/ProcessorService";
-import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
+import { numberParamOrError } from "../../../common/helpers/numberParamOrError";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
@@ -63,8 +63,8 @@ export class ProcessorController extends AbstractController {
 
     getSingleProcessor = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
+            const params = req.params
+            const validId = numberParamOrError(params, "id")
             const response = await this.processorService.getSingleProcessor(validId) as Processor
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
@@ -102,8 +102,8 @@ export class ProcessorController extends AbstractController {
     edit = async (req: Request, res: Response, next: NextFunction) => {
         let processor: Processor | undefined
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
+            const params = req.params
+            const validId = numberParamOrError(params, "id")
             const dto: IProcessorEdit = req.body
             const validatedDto = await bodyValidator(validateProcessorEditDto, dto)
             processor = await this.processorService.modifyprocessors(validId, validatedDto) as Processor

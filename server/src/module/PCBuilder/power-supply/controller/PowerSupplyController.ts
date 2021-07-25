@@ -12,7 +12,7 @@ import { IPowerSupply_Product } from "../interface/IPowerSupplyCreate";
 import { IPowerSupplyGetAllQuery } from "../interface/IPowerSupplyGetAllQuery";
 import { IPowerSupplyEdit } from '../interface/IPowerSupplyEdit'
 import { PowerSupplyService } from "../service/PowerSupplyService";
-import { idNumberOrError } from "../../../common/helpers/idNumberOrError";
+import { numberParamOrError } from "../../../common/helpers/numberParamOrError";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
@@ -63,8 +63,8 @@ export class PowerSupplyController extends AbstractController {
 
     getSinglePowerSupply = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
+            const params = req.params
+            const validId = numberParamOrError(params, "id")
             const response = await this.powerSupplyService.getSinglePowerSupply(validId) as PowerSupply
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
@@ -102,8 +102,8 @@ export class PowerSupplyController extends AbstractController {
     edit = async (req: Request, res: Response, next: NextFunction) => {
         let powerSupply: PowerSupply | undefined
         try {
-            const { id } = req.params
-            const validId = idNumberOrError(id) as number
+            const params = req.params
+            const validId = numberParamOrError(params, "id")
             const dto: IPowerSupplyEdit = req.body
             const validatedDto = await bodyValidator(validatePowerSupplyEditDto, dto)
             powerSupply = await this.powerSupplyService.modifyPowerSupply(validId, validatedDto) as PowerSupply

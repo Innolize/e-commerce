@@ -8,6 +8,10 @@ import { IUserEdit } from "../../interfaces/IUserEdit";
 import { IUserCreate } from "../../interfaces/IUserCreate";
 import { UserError } from "../../error/UserError";
 import { User } from "../../entities/User";
+import { IUserWithAuthorization } from "../../../authorization/interfaces/IUserWithAuthorization";
+import { buildAbility } from "../../../authorization/util/abilityBuilder";
+import { Role } from "../../../authorization/entities/Role";
+import { ForbiddenError } from "@casl/ability";
 jest.mock('bcrypt');
 
 const mockedBcrypt = mocked(bcript, true)
@@ -29,9 +33,20 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
+const adminRole = new Role("ADMIN", 1, [{ action: 'manage', subject: 'all', role_id: 1 }])
+const adminAbility = buildAbility(adminRole)
+const clientRole = new Role("CLIENT", 2, [
+    { action: 'read', subject: 'User', condition: '{"id": 2 }', role_id: 2 },
+    { action: 'update', subject: 'User', condition: '{"id": 2 }', role_id: 2 },
+    { action: 'delete', subject: 'User', condition: '{"id": 2 }', role_id: 2 }
+])
+const clientAbility = buildAbility(clientRole)
+const admin: IUserWithAuthorization = { id: 1, mail: "admin@gmail.com", role_id: 1, role: { ...adminRole, permissions: adminAbility } }
+const client: IUserWithAuthorization = { id: 2, mail: "client@gmail.com", role_id: 2, role: { name: clientRole.name, permissions: clientAbility } }
+
 describe("Service.getSingleUser", () => {
     it('Should call repository getSingleUser once with 5 as parameter', async () => {
-        await service.getSingleUser(5)
+        await service.getSingleUser(5, admin)
         expect(userRepository.getSingleUser).toHaveBeenCalledTimes(1)
         expect(userRepository.getSingleUser).toHaveBeenCalledWith(5)
     });
@@ -46,18 +61,41 @@ describe('Service.findUserByMail', () => {
 });
 
 describe('Service.modifyUser', () => {
-    it('Should call repository modifyUser once ', async () => {
-        const userToModify: IUserEdit = { id: 3, mail: "test@gmail.com" }
-        await service.modifyUser(userToModify)
+    it('Should update any user as admin ', async () => {
+        const adminUser = new User(1, "admin@gmail.com", "adminPassword", 1)
+        userRepository.getSingleUser.mockImplementationOnce(() => Promise.resolve(adminUser))
+        const userToModify: IUserEdit = { mail: "test@gmail.com" }
+        await service.modifyUser(1, userToModify, admin)
         expect(userRepository.modifyUser).toBeCalledTimes(1)
-        expect(userRepository.modifyUser).toBeCalledWith(userToModify)
+        expect(userRepository.modifyUser).toBeCalledWith(1, userToModify)
+    });
+    it('Should update own user as client ', async () => {
+        const CLIENT_ID = client.id
+        const targetUser = new User(CLIENT_ID, "client@gmail.com", "clientPassword", 2)
+        userRepository.getSingleUser.mockImplementationOnce(() => Promise.resolve(targetUser))
+        const userToModify: IUserEdit = { mail: "test@gmail.com" }
+        await service.modifyUser(CLIENT_ID, userToModify, client)
+        expect(userRepository.modifyUser).toBeCalledTimes(1)
+        expect(userRepository.modifyUser).toBeCalledWith(CLIENT_ID, userToModify)
+    });
+    it('Should throw if is not own user as client ', async () => {
+        const RANDOM_ID = 123456
+        const targetUser = new User(1, "client@gmail.com", "clientPassword", 2)
+        userRepository.getSingleUser.mockImplementationOnce(() => Promise.resolve(targetUser))
+        const userToModify: IUserEdit = { mail: "test@gmail.com" }
+        expect.assertions(1)
+        try {
+            await service.modifyUser(RANDOM_ID, userToModify, client)
+        } catch (err) {
+            expect(err).toBeInstanceOf(ForbiddenError)
+        }
     });
 });
 
 describe('userService.deleteUser', () => {
     it('Should call repository deleteUser once ', async () => {
         const DELETE_ID = 123
-        await service.deleteUser(DELETE_ID)
+        await service.deleteUser(DELETE_ID, admin)
         expect(userRepository.deleteUser).toBeCalledTimes(1)
         expect(userRepository.deleteUser).toBeCalledWith(DELETE_ID)
     });
