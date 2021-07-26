@@ -66,6 +66,7 @@ describe("Create users", () => {
             undefined,
             undefined
         )
+        console.log(12345)
         expect(response).toEqual(EXPECTED_RESPONSE);
     });
     it("Gives error when creating an user with an email already in use", async () => {

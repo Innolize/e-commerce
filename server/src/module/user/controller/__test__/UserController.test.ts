@@ -5,11 +5,11 @@ jest.mock('../../service/UserService')
 import { Multer } from 'multer'
 import { IUserService } from '../../interfaces/IUserService'
 jest.mock('multer')
-import { application, NextFunction, Request, Response } from 'express'
 import { UserError } from '../../error/UserError'
 import { IUserCreate } from '../../interfaces/IUserCreate'
 import { AuthenticationError } from '../../../auth/error/AuthenticationError'
 import { IUserEdit } from '../../interfaces/IUserEdit'
+import { application, NextFunction, Request, Response } from 'express'
 jest.mock('express')
 
 
