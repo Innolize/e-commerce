@@ -8,17 +8,18 @@ import { CategoryService } from "../../category/module";
 import { Product } from "../entity/Product";
 import { IProductCreate } from "../interfaces/IProductCreate";
 import { IProductEdit } from "../interfaces/IProductEdit";
-import { ProductRepository } from "../repository/productRepository";
 import { GetProductsDto } from "../dto/getProductsDto";
 import { GetProductsReqDto } from "../dto/getProductsReqDto";
+import { IProductRepository } from "../interfaces/IProductRepository";
+import { IProductService } from "../interfaces/IProductService";
 
 @injectable()
-export class ProductService extends AbstractService {
-    private productRepository: ProductRepository
+export class ProductService extends AbstractService implements IProductService {
+    private productRepository: IProductRepository
     private brandService: BrandService
     private categoryService: CategoryService
     constructor(
-        @inject(TYPES.Product.Repository) productRepository: ProductRepository,
+        @inject(TYPES.Product.Repository) productRepository: IProductRepository,
         @inject(TYPES.Brand.Service) brandService: BrandService,
         @inject(TYPES.Category.Service) categoryService: CategoryService
     ) {
@@ -27,19 +28,19 @@ export class ProductService extends AbstractService {
         this.brandService = brandService
         this.categoryService = categoryService
     }
-    async deleteProduct(id: number): Promise<boolean | Error> {
+    async deleteProduct(id: number): Promise<boolean> {
         return await this.productRepository.deleteProduct(id)
     }
 
-    async getAllProducts(queryParams: GetProductsReqDto): Promise<Error | GetProductsDto> {
+    async getAllProducts(queryParams: GetProductsReqDto): Promise<GetProductsDto> {
         return await this.productRepository.getAllProduct(queryParams)
     }
 
-    async modifyProduct(id: number, product: IProductEdit): Promise<Product | Error> {
+    async modifyProduct(id: number, product: IProductEdit): Promise<Product> {
         return await this.productRepository.modifyProduct(id, product)
     }
 
-    async createProduct(product: IProductCreate): Promise<Product | Error> {
+    async createProduct(product: IProductCreate): Promise<Product> {
         return await this.productRepository.createProduct(product)
     }
     async findProductById(id: number): Promise<Error | Product> {
