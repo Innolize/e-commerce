@@ -14,7 +14,7 @@ import { IProductRepository } from "../interfaces/IProductRepository";
 import { IProductService } from "../interfaces/IProductService";
 
 @injectable()
-export class ProductService extends AbstractService implements IProductService {
+export class ProductService extends AbstractService implements IProductService{
     private productRepository: IProductRepository
     private brandService: BrandService
     private categoryService: CategoryService
