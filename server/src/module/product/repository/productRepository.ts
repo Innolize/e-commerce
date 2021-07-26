@@ -10,9 +10,10 @@ import { fromDbToProduct } from "../mapper/productMapper";
 import { ProductModel } from "../model/productModel";
 import { GetProductsDto } from "../dto/getProductsDto";
 import { GetProductsReqDto } from "../dto/getProductsReqDto";
+import { IProductRepository } from "../interfaces/IProductRepository";
 
 @injectable()
-export class ProductRepository extends AbstractRepository {
+export class ProductRepository extends AbstractRepository implements IProductRepository {
     private productModel: typeof ProductModel
     constructor(
         @inject(TYPES.Product.Model) productModel: typeof ProductModel
