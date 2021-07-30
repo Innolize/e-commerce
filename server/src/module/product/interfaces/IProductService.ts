@@ -11,6 +11,6 @@ export interface IProductService{
     getAllProducts(queryParams: GetProductsReqDto): Promise<GetProductsDto>
     modifyProduct(id: number, product: IProductEdit): Promise<Product>
     createProduct(product: IProductCreate): Promise<Product>
-    findProductById(id: number): Promise<Error | Product>
+    findProductById(id: number): Promise<Product>
     verifyCategoryAndBrandExistence(categoryId: number, brandId: number): Promise<{ category: Category, brand: Brand }>
 }

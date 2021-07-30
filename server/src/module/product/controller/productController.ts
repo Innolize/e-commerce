@@ -2,50 +2,37 @@ import { Application as App, NextFunction } from 'express'
 import { inject, injectable } from 'inversify'
 import { TYPES } from '../../../config/inversify.types'
 import { AbstractController } from '../../abstractClasses/abstractController'
-import { ProductService } from '../service/productService'
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { Multer } from 'multer'
 import { validateCreateProductDto } from '../helper/create_dto_validator'
 import { bodyValidator } from '../../common/helpers/bodyValidator'
 import { validateEditProductDto } from '../helper/edit_dto_validator'
-import { Product } from '../entity/Product'
 import { IProductEdit } from '../interfaces/IProductEdit'
 import { IProductCreate } from '../interfaces/IProductCreate'
-import { ImageUploadService } from '../../imageUploader/module'
-import { BrandService } from '../../brand/module'
-import { CategoryService } from '../../category/module'
 import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
 import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
-import { ProductError } from '../error/ProductError'
 import { fromRequestToProduct } from '../mapper/productMapper'
 import { IProductGetAllQueries } from '../interfaces/IProductGetAllQueries'
 import { validateGetProductDto } from '../helper/get_dto_validator'
 import { GetProductsReqDto } from '../dto/getProductsReqDto'
+import { IProductService } from '../interfaces/IProductService'
+import { IImageUploadService } from '../../imageUploader/interfaces/IImageUploadService'
+import { BaseError } from '../../common/error/BaseError'
 
 @injectable()
 export class ProductController extends AbstractController {
     private ROUTE_BASE: string
-    private productService: ProductService
-    private uploadMiddleware: Multer
-    private uploadService: ImageUploadService
-    private brandService: BrandService
-    private categoryService: CategoryService
-
     constructor(
-        @inject(TYPES.Product.Service) productService: ProductService,
-        @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer,
-        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService,
-        @inject(TYPES.Brand.Service) brandService: BrandService,
-        @inject(TYPES.Category.Service) categoryService: CategoryService
+        @inject(TYPES.Product.Service) private productService: IProductService,
+        @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer,
+        @inject(TYPES.ImageUploader.Service) private uploadService: IImageUploadService,
     ) {
         super()
         this.ROUTE_BASE = "/product"
         this.productService = productService
         this.uploadMiddleware = uploadMiddleware
         this.uploadService = uploadService
-        this.brandService = brandService
-        this.categoryService = categoryService
     }
 
     configureRoutes(app: App): void {
@@ -57,7 +44,7 @@ export class ProductController extends AbstractController {
         app.get(`/api${ROUTE}/:id`, this.findProductById.bind(this))
     }
 
-    async getAllProducts(req: Request, res: Response, next: NextFunction) {
+    async getAllProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const dto: IProductGetAllQueries = req.query
             const { category_id, limit, name, offset } = await bodyValidator(validateGetProductDto, dto)
@@ -66,11 +53,10 @@ export class ProductController extends AbstractController {
             res.status(StatusCodes.OK).send(products)
         } catch (err) {
             next(err)
-            return
         }
     }
 
-    async createProduct(req: Request, res: Response, next: NextFunction) {
+    async createProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
         let productImage: string | undefined
         try {
             const dto: IProductCreate = req.body
@@ -85,75 +71,63 @@ export class ProductController extends AbstractController {
             }
             const product = fromRequestToProduct(validatedDto)
             const response = await this.productService.createProduct(product)
-            return res.status(StatusCodes.OK).send(response)
+            res.status(StatusCodes.OK).send(response)
         } catch (err) {
             if (productImage) {
                 await this.uploadService.deleteProduct(productImage)
             }
             next(err)
-            return
         }
     }
 
     async findProductById(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { id } = req.params
-        if (!id) {
-            throw ProductError.nameMissing()
-        }
         try {
-            const response = await this.productService.findProductById(Number(id))
+            const idNumber = BaseError.validateNumber(id)
+            const response = await this.productService.findProductById(idNumber)
             res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
         }
     }
 
-    async modifyProduct(req: Request, res: Response, next: NextFunction) {
+    async modifyProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
         let productImage: string | undefined
         const { id } = req.params
         try {
-            const idNumber = Number(id)
-            if (!idNumber || idNumber <= 0) {
-                throw ProductError.invalidId()
-            }
+            const idNumber = BaseError.validateNumber(id)
             const dto: IProductEdit = req.body
             const validatedDto = await bodyValidator(validateEditProductDto, dto)
-            if(!Object.keys(validatedDto).length){
-                throw new Error('Update form cannot be empty!')
-            }
+            BaseError.validateNonEmptyForm(validatedDto)
             if (req.file) {
                 const { buffer, originalname } = req.file
                 const uploadedImage = await this.uploadService.uploadProduct(buffer, originalname)
                 validatedDto.image = uploadedImage.Location
                 productImage = uploadedImage.Location
             }
-            const response = await this.productService.modifyProduct(Number(id), validatedDto) as Product
-            return res.status(StatusCodes.OK).send(response)
+            const response = await this.productService.modifyProduct(idNumber, validatedDto)
+            res.status(StatusCodes.OK).send(response)
         } catch (err) {
             if (productImage) {
                 await this.uploadService.deleteProduct(productImage)
             }
             next(err)
-            return
         }
     }
 
-    async deleteProduct(req: Request, res: Response, next: NextFunction) {
+    async deleteProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { id } = req.params
         try {
-            const idNumber = Number(id)
-            if (!idNumber || idNumber <= 0) {
-                throw ProductError.invalidId()
-            }
-            const product = await this.productService.findProductById(idNumber) as Product
-            await this.productService.deleteProduct(Number(id))
+            const idNumber = BaseError.validateNumber(id)
+            const product = await this.productService.findProductById(idNumber)
+            await this.productService.deleteProduct(idNumber)
             if (product.image) {
                 await this.uploadService.deleteProduct(product.image)
             }
-            res.status(StatusCodes.OK).send({ message: "Product successfully deleted" })
+            const SUCCESS_MESSAGE = "Product successfully deleted"
+            res.status(StatusCodes.OK).send({ message: SUCCESS_MESSAGE })
         } catch (err) {
             next(err)
-            return
         }
     }
 }

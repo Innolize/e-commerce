@@ -15,37 +15,21 @@ export class ImageUploadService extends AbstractService {
     }
 
     async uploadProduct(imageBuffer: Buffer, originalName: string): Promise<S3.ManagedUpload.SendData> {
-        try {
-            const imageExt = obtainExtension(originalName) as string
-            return this.imageUploaderRepository.uploadProduct(imageBuffer, imageExt)
-        } catch (err) {
-            throw err
-        }
+        const imageExt = obtainExtension(originalName) as string
+        return this.imageUploaderRepository.uploadProduct(imageBuffer, imageExt)
     }
 
     async uploadBrand(imageBuffer: Buffer, originalName: string): Promise<S3.ManagedUpload.SendData> {
-        try {
-            const imageExt = obtainExtension(originalName) as string
-            return this.imageUploaderRepository.uploadBrand(imageBuffer, imageExt)
-        } catch (err) {
-            throw err
-        }
+        const imageExt = obtainExtension(originalName) as string
+        return this.imageUploaderRepository.uploadBrand(imageBuffer, imageExt)
     }
     async deleteProduct(imageUrl: string): Promise<PromiseResult<S3.DeleteObjectOutput, AWSError>> {
-        try {
-            const imageName = obtainFilename(imageUrl) as string
-            return this.imageUploaderRepository.deleteProduct(imageName)
-        } catch (err) {
-            throw err
-        }
+        const imageName = obtainFilename(imageUrl) as string
+        return this.imageUploaderRepository.deleteProduct(imageName)
     }
 
     async deleteBrand(imageUrl: string): Promise<PromiseResult<S3.DeleteObjectOutput, AWSError>> {
-        try {
-            const imageName = obtainFilename(imageUrl) as string
-            return this.imageUploaderRepository.deleteBrand(imageName)
-        } catch (err) {
-            throw err
-        }
+        const imageName = obtainFilename(imageUrl) as string
+        return this.imageUploaderRepository.deleteBrand(imageName)
     }
 }

@@ -70,11 +70,6 @@ describe('getUsers', () => {
             }
         } as unknown as Request
 
-        const res = {
-            status: jest.fn(() => res),
-            send: jest.fn()
-        } as unknown as Response
-
         const next: NextFunction = jest.fn()
 
         await controller.getUsers(req, res, next)
