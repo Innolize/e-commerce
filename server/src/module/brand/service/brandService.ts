@@ -4,32 +4,38 @@ import { AbstractService } from "../../abstractClasses/abstractService";
 import { GetBrandsDto } from "../dto/getBrandsDto";
 import { GetBrandsReqDto } from "../dto/getBrandsReqDto";
 import { Brand } from "../entity/Brand";
-import { IEditableBrand } from "../interfaces/IEditableBrand";
-import { BrandRepository } from "../repository/brandRepository";
+import { IBrandRepository } from "../interfaces/IBrandRepository";
+import { IBrandService } from "../interfaces/IBrandService";
+import { IBrandEdit } from "../interfaces/IBrandEdit";
 
 @injectable()
-export class BrandService extends AbstractService {
-    private brandRepository: BrandRepository
+export class BrandService extends AbstractService implements IBrandService {
+    private brandRepository: IBrandRepository
+    private DEFAULT_OFFSET = 0
+    private DEFAULT_LIMIT = 0
     constructor(
-        @inject(TYPES.Brand.Repository) brandRepository: BrandRepository
+        @inject(TYPES.Brand.Repository) brandRepository: IBrandRepository
     ) {
         super()
         this.brandRepository = brandRepository
     }
 
-    async getAllCategories(queryParams: GetBrandsReqDto): Promise<GetBrandsDto> {
-        return await this.brandRepository.getAllBrands(queryParams)
+    async getAllBrands(queryParams?: GetBrandsReqDto): Promise<GetBrandsDto> {
+        const offset = queryParams?.offset || this.DEFAULT_OFFSET
+        const limit = queryParams?.limit || this.DEFAULT_LIMIT
+        const name = queryParams?.name
+        return await this.brandRepository.getAllBrands({ limit, offset, name })
     }
 
-    async deleteBrand(id: number): Promise<boolean | Error> {
+    async deleteBrand(id: number): Promise<boolean> {
         return await this.brandRepository.deleteBrand(id)
     }
 
-    async modifyBrand(product: IEditableBrand): Promise<Brand | Error> {
-        return await this.brandRepository.modifyBrand(product)
+    async modifyBrand(brandId: number, brand: IBrandEdit): Promise<Brand> {
+        return await this.brandRepository.modifyBrand(brandId, brand)
     }
 
-    async createBrand(brand: Brand): Promise<Brand | Error> {
+    async createBrand(brand: Brand): Promise<Brand> {
         return await this.brandRepository.createBrand(brand)
     }
     async findBrandById(id: number): Promise<Brand> {

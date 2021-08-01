@@ -8,9 +8,9 @@ import { Multer } from 'multer'
 import { BrandService } from '../service/brandService'
 import { IBrandCreate } from '../interfaces/IBrandCreate'
 import { Brand } from '../entity/Brand'
-import { bodyValidator, mapperMessageError } from '../../common/helpers/bodyValidator'
+import { bodyValidator } from '../../common/helpers/bodyValidator'
 import { validateCreateBrandDto } from '../helper/create_dto_validator'
-import { IEditableBrand } from '../interfaces/IEditableBrand'
+import { IBrandEdit } from '../interfaces/IBrandEdit'
 import { validateEditBrandDto } from '../helper/edit_dto_validator'
 import { ImageUploadService } from '../../imageUploader/module'
 import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
@@ -19,6 +19,7 @@ import { BrandError } from '../error/BrandError'
 import { fromRequestToBrand } from '../mapper/brandMapper'
 import { validateGetBrandsDto } from '../helper/get_dto_validator'
 import { GetBrandsReqDto } from '../dto/getBrandsReqDto'
+import { BaseError } from '../../common/error/BaseError'
 
 
 @injectable()
@@ -44,7 +45,7 @@ export class BrandController extends AbstractController {
         const ROUTE = this.ROUTE_BASE
         app.get(`/api${ROUTE}`, this.getAllBrands.bind(this))
         app.post(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'create', subject: 'Brand' })], this.uploadMiddleware.single("brand_logo"), this.createBrand.bind(this))
-        app.put(`/api${ROUTE}`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Brand' })], this.uploadMiddleware.single("brand_logo"), this.modifyBrand.bind(this))
+        app.put(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'update', subject: 'Brand' })], this.uploadMiddleware.single("brand_logo"), this.modifyBrand.bind(this))
         app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'Brand' })], this.deleteBrand.bind(this))
         app.get(`/api${ROUTE}/:id`, this.findBrandById.bind(this))
     }
@@ -54,7 +55,7 @@ export class BrandController extends AbstractController {
         try {
             const { limit, offset, name } = await bodyValidator(validateGetBrandsDto, dto)
             const queryParams = new GetBrandsReqDto(limit, offset, name)
-            const products = await this.brandService.getAllCategories(queryParams)
+            const products = await this.brandService.getAllBrands(queryParams)
             res.status(StatusCodes.OK).send(products)
         } catch (err) {
             next(err)
@@ -105,7 +106,9 @@ export class BrandController extends AbstractController {
     async modifyBrand(req: Request, res: Response, next: NextFunction) {
         let brandImage: string | undefined
         try {
-            const dto: IEditableBrand = req.body
+            const dto: IBrandEdit = req.body
+            const { id } = req.params
+            const brandId = BaseError.validateNumber(id)
             const validatedDto = await bodyValidator(validateEditBrandDto, dto)
             if (req.file) {
                 const { buffer, originalname } = req.file
@@ -113,7 +116,7 @@ export class BrandController extends AbstractController {
                 validatedDto.logo = uploadedImage.Location
                 brandImage = uploadedImage.Location
             }
-            const response = await this.brandService.modifyBrand(validatedDto)
+            const response = await this.brandService.modifyBrand(brandId, validatedDto)
             return res.status(StatusCodes.OK).send(response)
         } catch (err) {
             if (brandImage) {

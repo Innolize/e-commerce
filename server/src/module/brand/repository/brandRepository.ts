@@ -8,7 +8,7 @@ import { GetBrandsReqDto } from "../dto/getBrandsReqDto";
 import { Brand } from "../entity/Brand";
 import { BrandError } from "../error/BrandError";
 import { IBrandRepository } from "../interfaces/IBrandRepository";
-import { IEditableBrand } from "../interfaces/IEditableBrand";
+import { IBrandEdit } from "../interfaces/IBrandEdit";
 import { fromDbToBrand } from "../mapper/brandMapper";
 import { BrandModel } from "../model/brandModel";
 
@@ -59,8 +59,8 @@ export class BrandRepository extends AbstractRepository implements IBrandReposit
         return true
     }
 
-    public async modifyBrand(brand: IEditableBrand): Promise<Brand> {
-        const [brandEdited, brandArray] = await this.brandModel.update(brand, { where: { id: brand.id }, returning: true })
+    public async modifyBrand(id: number, brand: IBrandEdit): Promise<Brand> {
+        const [brandEdited, brandArray] = await this.brandModel.update(brand, { where: { id }, returning: true })
         // update returns an array, first argument is the number of elements updated in the
         // database. Second argument are the array of elements. Im updating by id so there is only 
         // one element in the array.
