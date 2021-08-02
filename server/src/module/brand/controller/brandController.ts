@@ -5,36 +5,30 @@ import { AbstractController } from '../../abstractClasses/abstractController'
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { Multer } from 'multer'
-import { BrandService } from '../service/brandService'
 import { IBrandCreate } from '../interfaces/IBrandCreate'
-import { Brand } from '../entity/Brand'
 import { bodyValidator } from '../../common/helpers/bodyValidator'
 import { validateCreateBrandDto } from '../helper/create_dto_validator'
 import { IBrandEdit } from '../interfaces/IBrandEdit'
 import { validateEditBrandDto } from '../helper/edit_dto_validator'
-import { ImageUploadService } from '../../imageUploader/module'
 import { authorizationMiddleware } from '../../authorization/util/authorizationMiddleware'
 import { jwtAuthentication } from '../../auth/util/passportMiddlewares'
-import { BrandError } from '../error/BrandError'
 import { fromRequestToBrand } from '../mapper/brandMapper'
 import { validateGetBrandsDto } from '../helper/get_dto_validator'
 import { GetBrandsReqDto } from '../dto/getBrandsReqDto'
 import { BaseError } from '../../common/error/BaseError'
+import { IBrandService } from '../interfaces/IBrandService'
+import { IImageUploadService } from '../../imageUploader/interfaces/IImageUploadService'
 
 
 @injectable()
 export class BrandController extends AbstractController {
-    public ROUTE_BASE: string
-    public brandService: BrandService
-    public uploadMiddleware: Multer
-    private uploadService: ImageUploadService
+    private ROUTE_BASE: "/brand"
     constructor(
-        @inject(TYPES.Brand.Service) brandService: BrandService,
-        @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer,
-        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService
+        @inject(TYPES.Brand.Service) private brandService: IBrandService,
+        @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer,
+        @inject(TYPES.ImageUploader.Service) private uploadService: IImageUploadService
     ) {
         super()
-        this.ROUTE_BASE = "/brand"
         this.brandService = brandService
         this.uploadMiddleware = uploadMiddleware
         this.uploadService = uploadService
@@ -50,7 +44,7 @@ export class BrandController extends AbstractController {
         app.get(`/api${ROUTE}/:id`, this.findBrandById.bind(this))
     }
 
-    async getAllBrands(req: Request, res: Response, next: NextFunction) {
+    async getAllBrands(req: Request, res: Response, next: NextFunction): Promise<void> {
         const dto: IBrandGetAllQueries = req.query
         try {
             const { limit, offset, name } = await bodyValidator(validateGetBrandsDto, dto)
@@ -59,11 +53,10 @@ export class BrandController extends AbstractController {
             res.status(StatusCodes.OK).send(products)
         } catch (err) {
             next(err)
-            return
         }
     }
 
-    async createBrand(req: Request, res: Response, next: NextFunction) {
+    async createBrand(req: Request, res: Response, next: NextFunction): Promise<void> {
         let brandImage: string | undefined
         try {
             const dto: IBrandCreate = req.body
@@ -79,31 +72,27 @@ export class BrandController extends AbstractController {
             const brand = fromRequestToBrand(validatedDto)
             const response = await this.brandService.createBrand(brand)
 
-            return res.status(StatusCodes.OK).send(response)
+            res.status(StatusCodes.OK).send(response)
         } catch (err) {
             if (brandImage) {
                 await this.uploadService.deleteBrand(brandImage)
             }
             next(err)
-            return
         }
     }
 
-    async findBrandById(req: Request, res: Response, next: NextFunction) {
+    async findBrandById(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { id } = req.params
-        if (!id) {
-            throw BrandError.missingId()
-        }
         try {
-            const response = await this.brandService.findBrandById(Number(id))
+            const brandId = BaseError.validateNumber(id)
+            const response = await this.brandService.findBrandById(brandId)
             res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
-            return
         }
     }
 
-    async modifyBrand(req: Request, res: Response, next: NextFunction) {
+    async modifyBrand(req: Request, res: Response, next: NextFunction): Promise<void> {
         let brandImage: string | undefined
         try {
             const dto: IBrandEdit = req.body
@@ -117,33 +106,28 @@ export class BrandController extends AbstractController {
                 brandImage = uploadedImage.Location
             }
             const response = await this.brandService.modifyBrand(brandId, validatedDto)
-            return res.status(StatusCodes.OK).send(response)
+            res.status(StatusCodes.OK).send(response)
         } catch (err) {
             if (brandImage) {
                 await this.uploadService.deleteBrand(brandImage)
             }
             next(err)
-            return
         }
     }
 
-    async deleteBrand(req: Request, res: Response, next: NextFunction) {
+    async deleteBrand(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { id } = req.params
         try {
-            const idNumber = Number(id)
-            if (!idNumber || idNumber <= 0) {
-                throw BrandError.invalidId()
-            }
-            const brand = await this.brandService.findBrandById(idNumber) as Brand
-            await this.brandService.deleteBrand(Number(id))
+            const brandId = BaseError.validateNumber(id)
+            const brand = await this.brandService.findBrandById(brandId)
+            await this.brandService.deleteBrand(brandId)
             if (brand.logo) {
                 await this.uploadService.deleteBrand(brand.logo)
             }
-            res.status(StatusCodes.OK)
-                .send({ message: "Product successfully deleted" })
+            const SUCCESS_MESSAGE = "Product successfully deleted"
+            res.status(StatusCodes.OK).send({ message: SUCCESS_MESSAGE })
         } catch (err) {
             next(err)
-            return
         }
     }
 }

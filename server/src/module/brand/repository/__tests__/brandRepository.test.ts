@@ -7,10 +7,6 @@ import { BrandModel } from '../../model/brandModel'
 import { Brand } from '../../entity/Brand'
 import { BrandError } from "../../error/BrandError";
 
-it('test', () => {
-    expect(1).toBe(1)
-})
-
 let sequelizeInstance: Sequelize
 let brand: typeof BrandModel
 let repository: BrandRepository
@@ -22,10 +18,10 @@ beforeAll(async () => {
         password: process.env.DATABASE_PASSWORD,
         dialect: 'postgres'
     })
+    await sequelizeInstance.drop({cascade: true})
 })
 
 beforeEach(async (done) => {
-    await sequelizeInstance.drop()
     brand = BrandModel.setup(sequelizeInstance)
     repository = new BrandRepository(brand)
     await sequelizeInstance.sync({ force: true });
@@ -106,6 +102,16 @@ describe("Delete brand", () => {
             expect(err).toBeInstanceOf(BrandError)
         }
     })
+
+    it('should throw if invalid id', async () => {
+        const NEGATIVE_ID = -5
+        expect.assertions(1)
+        try {
+            await repository.deleteBrand(NEGATIVE_ID)
+        } catch (err) {
+            expect(err).toEqual(BrandError.invalidId())
+        }
+    });
 })
 
 describe("Modifiy brand", () => {
