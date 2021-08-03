@@ -11,8 +11,9 @@ import { IBrandEdit } from "../interfaces/IBrandEdit";
 @injectable()
 export class BrandService extends AbstractService implements IBrandService {
     private brandRepository: IBrandRepository
+    private DEFAULT_LIMIT = 20
     private DEFAULT_OFFSET = 0
-    private DEFAULT_LIMIT = 0
+    
     constructor(
         @inject(TYPES.Brand.Repository) brandRepository: IBrandRepository
     ) {
