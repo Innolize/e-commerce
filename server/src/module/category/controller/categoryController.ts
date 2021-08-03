@@ -5,9 +5,8 @@ import { AbstractController } from '../../abstractClasses/abstractController'
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { Multer } from 'multer'
-import { CategoryService } from '../service/categoryService'
 import { ICategory } from '../interfaces/ICategory'
-import { bodyValidator, mapperMessageError } from '../../common/helpers/bodyValidator'
+import { bodyValidator } from '../../common/helpers/bodyValidator'
 import { validateCreateCategoryDto } from '../helper/create_dto_validator'
 import { Category } from '../entity/Category'
 import { ICategoryEdit } from '../interfaces/ICategoryEdit'
@@ -19,18 +18,16 @@ import { ICategoryGetAllQueries } from '../interfaces/ICategoryGetAllQueries'
 import { validateGetCategoriesDto } from '../helper/get_dto_validator'
 import { GetCategoriesReqDto } from '../dto/getCategoriesReqDto'
 import { BaseError } from '../../common/error/BaseError'
+import { ICategoryService } from '../interfaces/ICategoryService'
 
 @injectable()
 export class CategoryController extends AbstractController {
-    public ROUTE_BASE: string
-    public categoryService: CategoryService
-    public uploadMiddleware: Multer
+    private ROUTE_BASE: string
     constructor(
-        @inject(TYPES.Category.Service) categoryService: CategoryService,
-        @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer
+        @inject(TYPES.Category.Service) private categoryService: ICategoryService,
+        @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer
     ) {
         super()
-        this.ROUTE_BASE = "/category"
         this.categoryService = categoryService
         this.uploadMiddleware = uploadMiddleware
     }
@@ -44,7 +41,7 @@ export class CategoryController extends AbstractController {
         app.get(`/api${ROUTE}/:id`, this.findCategoryById.bind(this))
     }
 
-    async getAllCategories(req: Request, res: Response, next: NextFunction) {
+    async getAllCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
         const dto: ICategoryGetAllQueries = req.query
         try {
             const { limit, name, offset } = await bodyValidator(validateGetCategoriesDto, dto)
@@ -56,56 +53,53 @@ export class CategoryController extends AbstractController {
         }
     }
 
-    async createCategory(req: Request, res: Response, next: NextFunction) {
+    async createCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const dto: ICategory = req.body
-            const { name, id } = await bodyValidator(validateCreateCategoryDto, dto)
-            const product = new Category(name, id)
+            const { name } = await bodyValidator(validateCreateCategoryDto, dto)
+            const product = new Category(name)
             const response = await this.categoryService.createCategory(product)
-            return res.status(StatusCodes.CREATED).send(response)
+            res.status(StatusCodes.CREATED).send(response)
         } catch (err) {
             next(err)
         }
     }
 
-    async findCategoryById(req: Request, res: Response, next: NextFunction) {
-        const { id } = req.params
+    async findCategoryById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            if (!id) {
-                throw CategoryError.invalidId()
-            }
-            const response = await this.categoryService.findCategoryById(Number(id))
-            return res.status(StatusCodes.OK).send(response)
+            const { id } = req.params
+            const idNumber = BaseError.validateNumber(id)
+            const response = await this.categoryService.findCategoryById(idNumber)
+            res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
         }
     }
 
-    async modifyCategory(req: Request, res: Response, next: NextFunction) {
+    async modifyCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params
             const idNumber = BaseError.validateNumber(id)
             const dto: ICategoryEdit = req.body
             const validatedDto = await bodyValidator(validateEditCategoryDto, dto)
             const response = await this.categoryService.modifyCategory(idNumber, validatedDto)
-            return res.status(StatusCodes.OK).send(response)
+            res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
         }
     }
 
-    async deleteCategory(req: Request, res: Response, next: NextFunction) {
-        const { id } = req.params
+    async deleteCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+
         try {
-            const idNumber = Number(id)
-            if (!idNumber || idNumber <= 0) {
-                throw CategoryError.invalidId()
-            }
+            const { id } = req.params
+            const idNumber = BaseError.validateNumber(id)
             if (idNumber <= 7) {
                 throw CategoryError.undeletableCategory()
             }
-            await this.categoryService.deleteCategory(Number(id))
-            res.status(StatusCodes.OK).send({ message: "Category successfully deleted" })
+            await this.categoryService.deleteCategory(idNumber)
+            const SUCCESS_MESSAGE = "Category successfully deleted"
+            res.status(StatusCodes.OK).send({ message: SUCCESS_MESSAGE })
         } catch (err) {
             next(err)
         }
