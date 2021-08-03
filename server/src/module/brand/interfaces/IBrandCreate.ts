@@ -1,4 +1,4 @@
 export interface IBrandCreate {
     name: string,
-    logo?: string | null | undefined
+    logo: string | null
 }

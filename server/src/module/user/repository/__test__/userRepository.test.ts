@@ -26,7 +26,7 @@ beforeAll(async (done) => {
         password: process.env.DATABASE_PASSWORD,
         dialect: 'postgres'
     });
-    sequelizeInstance.drop({ cascade: true })
+    await sequelizeInstance.drop({ cascade: true })
     userModel = UserModel.setup(sequelizeInstance);
     cartModel = CartModel.setup(sequelizeInstance);
     roleModel = RoleModel.setup(sequelizeInstance);
@@ -46,9 +46,10 @@ beforeEach(async (done) => {
     done();
 })
 
-afterAll(async () => {
+afterAll(async (done) => {
     await sequelizeInstance.drop({ cascade: true });
     await sequelizeInstance.close();
+    done();
 });
 
 describe("Create users", () => {

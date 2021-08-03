@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractService } from "../../abstractClasses/abstractService";
 import { Category } from "../entity/Category";
-import { IEditableCategory } from "../interfaces/IEditableCategory";
+import { ICategoryEdit } from "../interfaces/ICategoryEdit";
 import { CategoryRepository } from "../repository/categoryRepository";
 import { GetCategoriesReqDto } from "../dto/getCategoriesReqDto";
 import { GetCategoriesDto } from "../dto/getCategoriesDto";
@@ -18,22 +18,22 @@ export class CategoryService extends AbstractService {
         this.categoryRepository = categoryRepository
     }
 
-    async getAllCategories(queryParams: GetCategoriesReqDto): Promise<Error | GetCategoriesDto> {
+    async getAllCategories(queryParams: GetCategoriesReqDto): Promise<GetCategoriesDto> {
         return await this.categoryRepository.getAllCategories(queryParams)
     }
 
-    async deleteCategory(id: number): Promise<boolean | Error> {
+    async deleteCategory(id: number): Promise<boolean> {
         return await this.categoryRepository.deleteCategory(id)
     }
 
-    async modifyCategory(product: IEditableCategory): Promise<Category | Error> {
-        return await this.categoryRepository.modifyCategory(product)
+    async modifyCategory(id: number, product: ICategoryEdit): Promise<Category> {
+        return await this.categoryRepository.modifyCategory(id, product)
     }
 
-    async createCategory(category: Category): Promise<Category | Error> {
+    async createCategory(category: Category): Promise<Category> {
         return await this.categoryRepository.createCategory(category)
     }
-    async findCategoryById(id: number): Promise<Error | Category> {
+    async findCategoryById(id: number): Promise<Category> {
         return await this.categoryRepository.findCategoryById(id)
     }
 }

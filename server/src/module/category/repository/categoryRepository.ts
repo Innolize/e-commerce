@@ -5,7 +5,7 @@ import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { Brand } from "../../brand/entity/Brand";
 import { Category } from "../entity/Category";
 import { CategoryError } from "../error/CategoryError";
-import { IEditableCategory } from "../interfaces/IEditableCategory";
+import { ICategoryEdit } from "../interfaces/ICategoryEdit";
 import { fromDbToCategory } from "../mapper/categoryMapper";
 import { CategoryModel } from "../model/categoryModel";
 import { GetCategoriesDto } from "../dto/getCategoriesDto";
@@ -41,12 +41,8 @@ export class CategoryRepository extends AbstractRepository implements ICategoryR
     }
 
     public async createCategory(category: Category): Promise<Category> {
-        try {
-            const response = await this.categoryModel.create(category)
-            return fromDbToCategory(response)
-        } catch (e) {
-            throw Error(e)
-        }
+        const response = await this.categoryModel.create(category)
+        return fromDbToCategory(response)
     }
 
     public async deleteCategory(categoryId: number): Promise<boolean> {
@@ -63,8 +59,8 @@ export class CategoryRepository extends AbstractRepository implements ICategoryR
         return true
     }
 
-    public async modifyCategory(product: IEditableCategory): Promise<Category> {
-        const [categoriesEdited, categoryArray] = await this.categoryModel.update(product, { where: { id: product.id }, returning: true })
+    public async modifyCategory(id: number, category: ICategoryEdit): Promise<Category> {
+        const [categoriesEdited, categoryArray] = await this.categoryModel.update(category, { where: { id }, returning: true })
         // update returns an array, first argument is the number of elements updated in the
         // database. Second argument are the array of elements. Im updating by id so there is only 
         // one element in the array.

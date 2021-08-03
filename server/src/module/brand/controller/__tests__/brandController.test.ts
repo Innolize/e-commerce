@@ -3,7 +3,6 @@ import { Multer } from "multer";
 import { BrandController } from "../brandController";
 import { mocked } from 'ts-jest/utils';
 import { application, NextFunction, Request, Response } from 'express';
-import { IBrandCreate } from '../../interfaces/IBrandCreate';
 import { Brand } from '../../entity/Brand';
 import { IBrandEdit } from '../../interfaces/IBrandEdit';
 jest.mock('express')
@@ -114,7 +113,7 @@ describe('getAllBrands', () => {
 
 describe('createBrand', () => {
     it('should create a new brand', async () => {
-        const newBrand: IBrandCreate = {
+        const newBrand = {
             name: 'test-brand'
         }
         const req = {
@@ -131,7 +130,7 @@ describe('createBrand', () => {
     });
 
     it('should create a brand with logo', async () => {
-        const newBrand: IBrandCreate = {
+        const newBrand = {
             name: 'test-brand'
         }
         const uploadBrandResponseMock = { Location: 'www.test-url.com' }
@@ -149,7 +148,7 @@ describe('createBrand', () => {
     });
 
     it('should call next function if error is thrown', async () => {
-        const newBrand: IBrandCreate = {
+        const newBrand = {
             name: 'test-brand'
         }
 
@@ -165,7 +164,7 @@ describe('createBrand', () => {
     });
 
     it('should call next function if error is thrown and delete current uploaded logo ', async () => {
-        const newBrand: IBrandCreate = {
+        const newBrand = {
             name: 'test-brand'
         }
         const req = {
@@ -227,7 +226,7 @@ describe('modifyBrand', () => {
 
     it('should modify a brand with a new logo', async () => {
         const ID = '5'
-        const brandToModify: IBrandCreate = {
+        const brandToModify = {
             name: 'test-brand'
         }
         const uploadBrandResponseMock = { Location: 'www.test-url.com' }
@@ -245,7 +244,7 @@ describe('modifyBrand', () => {
 
     it('should call next error handler if error is thrown', async () => {
         const ID = '5'
-        const brandToModify: IBrandCreate = {
+        const brandToModify = {
             name: 'test-brand'
         }
         const req = {
@@ -264,7 +263,7 @@ describe('modifyBrand', () => {
 
     it('should delete brand logo if error is thrown while modifying brand', async () => {
         const ID = '5'
-        const brandToModify: IBrandCreate = {
+        const brandToModify = {
             name: 'test-brand'
         }
         const req = {

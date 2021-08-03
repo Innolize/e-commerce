@@ -30,7 +30,7 @@ beforeAll(async (done) => {
         password: process.env.DATABASE_PASSWORD,
         dialect: 'postgres'
     });
-    await sequelizeInstance.drop({cascade: true})
+    await sequelizeInstance.drop({ cascade: true })
     brand = BrandModel.setup(sequelizeInstance)
     category = CategoryModel.setup(sequelizeInstance)
     product = ProductModel.setup(sequelizeInstance)
@@ -52,7 +52,7 @@ beforeEach(async (done) => {
 afterAll(async (done) => {
     await sequelizeInstance.drop({ cascade: true });
     await sequelizeInstance.close();
-    done()
+    done();
 });
 
 const sampleProduct = new Product(
@@ -74,13 +74,16 @@ const sampleCategory = new Category(
     "test-category"
 )
 
-test('Creates a product with id 1', async () => {
-    await brand.create(sampleBrand)
-    await category.create(sampleCategory)
-    const newProduct = await repository.createProduct(sampleProduct)
+describe('createProduct', () => {
+    test('Creates a product with id 1', async () => {
+        await brand.create(sampleBrand)
+        await category.create(sampleCategory)
+        const newProduct = await repository.createProduct(sampleProduct)
 
-    expect(newProduct.id).toBe(1)
-})
+        expect(newProduct.id).toBe(1)
+    })
+});
+
 
 describe('Get a product by id', () => {
     it("get product with correct id", async () => {

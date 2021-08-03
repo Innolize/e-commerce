@@ -11,7 +11,7 @@ let sequelizeInstance: Sequelize
 let brand: typeof BrandModel
 let repository: BrandRepository
 
-beforeAll(async () => {
+beforeAll(async (done) => {
     sequelizeInstance = new Sequelize(<string>process.env.TEST_DATABASE_URL, {
         logging: false,
         username: process.env.DATABASE_USERNAME,
@@ -19,6 +19,7 @@ beforeAll(async () => {
         dialect: 'postgres'
     })
     await sequelizeInstance.drop({cascade: true})
+    done();
 })
 
 beforeEach(async (done) => {
@@ -28,9 +29,10 @@ beforeEach(async (done) => {
     done();
 });
 
-afterAll(async () => {
+afterAll(async (done) => {
     await sequelizeInstance.drop({ cascade: true });
     await sequelizeInstance.close();
+    done();
 });
 
 const brandSample1 = new Brand("test-brand-1", "test-brand-logo-1")
