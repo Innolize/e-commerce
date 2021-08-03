@@ -62,8 +62,7 @@ export class ProductController extends AbstractController {
             const dto: IProductCreate = req.body
             const validatedDto = await bodyValidator(validateCreateProductDto, dto)
             if (req.file) {
-                const { buffer, originalname } = req.file
-                const uploadedImage = await this.uploadService.uploadProduct(buffer, originalname)
+                const uploadedImage = await this.uploadService.uploadProduct(req.file)
                 validatedDto.image = uploadedImage.Location
                 productImage = uploadedImage.Location
             } else {
@@ -100,8 +99,7 @@ export class ProductController extends AbstractController {
             const validatedDto = await bodyValidator(validateEditProductDto, dto)
             BaseError.validateNonEmptyForm(validatedDto)
             if (req.file) {
-                const { buffer, originalname } = req.file
-                const uploadedImage = await this.uploadService.uploadProduct(buffer, originalname)
+                const uploadedImage = await this.uploadService.uploadProduct(req.file)
                 validatedDto.image = uploadedImage.Location
                 productImage = uploadedImage.Location
             }

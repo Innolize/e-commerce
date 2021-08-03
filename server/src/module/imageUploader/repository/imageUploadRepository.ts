@@ -5,9 +5,10 @@ import { AbstractRepository } from "../../abstractClasses/abstractRepository";
 import { v4 as uuidV4 } from 'uuid'
 import { PutObjectRequest } from "aws-sdk/clients/s3";
 import { PromiseResult } from "aws-sdk/lib/request";
+import { IImageUploadRepository } from "../interfaces/IImageUploadRepository";
 
 @injectable()
-export class ImageUploadRepository extends AbstractRepository {
+export class ImageUploadRepository extends AbstractRepository implements IImageUploadRepository {
     private PRODUCT_FOLDER = "PRODUCT"
     private BRAND_FOLDER = "BRAND"
     constructor(

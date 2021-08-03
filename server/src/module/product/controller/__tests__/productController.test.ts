@@ -50,7 +50,7 @@ const mockFile = {
     encoding: '7bit',
     mimetype: 'image/png',
     buffer: Buffer.from('hellow world', 'utf-8'),
-    size: 118057
+    size: 118057,
 }
 
 const MOCK_ERROR = new Error('test-error')
@@ -137,7 +137,7 @@ describe('createProduct', () => {
         await controller.createProduct(req, res, next)
 
         expect(imageUpload.uploadProduct).toBeCalledTimes(1)
-        expect(imageUpload.uploadProduct).toBeCalledWith(mockFile.buffer, mockFile.originalname)
+        expect(imageUpload.uploadProduct).toBeCalledWith(mockFile)
         expect(productService.createProduct).toBeCalledWith({ ...NEW_PRODUCT, image: 'image-url.com' })
         expect(productService.createProduct).toBeCalledTimes(1)
         expect(res.send).toBeCalledTimes(1)
@@ -237,7 +237,7 @@ describe('modifyProduct', () => {
 
         await controller.modifyProduct(req, res, next)
 
-        expect(imageUpload.uploadProduct).toHaveBeenCalledWith(mockFile.buffer, mockFile.originalname)
+        expect(imageUpload.uploadProduct).toHaveBeenCalledWith(mockFile)
         expect(res.status).toHaveBeenCalledTimes(1)
     });
 
@@ -256,7 +256,7 @@ describe('modifyProduct', () => {
 
         await controller.modifyProduct(req, res, next)
 
-        expect(imageUpload.uploadProduct).toHaveBeenCalledWith(mockFile.buffer, mockFile.originalname)
+        expect(imageUpload.uploadProduct).toHaveBeenCalledWith(mockFile)
         expect(imageUpload.deleteProduct).toHaveBeenCalledWith(imageUploadResponseMock.Location)
         expect(next).toHaveBeenCalledWith(MOCK_ERROR)
     });

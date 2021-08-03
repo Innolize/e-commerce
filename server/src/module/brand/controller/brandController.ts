@@ -62,8 +62,7 @@ export class BrandController extends AbstractController {
             const dto: IBrandCreate = req.body
             const validatedDto = await bodyValidator(validateCreateBrandDto, dto)
             if (req.file) {
-                const { buffer, originalname } = req.file
-                const uploadedImage = await this.uploadService.uploadBrand(buffer, originalname)
+                const uploadedImage = await this.uploadService.uploadBrand(req.file)
                 validatedDto.logo = uploadedImage.Location
                 brandImage = uploadedImage.Location
             } else {
@@ -100,8 +99,7 @@ export class BrandController extends AbstractController {
             const brandId = BaseError.validateNumber(id)
             const validatedDto = await bodyValidator(validateEditBrandDto, dto)
             if (req.file) {
-                const { buffer, originalname } = req.file
-                const uploadedImage = await this.uploadService.uploadBrand(buffer, originalname)
+                const uploadedImage = await this.uploadService.uploadBrand(req.file)
                 validatedDto.logo = uploadedImage.Location
                 brandImage = uploadedImage.Location
             }

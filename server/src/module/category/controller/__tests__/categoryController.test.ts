@@ -1,6 +1,5 @@
 import { Multer } from 'multer';
 import 'reflect-metadata'
-import { ICategoryService } from '../../interfaces/ICategoryService';
 import { CategoryController } from '../categoryController';
 import { application, NextFunction, Request, Response } from 'express'
 import { mocked } from 'ts-jest/utils';

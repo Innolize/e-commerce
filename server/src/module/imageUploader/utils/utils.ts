@@ -1,6 +1,6 @@
 import { ImageUploaderError } from "../error/imageUploaderError"
 
-export const obtainExtension = (filename: string): string | Error => {
+export const obtainExtension = (filename: string): string => {
     console.log(filename)
     const extension = filename.split(".").pop()
     if (!extension) {
