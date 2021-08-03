@@ -51,13 +51,13 @@ const EditPowerSupplyForm = ({ id }: Props) => {
     return () => clearTimeout(timer);
   }, [editPowerSupply.isSuccess]);
 
-  const mapPowerSupply = (powerSupply: IPowerSupply): IPowerSupplyForm => {
-    const powerSupplyForm: IPowerSupplyForm = {
+  const getInitialValues = (powerSupply: IPowerSupply): IPowerSupplyForm => {
+    const powerSupplyInitialValues: IPowerSupplyForm = {
       certification: powerSupply.certification,
       watts: powerSupply.watts.toString(),
     };
 
-    return powerSupplyForm;
+    return powerSupplyInitialValues;
   };
 
   return (
@@ -86,7 +86,7 @@ const EditPowerSupplyForm = ({ id }: Props) => {
       {queryPowerSupply.isSuccess && (
         <Box className={classes.formContainer}>
           <Formik
-            initialValues={mapPowerSupply(queryPowerSupply.data)}
+            initialValues={getInitialValues(queryPowerSupply.data)}
             onSubmit={(data) => {
               const formData = new FormData();
               formData.append("certification", data.certification);

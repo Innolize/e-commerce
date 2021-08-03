@@ -52,19 +52,19 @@ const EditMotherboardForm = ({ id }: Props) => {
     return () => clearTimeout(timer);
   }, [editMotherboard.isSuccess]);
 
-  const mapMotherboard = (motherboard: IMotherboard): IMotherboardForm => {
-    const motherboardForm: IMotherboardForm = {
-      cpu_socket: motherboard.cpu_socket,
-      cpu_brand: motherboard.cpu_brand,
-      ram_version: motherboard.ram_version,
-      min_frec: motherboard.min_frec.toString(),
-      max_frec: motherboard.max_frec.toString(),
-      video_socket: motherboard.video_socket,
-      model_size: motherboard.model_size,
+  const getInitialValues = (motherboard: IMotherboard): IMotherboardForm => {
+    const motherboardInitialValues: IMotherboardForm = {
+      cpu_socket: motherboard.cpuSocket,
+      cpu_brand: motherboard.cpuBrand,
+      ram_version: motherboard.ramVersion,
+      min_frec: motherboard.minFrec.toString(),
+      max_frec: motherboard.maxFrec.toString(),
+      video_socket: motherboard.videoSocket,
+      model_size: motherboard.modelSize,
       watts: motherboard.watts.toString(),
     };
 
-    return motherboardForm;
+    return motherboardInitialValues;
   };
 
   return (
@@ -93,7 +93,7 @@ const EditMotherboardForm = ({ id }: Props) => {
       {queryMotherboard.isSuccess && (
         <Box className={classes.formContainer}>
           <Formik
-            initialValues={mapMotherboard(queryMotherboard.data)}
+            initialValues={getInitialValues(queryMotherboard.data)}
             onSubmit={(data) => {
               const formData = new FormData();
               formData.append("cpu_socket", data.cpu_socket);

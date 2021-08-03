@@ -51,12 +51,12 @@ const EditCabinetForm = ({ id }: Props) => {
     return () => clearTimeout(timer);
   }, [editCabinet.isSuccess]);
 
-  const mapCabinet = (cabinet: ICabinet): ICabinetForm => {
-    const cabinetForm: ICabinetForm = {
+  const getInitialValues = (cabinet: ICabinet): ICabinetForm => {
+    const cabinetInitialValues: ICabinetForm = {
       size: cabinet.size,
-      generic_pws: cabinet.generic_pws ? "true" : " false",
+      generic_pws: cabinet.genericPws ? "true" : " false",
     };
-    return cabinetForm;
+    return cabinetInitialValues;
   };
 
   return (
@@ -85,7 +85,7 @@ const EditCabinetForm = ({ id }: Props) => {
       {queryCabinet.isSuccess && (
         <Box className={classes.formContainer}>
           <Formik
-            initialValues={mapCabinet(queryCabinet.data)}
+            initialValues={getInitialValues(queryCabinet.data)}
             onSubmit={(data) => {
               const formData = new FormData();
               formData.append("size", data.size);

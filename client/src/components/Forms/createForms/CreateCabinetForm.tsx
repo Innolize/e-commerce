@@ -8,7 +8,7 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { ICabinetForm, IProductForm } from "src/form_types";
-import { IGetBrands } from "src/hooks/types";
+import { IGetAllBrands } from "src/hooks/types";
 import useCreate from "src/hooks/useCreate";
 import useGetAll from "src/hooks/useGetAll";
 import { IBrand, ICabinet, SIZE } from "src/types";
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 const CabinetForm = () => {
   const classes = useStyles();
   const createCabinet = useCreate<ICabinet>("cabinet");
-  const queryBrands = useGetAll<IGetBrands>("brand");
+  const queryBrands = useGetAll<IGetAllBrands>("brand");
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {

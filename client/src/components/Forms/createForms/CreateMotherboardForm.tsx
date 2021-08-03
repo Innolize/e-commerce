@@ -8,7 +8,7 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IMotherboardForm, IProductForm } from "src/form_types";
-import { IGetBrands } from "src/hooks/types";
+import { IGetAllBrands } from "src/hooks/types";
 import useCreate from "src/hooks/useCreate";
 import useGetAll from "src/hooks/useGetAll";
 import { IBrand, IMotherboard, RAM_VERSION, SIZE } from "src/types";
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 const MotherboardForm = () => {
   const classes = useStyles();
   const createMotherboard = useCreate<IMotherboard>("motherboard");
-  const queryBrands = useGetAll<IGetBrands>("brand");
+  const queryBrands = useGetAll<IGetAllBrands>("brand");
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {

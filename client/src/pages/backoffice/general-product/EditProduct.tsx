@@ -11,8 +11,8 @@ import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
 import { IGeneralProductForm } from "src/form_types";
-import { apiOptions } from "src/hooks/apiOptions";
-import { IGetBrands, IGetCategories } from "src/hooks/types";
+import { apiRoutes } from "src/hooks/apiRoutes";
+import { IGetAllBrands, IGetAllCategories } from "src/hooks/types";
 import useEdit from "src/hooks/useEdit";
 import useGetAll from "src/hooks/useGetAll";
 import useGetById from "src/hooks/useGetById";
@@ -57,8 +57,8 @@ const useStyles = makeStyles((theme) => ({
 
 const EditProduct = () => {
   const { id } = useParams<{ id: string }>();
-  const queryCategories = useGetAll<IGetCategories>("category");
-  const queryBrands = useGetAll<IGetBrands>("brand");
+  const queryCategories = useGetAll<IGetAllCategories>("category");
+  const queryBrands = useGetAll<IGetAllBrands>("brand");
   const queryProduct = useGetById<IProduct>("product", id);
   const editProduct = useEdit<IProduct>("product", id);
   const classes = useStyles();
@@ -132,7 +132,7 @@ const EditProduct = () => {
                   // Otherwise the pc-build tables would show the data from before the mutation
                   if (BUILD_CATEGORIES_IDS.includes(Number(queryProduct.data.category.id))) {
                     const category = queryProduct.data.category.name;
-                    queryClient.invalidateQueries(apiOptions[category].cacheString);
+                    queryClient.invalidateQueries(apiRoutes[category].cacheString);
                   }
                 },
               });

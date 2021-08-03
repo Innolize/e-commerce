@@ -2,15 +2,15 @@ import { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQueryClient } from "react-query";
 import api from "src/services/api";
 import { ServerError } from "src/types";
-import { apiOptions, ApiOptions } from "./apiOptions";
+import { apiRoutes, IApiRoutes } from "./apiRoutes";
 
-export default function useEdit<T>(option: ApiOptions, id: string | number) {
+export default function useEdit<T>(option: IApiRoutes, id: string | number) {
   const queryClient = useQueryClient();
 
   return useMutation(
     (values: FormData) =>
       api
-        .put(apiOptions[option].route + `/${id}`, values)
+        .put(apiRoutes[option].route + `/${id}`, values)
         .then((res: AxiosResponse<T>) => res.data)
         .catch((error: AxiosError<ServerError | string>) => {
           if (error.response) {
@@ -28,7 +28,7 @@ export default function useEdit<T>(option: ApiOptions, id: string | number) {
     {
       retry: false,
       onSettled: () => {
-        queryClient.invalidateQueries(apiOptions[option].cacheString);
+        queryClient.invalidateQueries(apiRoutes[option].cacheString);
       },
       onError: (e: AxiosError) => {},
     }

@@ -8,8 +8,8 @@ import CustomLoadingOverlay from "src/components/CustomLoadingOverlay";
 import CustomNoRowsOverlay from "src/components/CustomNoRowsOverlay";
 import CustomToolbar from "src/components/CustomToolbar";
 import SnackbarAlert from "src/components/SnackbarAlert";
-import { apiOptions } from "src/hooks/apiOptions";
-import { IGetBrands } from "src/hooks/types";
+import { apiRoutes } from "src/hooks/apiRoutes";
+import { IGetAllBrands } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IBrand } from "src/types";
@@ -19,11 +19,11 @@ const BrandTable = () => {
   const PAGE_SIZE = 12;
   const [offset, setOffset] = useState(0);
   const [deleteId, setDeleteId] = useState<string>("");
-  const isFetching = useIsFetching(apiOptions.brand.cacheString);
+  const isFetching = useIsFetching(apiRoutes.brand.cacheString);
   const isMutating = useIsMutating();
   const [open, setOpen] = useState(false);
   const deleteBrand = useDelete<IBrand>("brand");
-  const queryBrands = useGetAll<IGetBrands>("brand", offset, PAGE_SIZE);
+  const queryBrands = useGetAll<IGetAllBrands>("brand", offset, PAGE_SIZE);
 
   const handlePageChange = (params: GridPageChangeParams) => {
     setOffset(params.page * PAGE_SIZE);
