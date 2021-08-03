@@ -4,12 +4,12 @@ const theme = createMuiTheme({
   palette: {
     type: "light",
     primary: {
-      main: "#fff",
-      dark: "#fff",
+      dark: "#EEE844",
+      main: "#EEE844",
       contrastText: "#000",
     },
     background: {
-      default: "#F3F5F7",
+      default: "#EBEBEB",
     },
     text: {
       primary: "#000",
@@ -31,6 +31,18 @@ const theme = createMuiTheme({
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
+        },
+        "*::-webkit-scrollbar": {
+          width: "0.6rem",
+        },
+        "*::-webkit-scrollbar-track": {
+          boxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+          webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+          borderRadius: "10px",
+        },
+        "*::-webkit-scrollbar-thumb": {
+          borderRadius: "10px",
+          backgroundColor: "#999",
         },
       },
     },

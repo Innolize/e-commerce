@@ -29,6 +29,18 @@ const theme = createMuiTheme({
           display: "flex",
           flexDirection: "column",
         },
+        "*::-webkit-scrollbar": {
+          width: "10px",
+        },
+        "*::-webkit-scrollbar-track": {
+          boxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+          webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+          borderRadius: "10px",
+        },
+        "*::-webkit-scrollbar-thumb": {
+          borderRadius: "10px",
+          backgroundColor: "#555",
+        },
       },
     },
   },
