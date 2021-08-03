@@ -10,8 +10,8 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
-import { apiOptions } from "src/hooks/apiOptions";
-import { IGetVideoCards } from "src/hooks/types";
+import { apiRoutes } from "src/hooks/apiRoutes";
+import { IGetAllVideoCards } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IVideoCard } from "src/types";
@@ -28,8 +28,8 @@ const VideoCardContainer = () => {
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteVideoCard = useDelete<IVideoCard>("video-card");
-  const queryVideoCards = useGetAll<IGetVideoCards>("video-card", offset, PAGE_SIZE);
-  const isFetching = useIsFetching(apiOptions["video-card"].cacheString);
+  const queryVideoCards = useGetAll<IGetAllVideoCards>("video-card", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiRoutes["video-card"].cacheString);
   const isMutating = useIsMutating();
 
   const handlePageChange = (params: GridPageChangeParams) => {
@@ -76,7 +76,7 @@ const VideoCardContainer = () => {
           columns={
             [
               { field: "id", type: "number", hide: true },
-              { field: "product_id", type: "number", hide: true },
+              { field: "productId", type: "number", hide: true },
               { field: "name", width: 200, headerName: "Name" },
               { field: "description", width: 200, headerName: "Description" },
               {
@@ -99,7 +99,7 @@ const VideoCardContainer = () => {
                 valueFormatter: (params: ValueFormatterParams) => params.value + " GB",
               },
               {
-                field: "clock_speed",
+                field: "clockSpeed",
                 width: 140,
                 headerName: "Clock Speed",
                 type: "number",
@@ -121,7 +121,7 @@ const VideoCardContainer = () => {
                 width: 400,
                 renderCell: (params: GridCellParams) => (
                   <ButtonGroup>
-                    <Button to={"/admin/products/edit/" + params.row.product_id} component={RouterLink}>
+                    <Button to={"/admin/products/edit/" + params.row.productId} component={RouterLink}>
                       Edit product
                     </Button>
                     <Button to={"edit/video-card/" + params.row.id} component={RouterLink}>
@@ -137,15 +137,15 @@ const VideoCardContainer = () => {
             queryVideoCards.isSuccess
               ? queryVideoCards.data.results.map((videoCard: IVideoCard) => ({
                   id: videoCard.id,
-                  product_id: videoCard.product?.id,
+                  productId: videoCard.product?.id,
                   name: videoCard.product?.name,
                   description: videoCard.product?.description,
                   stock: videoCard.product?.stock ? "Yes" : "No",
-                  price: videoCard.product!.price,
+                  price: videoCard.product?.price,
                   brand: videoCard.product?.brand.name || "Not found",
                   memory: videoCard.memory,
                   version: videoCard.version,
-                  clock_speed: videoCard.clock_speed,
+                  clockSpeed: videoCard.clockSpeed,
                   watts: videoCard.watts,
                 }))
               : []

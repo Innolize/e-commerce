@@ -10,8 +10,8 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
-import { apiOptions } from "src/hooks/apiOptions";
-import { IGetPowerSupplies } from "src/hooks/types";
+import { apiRoutes } from "src/hooks/apiRoutes";
+import { IGetAllPowerSupplies } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IPowerSupply } from "src/types";
@@ -28,8 +28,8 @@ const PowerSupplyContainer = () => {
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string>("");
   const deletePowerSupply = useDelete<IPowerSupply>("power-supply");
-  const queryPowerSupply = useGetAll<IGetPowerSupplies>("power-supply", offset, PAGE_SIZE);
-  const isFetching = useIsFetching(apiOptions["power-supply"].cacheString);
+  const queryPowerSupply = useGetAll<IGetAllPowerSupplies>("power-supply", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiRoutes["power-supply"].cacheString);
   const isMutating = useIsMutating();
 
   const handlePageChange = (params: GridPageChangeParams) => {
@@ -76,7 +76,7 @@ const PowerSupplyContainer = () => {
           columns={
             [
               { field: "id", type: "number", hide: true },
-              { field: "product_id", type: "number", hide: true },
+              { field: "productId", type: "number", hide: true },
               { field: "name", width: 200, headerName: "Name" },
               { field: "description", width: 200, headerName: "Description" },
               {
@@ -107,7 +107,7 @@ const PowerSupplyContainer = () => {
                 width: 400,
                 renderCell: (params: GridCellParams) => (
                   <ButtonGroup>
-                    <Button to={"/admin/products/edit/" + params.row.product_id} component={RouterLink}>
+                    <Button to={"/admin/products/edit/" + params.row.productId} component={RouterLink}>
                       Edit product
                     </Button>
                     <Button to={"edit/power-supply/" + params.row.id} component={RouterLink}>
@@ -123,7 +123,7 @@ const PowerSupplyContainer = () => {
             queryPowerSupply.isSuccess
               ? queryPowerSupply.data.results.map((powerSupply: IPowerSupply) => ({
                   id: powerSupply.id,
-                  product_id: powerSupply.product?.id,
+                  productId: powerSupply.product?.id,
                   name: powerSupply.product?.name,
                   description: powerSupply.product?.description,
                   stock: powerSupply.product?.stock ? "Yes" : "No",

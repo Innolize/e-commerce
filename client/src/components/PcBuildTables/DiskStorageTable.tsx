@@ -10,8 +10,8 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
-import { apiOptions } from "src/hooks/apiOptions";
-import { IGetDiskStorages } from "src/hooks/types";
+import { apiRoutes } from "src/hooks/apiRoutes";
+import { IGetAllDiskStorages } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IDiskStorage } from "src/types";
@@ -28,8 +28,8 @@ const DiskStorageContainer = () => {
   const [deleteId, setDeleteId] = useState<string>("");
   const [open, setOpen] = useState(false);
   const deleteDiskStorage = useDelete<IDiskStorage>("disk-storage");
-  const queryDiskStorages = useGetAll<IGetDiskStorages>("disk-storage", offset, PAGE_SIZE);
-  const isFetching = useIsFetching(apiOptions["disk-storage"].cacheString);
+  const queryDiskStorages = useGetAll<IGetAllDiskStorages>("disk-storage", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiRoutes["disk-storage"].cacheString);
   const isMutating = useIsMutating();
 
   const handlePageChange = (params: GridPageChangeParams) => {
@@ -77,7 +77,7 @@ const DiskStorageContainer = () => {
           columns={
             [
               { field: "id", type: "number", hide: true },
-              { field: "product_id", type: "number", hide: true },
+              { field: "productId", type: "number", hide: true },
               { field: "name", width: 200, headerName: "Name" },
               { field: "description", width: 200, headerName: "Description" },
               {
@@ -107,7 +107,7 @@ const DiskStorageContainer = () => {
                 valueFormatter: (params: ValueFormatterParams) => params.value + " MB",
               },
               {
-                field: "total_storage",
+                field: "totalStorage",
                 width: 150,
                 headerName: "Total Storage",
                 headerAlign: "left",
@@ -136,7 +136,7 @@ const DiskStorageContainer = () => {
                 width: 400,
                 renderCell: (params: GridCellParams) => (
                   <ButtonGroup>
-                    <Button to={"/admin/products/edit/" + params.row.product_id} component={RouterLink}>
+                    <Button to={"/admin/products/edit/" + params.row.productId} component={RouterLink}>
                       Edit product
                     </Button>
                     <Button to={"edit/disk-storage/" + params.row.id} component={RouterLink}>
@@ -152,14 +152,14 @@ const DiskStorageContainer = () => {
             queryDiskStorages.isSuccess
               ? queryDiskStorages.data.results.map((diskStorage: IDiskStorage) => ({
                   id: diskStorage.id,
-                  product_id: diskStorage.product?.id,
+                  productId: diskStorage.product?.id,
                   name: diskStorage.product?.name,
                   description: diskStorage.product?.description,
                   stock: diskStorage.product?.stock ? "Yes" : "No",
                   price: diskStorage.product!.price,
                   brand: diskStorage.product?.brand.name || "Not found",
                   mbs: diskStorage.mbs,
-                  total_storage: diskStorage.total_storage,
+                  totalStorage: diskStorage.totalStorage,
                   type: diskStorage.type,
                   watts: diskStorage.watts,
                 }))

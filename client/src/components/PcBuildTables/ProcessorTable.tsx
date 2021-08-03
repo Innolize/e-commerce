@@ -10,8 +10,8 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
-import { apiOptions } from "src/hooks/apiOptions";
-import { IGetProcessors } from "src/hooks/types";
+import { apiRoutes } from "src/hooks/apiRoutes";
+import { IGetAllProcessors } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IProcessor } from "src/types";
@@ -28,8 +28,8 @@ const ProcessorContainer = () => {
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteProcessor = useDelete<IProcessor>("processor");
-  const queryProcessors = useGetAll<IGetProcessors>("processor", offset, PAGE_SIZE);
-  const isFetching = useIsFetching(apiOptions.processor.cacheString);
+  const queryProcessors = useGetAll<IGetAllProcessors>("processor", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiRoutes.processor.cacheString);
   const isMutating = useIsMutating();
 
   const handlePageChange = (params: GridPageChangeParams) => {
@@ -76,7 +76,7 @@ const ProcessorContainer = () => {
           columns={
             [
               { field: "id", type: "number", hide: true },
-              { field: "product_id", type: "number", hide: true },
+              { field: "productId", type: "number", hide: true },
               { field: "name", width: 200, headerName: "Name" },
               { field: "description", width: 200, headerName: "Description" },
               {
@@ -123,7 +123,7 @@ const ProcessorContainer = () => {
                 width: 400,
                 renderCell: (params: GridCellParams) => (
                   <ButtonGroup>
-                    <Button to={"/admin/products/edit/" + params.row.product_id} component={RouterLink}>
+                    <Button to={"/admin/products/edit/" + params.row.productId} component={RouterLink}>
                       Edit product
                     </Button>
                     <Button to={"edit/processor/" + params.row.id} component={RouterLink}>
@@ -139,7 +139,7 @@ const ProcessorContainer = () => {
             queryProcessors.isSuccess
               ? queryProcessors.data.results.map((processor: IProcessor) => ({
                   id: processor.id,
-                  product_id: processor.product?.id,
+                  productId: processor.product?.id,
                   name: processor.product?.name,
                   description: processor.product?.description,
                   stock: processor.product?.stock ? "Yes" : "No",
