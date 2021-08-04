@@ -1,25 +1,26 @@
-import React, { useContext } from "react";
-import { createStyles, makeStyles, Theme, useTheme } from "@material-ui/core/styles";
-import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
-import List from "@material-ui/core/List";
+import { Box, Typography } from "@material-ui/core";
 import Divider from "@material-ui/core/Divider";
+import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import { Box, Typography } from "@material-ui/core";
+import { createStyles, makeStyles, Theme, useTheme } from "@material-ui/core/styles";
+import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
+import DesktopMacIcon from "@material-ui/icons/DesktopMac";
 import HomeIcon from "@material-ui/icons/Home";
 import ListAltIcon from "@material-ui/icons/ListAlt";
-import DesktopMacIcon from "@material-ui/icons/DesktopMac";
+import NightsStayIcon from "@material-ui/icons/NightsStay";
 import PersonIcon from "@material-ui/icons/Person";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
-import WbSunnyIcon from "@material-ui/icons/WbSunny";
-import NightsStayIcon from "@material-ui/icons/NightsStay";
-import ListLink from "./ListLink";
+import ShopTwoIcon from "@material-ui/icons/ShopTwo";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
-import { UserContext } from "src/contexts/UserContext";
-import { isAdmin } from "src/utils/isAdmin";
-import useLogoutUser from "src/hooks/useLogout";
+import WbSunnyIcon from "@material-ui/icons/WbSunny";
+import React, { useContext } from "react";
 import { ThemeContext } from "src/contexts/CustomThemeContext";
+import { UserContext } from "src/contexts/UserContext";
+import useLogoutUser from "src/hooks/useLogout";
+import { isAdmin } from "src/utils/isAdmin";
+import ListLink from "./ListLink";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -105,12 +106,15 @@ function Sidebar({ state, setState }: Props) {
           <Divider />
 
           {user ? (
-            <ListItem onClick={handleLogout} button>
-              <ListItemIcon>
-                <PersonIcon />
-              </ListItemIcon>
-              <ListItemText>Logout</ListItemText>
-            </ListItem>
+            <React.Fragment>
+              <ListItem onClick={handleLogout} button>
+                <ListItemIcon>
+                  <PersonIcon />
+                </ListItemIcon>
+                <ListItemText>Logout</ListItemText>
+              </ListItem>
+              <ListLink label="My orders" to="/orders" icon={<ShopTwoIcon />} />
+            </React.Fragment>
           ) : (
             <>
               <ListLink label="Login" to="/login" icon={<PersonIcon />} />

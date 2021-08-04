@@ -17,6 +17,7 @@ import useLogoutUser from "src/hooks/useLogout";
 import { isAdmin } from "src/utils/isAdmin";
 import ChangeThemeButton from "../ChangeThemeButton";
 import SearchBar from "./SearchBar";
+import UserMenu from "./UserMenu";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -93,14 +94,7 @@ const DesktopNavbar = React.memo(() => {
           <Box className={classes.nowrap}>
             {user ? (
               <Box display="flex" alignItems="center">
-                {user && (
-                  <Typography color="textSecondary" variant="caption">
-                    {user.userInfo.mail}
-                  </Typography>
-                )}
-                <Link onClick={handleLogout} className={classes.link} component="button" variant="body1">
-                  Logout
-                </Link>
+                <UserMenu user={user} handleLogout={handleLogout} />
                 <Link className={classes.linkIcon} component={RouterLink} to="/cart">
                   {getCart.data?.cartItems?.length ? (
                     <Badge badgeContent={getCart.data?.cartItems?.length} color="secondary">
