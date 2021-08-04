@@ -10,7 +10,7 @@ export default function useGetProducts(
   name: string | null,
   limit = 12
 ) {
-  const offset = page ? (Number(page) - 1) * limit : 0;
+  const offset = page && Number(page) !== 0 ? (Number(page) - 1) * limit : 0;
   const params = {
     category_id,
     name,
