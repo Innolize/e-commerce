@@ -9,6 +9,8 @@ import { DefaultLayout } from "../components/layouts/DefaultLayout";
 import NoMatch from "src/pages/NoMatch";
 import { Switch } from "react-router-dom";
 import IndividualProduct from "src/pages/IndividualProduct";
+import Checkout from "src/pages/Checkout";
+import Orders from "src/pages/Orders";
 
 const DefaultRoutes = () => {
   return (
@@ -21,6 +23,8 @@ const DefaultRoutes = () => {
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         <Route path="/cart" component={Cart} />
+        <Route path="/checkout" component={Checkout} />
+        <Route path="/orders" component={Orders} />
         <Route path="*" component={NoMatch} />
       </Switch>
     </DefaultLayout>
