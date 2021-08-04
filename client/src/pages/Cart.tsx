@@ -5,18 +5,20 @@ import {
   Container,
   Divider,
   Grid,
+  Link,
   makeStyles,
   Paper,
   Typography,
 } from "@material-ui/core";
 import { useContext } from "react";
 import { UserContext } from "src/contexts/UserContext";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link as RouterLink } from "react-router-dom";
 import CartItem from "src/components/CartItem";
 import useUpdateCart from "src/hooks/useUpdateCart";
 import useGetCart from "src/hooks/useGetCart";
 import useRemoveCartItem from "src/hooks/useRemoveCartItem";
 import currencyFormatter from "src/utils/formatCurrency";
+import { ICartItem } from "src/types";
 
 const useStyles = makeStyles({
   box: {
@@ -80,6 +82,12 @@ const Cart = () => {
     removeCartItem.mutate({ productId, userId: user.userInfo.id });
   };
 
+  const getTotalPrice = (cartItems: ICartItem[]): string => {
+    return currencyFormatter.format(
+      cartItems.reduce((totalPrice, item) => totalPrice + item.product.price * item.quantity, 0)
+    );
+  };
+
   return (
     <Container>
       <Box my={5}>
@@ -107,22 +115,16 @@ const Cart = () => {
             <CartItem cartItems={cartQuery.data.cartItems} removeItem={removeItem} updateQuantity={updateQuantity} />
             <Box className={classes.total}>
               <Paper variant="outlined" square className={classes.box}>
-                <Typography variant="h5">
-                  {`Total: ` +
-                    currencyFormatter.format(
-                      (cartQuery.data.cartItems as any[]).reduce(
-                        (totalPrice, item) => totalPrice + item.product.price * item.quantity,
-                        0
-                      )
-                    )}
-                </Typography>
+                <Typography variant="h5">{`Total: ` + getTotalPrice(cartQuery.data.cartItems)}</Typography>
               </Paper>
             </Box>
           </Paper>
           <Box className={classes.checkout}>
-            <Button color="secondary" className={classes.checkoutBtn} size="large" variant="contained">
-              Checkout
-            </Button>
+            <Link component={RouterLink} to="/checkout">
+              <Button color="secondary" className={classes.checkoutBtn} size="large" variant="contained">
+                Checkout
+              </Button>
+            </Link>
           </Box>
         </Box>
       ) : cartQuery.isLoading ? (
