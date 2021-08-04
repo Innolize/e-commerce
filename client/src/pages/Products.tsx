@@ -22,7 +22,7 @@ const useStyles = makeStyles({
 });
 
 const Products = () => {
-  const LIMIT = 12;
+  const LIMIT = 9;
   const classes = useStyles();
   const queryParam = useQuery();
   const history = useHistory();
