@@ -1,11 +1,5 @@
 import { Box, Button, ButtonGroup } from "@material-ui/core";
-import {
-  DataGrid,
-  GridCellParams,
-  GridColDef,
-  GridPageChangeParams,
-  ValueFormatterParams,
-} from "@material-ui/data-grid";
+import { DataGrid, GridCellParams, GridColDef, GridValueFormatterParams } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { useIsFetching, useIsMutating } from "react-query";
@@ -32,8 +26,8 @@ const DiskStorageContainer = () => {
   const isFetching = useIsFetching(apiRoutes["disk-storage"].cacheString);
   const isMutating = useIsMutating();
 
-  const handlePageChange = (params: GridPageChangeParams) => {
-    setOffset(params.page * PAGE_SIZE);
+  const handlePageChange = (page: number) => {
+    setOffset(page * PAGE_SIZE);
   };
 
   const handleClickDeleteBtn = (id: string) => {
@@ -87,7 +81,7 @@ const DiskStorageContainer = () => {
                 headerAlign: "left",
                 align: "center",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => currencyFormatter.format(Number(params.value)),
+                valueFormatter: (params: GridValueFormatterParams) => currencyFormatter.format(Number(params.value)),
               },
               {
                 field: "stock",
@@ -104,7 +98,7 @@ const DiskStorageContainer = () => {
                 headerAlign: "left",
                 align: "center",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => params.value + " MB",
+                valueFormatter: (params: GridValueFormatterParams) => params.value + " MB",
               },
               {
                 field: "totalStorage",
@@ -113,7 +107,7 @@ const DiskStorageContainer = () => {
                 headerAlign: "left",
                 align: "center",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => params.value + " GB",
+                valueFormatter: (params: GridValueFormatterParams) => params.value + " GB",
               },
               {
                 field: "type",
@@ -126,7 +120,7 @@ const DiskStorageContainer = () => {
                 headerAlign: "left",
                 align: "center",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => params.value + " W",
+                valueFormatter: (params: GridValueFormatterParams) => params.value + " W",
               },
               {
                 field: "edit",

@@ -1,11 +1,5 @@
 import { Box, Button, ButtonGroup } from "@material-ui/core";
-import {
-  DataGrid,
-  GridCellParams,
-  GridColDef,
-  GridPageChangeParams,
-  ValueFormatterParams,
-} from "@material-ui/data-grid";
+import { DataGrid, GridCellParams, GridColDef, GridValueFormatterParams } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { useIsFetching, useIsMutating } from "react-query";
@@ -32,8 +26,8 @@ const CabinetContainer = () => {
   const isFetching = useIsFetching(apiRoutes.cabinet.cacheString);
   const isMutating = useIsMutating();
 
-  const handlePageChange = (params: GridPageChangeParams) => {
-    setOffset(params.page * PAGE_SIZE);
+  const handlePageChange = (page: number) => {
+    setOffset(page * PAGE_SIZE);
   };
 
   const handleClickDeleteBtn = (id: string) => {
@@ -86,7 +80,7 @@ const CabinetContainer = () => {
                 headerAlign: "left",
                 align: "center",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => currencyFormatter.format(Number(params.value)),
+                valueFormatter: (params: GridValueFormatterParams) => currencyFormatter.format(Number(params.value)),
               },
               { field: "stock", headerName: "Stock" },
               { field: "brand", headerName: "Brand" },

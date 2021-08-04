@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Container, Typography } from "@material-ui/core";
-import { DataGrid, GridCellParams, GridColDef, GridPageChangeParams } from "@material-ui/data-grid";
+import { DataGrid, GridCellParams, GridColDef } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { useIsFetching, useIsMutating } from "react-query";
@@ -16,17 +16,17 @@ import { IBrand } from "src/types";
 import DeleteDialog from "../../../components/DeleteDialogs/DeleteDialog";
 
 const BrandTable = () => {
-  const PAGE_SIZE = 12;
+  const LIMIT = 12;
   const [offset, setOffset] = useState(0);
   const [deleteId, setDeleteId] = useState<string>("");
   const isFetching = useIsFetching(apiRoutes.brand.cacheString);
   const isMutating = useIsMutating();
   const [open, setOpen] = useState(false);
   const deleteBrand = useDelete<IBrand>("brand");
-  const queryBrands = useGetAll<IGetAllBrands>("brand", offset, PAGE_SIZE);
+  const queryBrands = useGetAll<IGetAllBrands>("brand", offset, LIMIT);
 
-  const handlePageChange = (params: GridPageChangeParams) => {
-    setOffset(params.page * PAGE_SIZE);
+  const handlePageChange = (page: number) => {
+    setOffset(page * LIMIT);
   };
 
   const handleClickDeleteBtn = (id: string) => {
@@ -67,7 +67,7 @@ const BrandTable = () => {
         <DataGrid
           pagination
           paginationMode="server"
-          pageSize={PAGE_SIZE}
+          pageSize={LIMIT}
           rowCount={queryBrands.isSuccess ? queryBrands.data.count : undefined}
           onPageChange={handlePageChange}
           loading={queryBrands.isLoading || !!isFetching || !!isMutating}

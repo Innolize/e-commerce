@@ -1,11 +1,5 @@
 import { Box, Button, ButtonGroup } from "@material-ui/core";
-import {
-  DataGrid,
-  GridCellParams,
-  GridColDef,
-  GridPageChangeParams,
-  ValueFormatterParams,
-} from "@material-ui/data-grid";
+import { DataGrid, GridCellParams, GridColDef, GridValueFormatterParams } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { useIsFetching, useIsMutating } from "react-query";
@@ -32,8 +26,8 @@ const MotherboardContainer = () => {
   const isFetching = useIsFetching(apiRoutes.motherboard.cacheString);
   const isMutating = useIsMutating();
 
-  const handlePageChange = (params: GridPageChangeParams) => {
-    setOffset(params.page * PAGE_SIZE);
+  const handlePageChange = (page: number) => {
+    setOffset(page * PAGE_SIZE);
   };
 
   const handleClickDeleteBtn = (id: string) => {
@@ -87,7 +81,7 @@ const MotherboardContainer = () => {
                 headerAlign: "left",
                 align: "center",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => currencyFormatter.format(Number(params.value)),
+                valueFormatter: (params: GridValueFormatterParams) => currencyFormatter.format(Number(params.value)),
               },
               { field: "stock", width: 100, headerName: "Stock" },
               { field: "brand", width: 100, headerName: "Brand" },
@@ -98,14 +92,14 @@ const MotherboardContainer = () => {
                 width: 120,
                 headerName: "Min Frec",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => params.value + " MHz",
+                valueFormatter: (params: GridValueFormatterParams) => params.value + " MHz",
               },
               {
                 field: "max_frec",
                 width: 120,
                 headerName: "Max Frec",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => params.value + " MHz",
+                valueFormatter: (params: GridValueFormatterParams) => params.value + " MHz",
               },
               { field: "ram_version", width: 150, headerName: "RAM version" },
               { field: "model_size", width: 150, headerName: "Model Size" },
