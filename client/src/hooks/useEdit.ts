@@ -29,6 +29,7 @@ export default function useEdit<T>(option: IApiRoutes, id: string | number) {
       retry: false,
       onSettled: () => {
         queryClient.invalidateQueries(apiRoutes[option].cacheString);
+        queryClient.invalidateQueries("cart");
       },
       onError: (e: AxiosError) => {},
     }
