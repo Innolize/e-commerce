@@ -16,8 +16,6 @@ export const validateCabinetCreateSchema = {
         .required(),
     generic_pws: Joi.boolean()
         .required(),
-    id_product: Joi.number()
-        .required()
 }
 
 export const validateCabinetEditSchema = {
