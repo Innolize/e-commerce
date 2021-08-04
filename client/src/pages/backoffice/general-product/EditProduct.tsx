@@ -209,7 +209,7 @@ const EditProduct = () => {
                     color="secondary"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldValue("image", e.target.files![0])}
                   />
-                  <ErrorMessage component={Typography} className={classes.errorMsg} name="logo" />
+                  <ErrorMessage component={Typography} className={classes.errorMsg} name="image" />
                 </Box>
 
                 {editProduct.isError && (
