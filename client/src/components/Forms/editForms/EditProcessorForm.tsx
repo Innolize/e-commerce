@@ -50,14 +50,14 @@ const EditProcessorForm = ({ id }: Props) => {
     return () => clearTimeout(timer);
   }, [editProcessor.isSuccess]);
 
-  const mapProcessor = (processor: IProcessor): IProcessorForm => {
-    const processorForm: IProcessorForm = {
+  const getInitialValues = (processor: IProcessor): IProcessorForm => {
+    const processorInitialValues: IProcessorForm = {
       cores: processor.cores.toString(),
       frecuency: processor.frecuency.toString(),
       socket: processor.socket.toString(),
       watts: processor.watts.toString(),
     };
-    return processorForm;
+    return processorInitialValues;
   };
 
   return (
@@ -86,7 +86,7 @@ const EditProcessorForm = ({ id }: Props) => {
       {queryProcessor.isSuccess && (
         <Box className={classes.formContainer}>
           <Formik
-            initialValues={mapProcessor(queryProcessor.data)}
+            initialValues={getInitialValues(queryProcessor.data)}
             onSubmit={(data) => {
               const formData = new FormData();
               formData.append("socket", data.socket);

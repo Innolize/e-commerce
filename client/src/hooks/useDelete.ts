@@ -1,15 +1,15 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQueryClient, useMutation } from "react-query";
 import api from "src/services/api";
-import { apiOptions, ApiOptions } from "./apiOptions";
+import { apiRoutes, IApiRoutes } from "./apiRoutes";
 
-export default function useDelete<T>(option: ApiOptions) {
+export default function useDelete<T>(option: IApiRoutes) {
   const queryClient = useQueryClient();
 
   return useMutation(
     (id: string) =>
       api
-        .delete(apiOptions[option].route + "/" + id)
+        .delete(apiRoutes[option].route + "/" + id)
         .then((res: AxiosResponse<T>) => res.data)
         .catch((error: AxiosError) => {
           if (error.response) {
@@ -21,7 +21,7 @@ export default function useDelete<T>(option: ApiOptions) {
     {
       retry: false,
       onSettled: () => {
-        queryClient.invalidateQueries(apiOptions[option].cacheString);
+        queryClient.invalidateQueries(apiRoutes[option].cacheString);
       },
       onError: (e: AxiosError) => {
         console.error(e);

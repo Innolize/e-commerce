@@ -17,6 +17,7 @@ export default function useLogoutUser() {
       setUser();
       localStorage.removeItem("token");
       queryClient.removeQueries("cart");
+      queryClient.removeQueries("orders");
       enqueueSnackbar("You've been logged out.", { variant: "info" });
     },
     onError: () => {

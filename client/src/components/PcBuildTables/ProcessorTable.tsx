@@ -1,17 +1,11 @@
 import { Box, Button, ButtonGroup } from "@material-ui/core";
-import {
-  DataGrid,
-  GridCellParams,
-  GridColDef,
-  GridPageChangeParams,
-  ValueFormatterParams,
-} from "@material-ui/data-grid";
+import { DataGrid, GridCellParams, GridColDef, GridValueFormatterParams } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
-import { apiOptions } from "src/hooks/apiOptions";
-import { IGetProcessors } from "src/hooks/types";
+import { apiRoutes } from "src/hooks/apiRoutes";
+import { IGetAllProcessors } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IProcessor } from "src/types";
@@ -28,12 +22,12 @@ const ProcessorContainer = () => {
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteProcessor = useDelete<IProcessor>("processor");
-  const queryProcessors = useGetAll<IGetProcessors>("processor", offset, PAGE_SIZE);
-  const isFetching = useIsFetching(apiOptions.processor.cacheString);
+  const queryProcessors = useGetAll<IGetAllProcessors>("processor", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiRoutes.processor.cacheString);
   const isMutating = useIsMutating();
 
-  const handlePageChange = (params: GridPageChangeParams) => {
-    setOffset(params.page * PAGE_SIZE);
+  const handlePageChange = (page: number) => {
+    setOffset(page * PAGE_SIZE);
   };
 
   const handleClickDeleteBtn = (id: string) => {
@@ -76,7 +70,7 @@ const ProcessorContainer = () => {
           columns={
             [
               { field: "id", type: "number", hide: true },
-              { field: "product_id", type: "number", hide: true },
+              { field: "productId", type: "number", hide: true },
               { field: "name", width: 200, headerName: "Name" },
               { field: "description", width: 200, headerName: "Description" },
               {
@@ -86,7 +80,7 @@ const ProcessorContainer = () => {
                 headerAlign: "left",
                 align: "center",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => currencyFormatter.format(Number(params.value)),
+                valueFormatter: (params: GridValueFormatterParams) => currencyFormatter.format(Number(params.value)),
               },
               { field: "stock", headerName: "Stock" },
               { field: "brand", headerName: "Brand" },
@@ -104,7 +98,7 @@ const ProcessorContainer = () => {
                 headerAlign: "left",
                 align: "center",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => params.value + " GHz",
+                valueFormatter: (params: GridValueFormatterParams) => params.value + " GHz",
               },
               { field: "socket", width: 150, headerName: "Socket" },
               {
@@ -113,7 +107,7 @@ const ProcessorContainer = () => {
                 headerAlign: "left",
                 align: "center",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => params.value + " W",
+                valueFormatter: (params: GridValueFormatterParams) => params.value + " W",
               },
               {
                 field: "edit",
@@ -123,7 +117,7 @@ const ProcessorContainer = () => {
                 width: 400,
                 renderCell: (params: GridCellParams) => (
                   <ButtonGroup>
-                    <Button to={"/admin/products/edit/" + params.row.product_id} component={RouterLink}>
+                    <Button to={"/admin/products/edit/" + params.row.productId} component={RouterLink}>
                       Edit product
                     </Button>
                     <Button to={"edit/processor/" + params.row.id} component={RouterLink}>
@@ -139,7 +133,7 @@ const ProcessorContainer = () => {
             queryProcessors.isSuccess
               ? queryProcessors.data.results.map((processor: IProcessor) => ({
                   id: processor.id,
-                  product_id: processor.product?.id,
+                  productId: processor.product?.id,
                   name: processor.product?.name,
                   description: processor.product?.description,
                   stock: processor.product?.stock ? "Yes" : "No",

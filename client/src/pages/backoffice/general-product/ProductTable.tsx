@@ -3,11 +3,12 @@ import {
   DataGrid,
   GridCellParams,
   GridColDef,
-  GridPageChangeParams,
-  ValueFormatterParams,
+  GridFilterModel,
+  GridValueFormatterParams,
 } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
+import { useState } from "react";
 import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
 import CustomLoadingOverlay from "src/components/CustomLoadingOverlay";
@@ -15,7 +16,7 @@ import CustomNoRowsOverlay from "src/components/CustomNoRowsOverlay";
 import CustomToolbar from "src/components/CustomToolbar";
 import DeleteDialog from "src/components/DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "src/components/SnackbarAlert";
-import { apiOptions } from "src/hooks/apiOptions";
+import { apiRoutes } from "src/hooks/apiRoutes";
 import useDelete from "src/hooks/useDelete";
 import useGetProducts from "src/hooks/useGetProducts";
 import { IProduct } from "src/types";
@@ -29,16 +30,18 @@ const Products = () => {
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteProduct = useDelete<IProduct>("product");
-  const isFetching = useIsFetching(apiOptions.product.cacheString);
+  const isFetching = useIsFetching(apiRoutes.product.cacheString);
   const isMutating = useIsMutating();
   const queryProducts = useGetProducts(page, null, name, PAGE_SIZE);
 
-  const onFilterChange = useCallback((params) => {
-    setName(params.filterModel.items[0].value);
+  const onFilterChange = useCallback((filterModel: GridFilterModel) => {
+    const name = filterModel.items[0]?.value;
+    setName(name);
+    setPage("0");
   }, []);
 
-  const handlePageChange = (params: GridPageChangeParams) => {
-    setPage((params.page + 1).toString());
+  const handlePageChange = (page: number) => {
+    setPage((page + 1).toString());
   };
 
   const handleClickDeleteBtn = (id: string) => {
@@ -75,13 +78,14 @@ const Products = () => {
         </Button>
       </Box>
 
-      <Box width="100%" height="525px" marginBottom="50px">
+      <Box width="100%" height="545px" mb={4}>
         <DataGrid
           pagination
           paginationMode="server"
           pageSize={PAGE_SIZE}
           rowCount={queryProducts.isSuccess ? queryProducts.data.count : undefined}
           onPageChange={handlePageChange}
+          rowsPerPageOptions={[PAGE_SIZE]}
           onFilterModelChange={onFilterChange}
           loading={queryProducts.isLoading || !!isFetching || !!isMutating}
           columns={
@@ -98,7 +102,7 @@ const Products = () => {
                 align: "left",
                 type: "number",
                 filterable: false,
-                valueFormatter: (params: ValueFormatterParams) => currencyFormatter.format(Number(params.value)),
+                valueFormatter: (params: GridValueFormatterParams) => currencyFormatter.format(Number(params.value)),
               },
               { field: "stock", width: 100, headerName: "Stock", filterable: false },
               { field: "brand", width: 100, headerName: "Brand", filterable: false },

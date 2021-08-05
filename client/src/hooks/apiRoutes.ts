@@ -1,4 +1,4 @@
-export const apiOptions = {
+export const apiRoutes = {
   cabinet: {
     route: "/api/cabinet",
     cacheString: "cabinets",
@@ -39,9 +39,13 @@ export const apiOptions = {
     route: "/api/product",
     cacheString: "products",
   },
+  order: {
+    route: "/api/order",
+    cacheString: "orders",
+  },
 };
 
-export type ApiOptions =
+export type IApiRoutes =
   | "brand"
   | "video-card"
   | "product"
@@ -51,4 +55,5 @@ export type ApiOptions =
   | "disk-storage"
   | "processor"
   | "ram"
-  | "cabinet";
+  | "cabinet"
+  | "order";

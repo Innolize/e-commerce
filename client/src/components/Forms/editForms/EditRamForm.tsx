@@ -50,16 +50,16 @@ const EditRamForm = ({ id }: Props) => {
     return () => clearTimeout(timer);
   }, [createRam.isSuccess]);
 
-  const mapRam = (ram: IRam): IRamForm => {
-    const ramForm: IRamForm = {
-      ram_version: ram.ram_version,
+  const getInitialValues = (ram: IRam): IRamForm => {
+    const ramInitialValues: IRamForm = {
+      ram_version: ram.ramVersion,
       memory: ram.memory.toString(),
-      min_frec: ram.min_frec.toString(),
-      max_frec: ram.max_frec.toString(),
+      min_frec: ram.minFrec.toString(),
+      max_frec: ram.maxFrec.toString(),
       watts: ram.watts.toString(),
     };
 
-    return ramForm;
+    return ramInitialValues;
   };
 
   return (
@@ -88,7 +88,7 @@ const EditRamForm = ({ id }: Props) => {
       {queryRam.isSuccess && (
         <Container maxWidth="xs" className={classes.formContainer}>
           <Formik
-            initialValues={mapRam(queryRam.data)}
+            initialValues={getInitialValues(queryRam.data)}
             onSubmit={(data) => {
               const formData = new FormData();
               formData.append("memory", data.memory);

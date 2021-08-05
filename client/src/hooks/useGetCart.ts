@@ -15,7 +15,7 @@ const useGetCart = (userId?: number | string) => {
       }),
     {
       enabled: !!userId,
-      staleTime: 1000 * 60,
+      staleTime: 1000 * 5 * 60,
     }
   );
 };

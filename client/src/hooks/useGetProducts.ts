@@ -1,8 +1,8 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "react-query";
 import api from "src/services/api";
-import { apiOptions } from "./apiOptions";
-import { IGetProducts } from "./types";
+import { apiRoutes } from "./apiRoutes";
+import { IGetAllProducts } from "./types";
 
 export default function useGetProducts(
   page: string | null,
@@ -10,7 +10,7 @@ export default function useGetProducts(
   name: string | null,
   limit = 12
 ) {
-  const offset = page ? (Number(page) - 1) * limit : 0;
+  const offset = page && Number(page) !== 0 ? (Number(page) - 1) * limit : 0;
   const params = {
     category_id,
     name,
@@ -25,7 +25,7 @@ export default function useGetProducts(
 
   return useQuery(
     ["products", { category_id, name, offset }],
-    () => api.get(apiOptions.product.route + "/", { params }).then((res: AxiosResponse<IGetProducts>) => res.data),
+    () => api.get(apiRoutes.product.route + "/", { params }).then((res: AxiosResponse<IGetAllProducts>) => res.data),
     {
       retry: false,
       staleTime: 60 * 5 * 1000, // 5 minutes

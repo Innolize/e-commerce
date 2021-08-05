@@ -1,17 +1,11 @@
 import { Box, Button, ButtonGroup } from "@material-ui/core";
-import {
-  DataGrid,
-  GridCellParams,
-  GridColDef,
-  GridPageChangeParams,
-  ValueFormatterParams,
-} from "@material-ui/data-grid";
+import { DataGrid, GridCellParams, GridColDef, GridValueFormatterParams } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
-import { apiOptions } from "src/hooks/apiOptions";
-import { IGetMotherboards } from "src/hooks/types";
+import { apiRoutes } from "src/hooks/apiRoutes";
+import { IGetAllMotherboards } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IMotherboard } from "src/types";
@@ -28,12 +22,12 @@ const MotherboardContainer = () => {
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteMotherboard = useDelete<IMotherboard>("motherboard");
-  const queryMotherboards = useGetAll<IGetMotherboards>("motherboard", offset, PAGE_SIZE);
-  const isFetching = useIsFetching(apiOptions.motherboard.cacheString);
+  const queryMotherboards = useGetAll<IGetAllMotherboards>("motherboard", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiRoutes.motherboard.cacheString);
   const isMutating = useIsMutating();
 
-  const handlePageChange = (params: GridPageChangeParams) => {
-    setOffset(params.page * PAGE_SIZE);
+  const handlePageChange = (page: number) => {
+    setOffset(page * PAGE_SIZE);
   };
 
   const handleClickDeleteBtn = (id: string) => {
@@ -87,7 +81,7 @@ const MotherboardContainer = () => {
                 headerAlign: "left",
                 align: "center",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => currencyFormatter.format(Number(params.value)),
+                valueFormatter: (params: GridValueFormatterParams) => currencyFormatter.format(Number(params.value)),
               },
               { field: "stock", width: 100, headerName: "Stock" },
               { field: "brand", width: 100, headerName: "Brand" },
@@ -98,14 +92,14 @@ const MotherboardContainer = () => {
                 width: 120,
                 headerName: "Min Frec",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => params.value + " MHz",
+                valueFormatter: (params: GridValueFormatterParams) => params.value + " MHz",
               },
               {
                 field: "max_frec",
                 width: 120,
                 headerName: "Max Frec",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => params.value + " MHz",
+                valueFormatter: (params: GridValueFormatterParams) => params.value + " MHz",
               },
               { field: "ram_version", width: 150, headerName: "RAM version" },
               { field: "model_size", width: 150, headerName: "Model Size" },
@@ -118,7 +112,7 @@ const MotherboardContainer = () => {
                 width: 450,
                 renderCell: (params: GridCellParams) => (
                   <ButtonGroup>
-                    <Button to={"/admin/products/edit/" + params.row.product_id} component={RouterLink}>
+                    <Button to={"/admin/products/edit/" + params.row.productId} component={RouterLink}>
                       Edit product
                     </Button>
                     <Button to={"edit/motherboard/" + params.row.id} component={RouterLink}>
@@ -134,19 +128,19 @@ const MotherboardContainer = () => {
             queryMotherboards.isSuccess
               ? queryMotherboards.data.results.map((motherboard: IMotherboard) => ({
                   id: motherboard.id,
-                  product_id: motherboard.product?.id,
-                  name: motherboard.product?.name,
-                  description: motherboard.product?.description,
-                  stock: motherboard.product?.stock ? "Yes" : "No",
-                  price: motherboard.product!.price,
-                  brand: motherboard.product?.brand.name || "Not found",
-                  cpu_brand: motherboard.cpu_brand,
-                  cpu_socket: motherboard.cpu_socket,
-                  min_frec: motherboard.min_frec,
-                  max_frec: motherboard.max_frec,
-                  model_size: motherboard.model_size,
-                  ram_version: motherboard.ram_version,
-                  video_socket: motherboard.video_socket,
+                  product_id: motherboard.product.id,
+                  name: motherboard.product.name,
+                  description: motherboard.product.description,
+                  stock: motherboard.product.stock ? "Yes" : "No",
+                  price: motherboard.product.price,
+                  brand: motherboard.product.brand.name || "Not found",
+                  cpu_brand: motherboard.cpuBrand,
+                  cpu_socket: motherboard.cpuSocket,
+                  min_frec: motherboard.minFrec,
+                  max_frec: motherboard.maxFrec,
+                  model_size: motherboard.modelSize,
+                  ram_version: motherboard.ramVersion,
+                  video_socket: motherboard.videoSocket,
                 }))
               : []
           }

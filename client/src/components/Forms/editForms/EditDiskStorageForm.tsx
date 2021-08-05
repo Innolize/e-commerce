@@ -52,14 +52,14 @@ const EditDiskStorageForm = ({ id }: Props) => {
     return () => clearTimeout(timer);
   }, [createDiskStorage.isSuccess]);
 
-  const mapDiskStorage = (diskStorage: IDiskStorage): IDiskStorageForm => {
-    const diskStorageForm: IDiskStorageForm = {
-      total_storage: diskStorage.total_storage.toString(),
+  const getInitialValues = (diskStorage: IDiskStorage): IDiskStorageForm => {
+    const diskStorageInitialValues: IDiskStorageForm = {
+      total_storage: diskStorage.totalStorage.toString(),
       type: diskStorage.type,
       mbs: diskStorage.mbs.toString(),
       watts: diskStorage.watts.toString(),
     };
-    return diskStorageForm;
+    return diskStorageInitialValues;
   };
 
   return (
@@ -88,7 +88,7 @@ const EditDiskStorageForm = ({ id }: Props) => {
       {queryDiskStorage.isSuccess && (
         <Box className={classes.formContainer}>
           <Formik
-            initialValues={mapDiskStorage(queryDiskStorage.data)}
+            initialValues={getInitialValues(queryDiskStorage.data)}
             onSubmit={(data) => {
               const formData = new FormData();
               formData.append("type", data.type);

@@ -3,7 +3,7 @@ import Typography from "@material-ui/core/Typography";
 import { useHistory, useLocation } from "react-router-dom";
 import Filters from "src/components/ProductsPage/Filters";
 import ProductsContainer from "src/components/ProductsPage/ProductsContainer";
-import { IGetCategories } from "src/hooks/types";
+import { IGetAllCategories } from "src/hooks/types";
 import useGetAll from "src/hooks/useGetAll";
 import useGetProducts from "src/hooks/useGetProducts";
 
@@ -22,7 +22,7 @@ const useStyles = makeStyles({
 });
 
 const Products = () => {
-  const LIMIT = 12;
+  const LIMIT = 9;
   const classes = useStyles();
   const queryParam = useQuery();
   const history = useHistory();
@@ -32,7 +32,7 @@ const Products = () => {
     queryParam.get("name"),
     LIMIT
   );
-  const queryCategories = useGetAll<IGetCategories>("category");
+  const queryCategories = useGetAll<IGetAllCategories>("category");
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     window.scrollTo({ top: 0 });

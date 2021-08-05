@@ -52,14 +52,14 @@ const EditVideoCardForm = ({ id }: Props) => {
     return () => clearTimeout(timer);
   }, [createVideoCard.isSuccess]);
 
-  const mapVideoCard = (videoCard: IVideoCard): IVideoCardForm => {
-    const videoCardForm: IVideoCardForm = {
+  const getInitialValues = (videoCard: IVideoCard): IVideoCardForm => {
+    const videoCardInitialValues: IVideoCardForm = {
       version: videoCard.version,
       memory: videoCard.memory.toString(),
-      clock_speed: videoCard.clock_speed.toString(),
+      clock_speed: videoCard.clockSpeed.toString(),
       watts: videoCard.watts.toString(),
     };
-    return videoCardForm;
+    return videoCardInitialValues;
   };
 
   return (
@@ -88,7 +88,7 @@ const EditVideoCardForm = ({ id }: Props) => {
       {queryVideoCard.isSuccess && (
         <Box className={classes.formContainer}>
           <Formik
-            initialValues={mapVideoCard(queryVideoCard.data)}
+            initialValues={getInitialValues(queryVideoCard.data)}
             onSubmit={(data) => {
               const formData = new FormData();
               formData.append("memory", data.memory);

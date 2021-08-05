@@ -1,6 +1,6 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useContext } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { UserContext } from "src/contexts/UserContext";
 import api from "src/services/api";
 import { IServerUserResponse, ServerError } from "src/types";
@@ -13,6 +13,7 @@ interface ILoginData {
 
 export default function useLoginUser() {
   const { setUser } = useContext(UserContext);
+  const queryClient = useQueryClient();
 
   return useMutation(
     (values: ILoginData) =>
@@ -38,6 +39,8 @@ export default function useLoginUser() {
     {
       retry: false,
       onSuccess: (user) => {
+        queryClient.removeQueries("cart");
+        queryClient.removeQueries("orders");
         localStorage.setItem("token", user.accessToken);
         setUser(user);
       },

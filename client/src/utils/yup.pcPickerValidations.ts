@@ -12,7 +12,7 @@ const productSchema = yup.object({
     .max(40, "Name length cannot have more than 40 characters"),
   image: yup
     .mixed()
-    .test("fileSize", "File size is too large", (value) => !value || value.size <= FILE_SIZE)
+    .test("fileSize", "File size is too large (1MB)", (value) => !value || value.size <= FILE_SIZE)
     .test("fileType", "Unsupported file format", (value) => !value || SUPPORTED_FORMATS.includes(value.type)),
   description: yup
     .string()

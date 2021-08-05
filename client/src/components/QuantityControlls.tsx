@@ -1,4 +1,4 @@
-import { Box, Button, makeStyles, MenuItem, TextField } from "@material-ui/core";
+import { Box, Button, createStyles, makeStyles, MenuItem, TextField, Theme } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import { useEffect } from "react";
@@ -90,7 +90,7 @@ const QuantityControlls = ({ item, handleUpdateQuantity, index }: Props) => {
       ></TextField>
       {item.quantity >= STOCK ? (
         <Button disabled aria-label="increase">
-          <AddIcon fontSize="small" />
+          <AddIcon color="disabled" fontSize="small" />
         </Button>
       ) : (
         <Button onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1, index)} aria-label="increase">
@@ -103,31 +103,33 @@ const QuantityControlls = ({ item, handleUpdateQuantity, index }: Props) => {
 
 export default QuantityControlls;
 
-const useStyles = makeStyles({
-  quantity: {
-    display: "flex",
-    justifyContent: "center",
-    "@media(max-width: 600px)": {
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    quantity: {
       display: "flex",
+      justifyContent: "center",
+      "@media(max-width: 600px)": {
+        display: "flex",
+      },
     },
-  },
-  removeBtn: {
-    "@media(max-width: 600px)": {
-      top: 0,
-      right: -15,
-      position: "absolute",
+    removeBtn: {
+      "@media(max-width: 600px)": {
+        top: 0,
+        right: -15,
+        position: "absolute",
+      },
     },
-  },
-  input: {
-    width: "70px",
-    textAlign: "center",
-    // removes arrows of the number input
-    "& input::-webkit-clear-button, & input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-      display: "none",
+    input: {
+      width: "70px",
+      textAlign: "center",
+      // removes arrows of the number input
+      "& input::-webkit-clear-button, & input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+        display: "none",
+      },
     },
-  },
-  inputMobile: {
-    width: "80%",
-    textAlign: "center",
-  },
-});
+    inputMobile: {
+      width: "80%",
+      textAlign: "center",
+    },
+  })
+);

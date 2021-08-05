@@ -4,6 +4,8 @@ export const SIZE = ["ATX", "Micro-ATX", "Mini-ATX"];
 export const DISK_TYPE = ["SSD", "HDD"];
 export const VIDEO_CARD_VERSION = ["DDR4", "DDR5", "DDR6"];
 export const PWS_CERTIFICATION = ["GENERIC", "PLUS", "PLUS SILVER", "PLUS GOLD", "PLUS PLATINUM"];
+export const PAYMENT_TYPE = ["CASH", "DEBIT CARD", "CREDIT CARD", "MERCADOPAGO"];
+export const PAYMENT_STATUS = ["PAID", "PENDING"] as const;
 
 export interface IBrand {
   id: string | number;
@@ -29,37 +31,37 @@ export interface IProduct {
 
 export interface IMotherboard {
   id: number;
-  cpu_socket: string;
-  cpu_brand: typeof CPU_BRANDS[number];
-  ram_version: typeof RAM_VERSION[number];
-  min_frec: number;
-  max_frec: number;
-  video_socket: string;
-  model_size: typeof SIZE[number];
+  cpuSocket: string;
+  cpuBrand: typeof CPU_BRANDS[number];
+  ramVersion: typeof RAM_VERSION[number];
+  minFrec: number;
+  maxFrec: number;
+  videoSocket: string;
+  modelSize: typeof SIZE[number];
   watts: number;
-  product?: IProduct;
+  product: IProduct;
 }
 
 export interface ICabinet {
   id: number;
   size: typeof SIZE[number];
-  generic_pws: boolean | string;
+  genericPws: boolean | string;
   product?: IProduct;
 }
 
 export interface IRam {
   id: number;
-  ram_version: typeof RAM_VERSION[number];
+  ramVersion: typeof RAM_VERSION[number];
   memory: number;
-  min_frec: number;
-  max_frec: number;
+  minFrec: number;
+  maxFrec: number;
   watts: number;
-  product?: IProduct;
+  product: IProduct;
 }
 
 export interface IDiskStorage {
   id: number;
-  total_storage: number;
+  totalStorage: number;
   type: typeof DISK_TYPE[number];
   mbs: number;
   watts: number;
@@ -86,7 +88,7 @@ export interface IVideoCard {
   id: number;
   version: typeof VIDEO_CARD_VERSION[number];
   memory: number;
-  clock_speed: number;
+  clockSpeed: number;
   watts: number;
   product?: IProduct;
 }
@@ -127,6 +129,29 @@ export interface IUserInfo {
 export interface IUser {
   userInfo: IUserInfo;
   accessToken: string;
+}
+
+export interface IOrderItem {
+  id: number;
+  orderId: number;
+  pricePerUnit: number;
+  product: IProduct;
+  productId: number;
+  quantity: number;
+  total: number;
+}
+
+export interface IOrder {
+  id: number;
+  orderItems: IOrderItem[];
+  payment: {
+    amount: number;
+    id: number;
+    orderId: number;
+    status: typeof PAYMENT_STATUS[number];
+    type: typeof PAYMENT_TYPE[number];
+  };
+  user_id: number;
 }
 
 export interface IServerUserResponse {

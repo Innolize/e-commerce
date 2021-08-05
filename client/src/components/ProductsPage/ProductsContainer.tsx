@@ -1,12 +1,12 @@
 import { Box, Typography } from "@material-ui/core";
 import { Pagination } from "@material-ui/lab";
-import { IGetProducts } from "src/hooks/types";
+import { IGetAllProducts } from "src/hooks/types";
 import useScreenSize from "use-screen-size";
 import DesktopCard from "./DesktopCard";
 import MobileCard from "./MobileCard";
 
 interface Props {
-  productData: IGetProducts;
+  productData: IGetAllProducts;
   page: number;
   handlePageChange: (event: React.ChangeEvent<unknown>, value: number) => void;
   LIMIT: number;

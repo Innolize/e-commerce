@@ -1,17 +1,11 @@
 import { Box, Button, ButtonGroup } from "@material-ui/core";
-import {
-  DataGrid,
-  GridCellParams,
-  GridColDef,
-  GridPageChangeParams,
-  ValueFormatterParams,
-} from "@material-ui/data-grid";
+import { DataGrid, GridCellParams, GridColDef, GridValueFormatterParams } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { useIsFetching, useIsMutating } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
-import { apiOptions } from "src/hooks/apiOptions";
-import { IGetRams } from "src/hooks/types";
+import { apiRoutes } from "src/hooks/apiRoutes";
+import { IGetAllRams } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { IRam } from "src/types";
@@ -28,12 +22,12 @@ const RamTableContainer = () => {
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteRam = useDelete<IRam>("ram");
-  const queryRams = useGetAll<IGetRams>("ram", offset, PAGE_SIZE);
-  const isFetching = useIsFetching(apiOptions.ram.cacheString);
+  const queryRams = useGetAll<IGetAllRams>("ram", offset, PAGE_SIZE);
+  const isFetching = useIsFetching(apiRoutes.ram.cacheString);
   const isMutating = useIsMutating();
 
-  const handlePageChange = (params: GridPageChangeParams) => {
-    setOffset(params.page * PAGE_SIZE);
+  const handlePageChange = (page: number) => {
+    setOffset(page * PAGE_SIZE);
   };
 
   const handleClickDeleteBtn = (id: string) => {
@@ -76,7 +70,7 @@ const RamTableContainer = () => {
           columns={
             [
               { field: "id", type: "number", hide: true },
-              { field: "product_id", type: "number", hide: true },
+              { field: "productId", type: "number", hide: true },
               { field: "name", width: 200, headerName: "Name" },
               { field: "description", width: 200, headerName: "Description" },
               {
@@ -86,21 +80,21 @@ const RamTableContainer = () => {
                 headerAlign: "left",
                 align: "center",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => currencyFormatter.format(Number(params.value)),
+                valueFormatter: (params: GridValueFormatterParams) => currencyFormatter.format(Number(params.value)),
               },
               { field: "stock", width: 100, headerName: "Stock" },
               { field: "brand", width: 100, headerName: "Brand" },
-              { field: "ram_version", width: 150, headerName: "Ram Version" },
+              { field: "ramVersion", width: 150, headerName: "Ram Version" },
               { field: "memory", width: 150, headerName: "Memory" },
-              { field: "min_frec", width: 150, headerName: "Min Frec" },
-              { field: "max_frec", width: 150, headerName: "Max Frec" },
+              { field: "minFrec", width: 150, headerName: "Min Frec" },
+              { field: "maxFrec", width: 150, headerName: "Max Frec" },
               {
                 field: "watts",
                 headerName: "Watts",
                 headerAlign: "left",
                 align: "center",
                 type: "number",
-                valueFormatter: (params: ValueFormatterParams) => params.value + " W",
+                valueFormatter: (params: GridValueFormatterParams) => params.value + " W",
               },
               {
                 field: "edit",
@@ -110,7 +104,7 @@ const RamTableContainer = () => {
                 width: 400,
                 renderCell: (params: GridCellParams) => (
                   <ButtonGroup>
-                    <Button to={"/admin/products/edit/" + params.row.product_id} component={RouterLink}>
+                    <Button to={"/admin/products/edit/" + params.row.productId} component={RouterLink}>
                       Edit product
                     </Button>
                     <Button to={"edit/ram/" + params.row.id} component={RouterLink}>
@@ -126,17 +120,17 @@ const RamTableContainer = () => {
             queryRams.isSuccess
               ? queryRams.data.results.map((ram: IRam) => ({
                   id: ram.id,
-                  product_id: ram.product?.id,
-                  name: ram.product?.name,
-                  description: ram.product?.description,
-                  stock: ram.product?.stock ? "Yes" : "No",
-                  price: ram.product!.price,
-                  brand: ram.product?.brand.name || "Not found",
+                  productId: ram.product.id,
+                  name: ram.product.name,
+                  description: ram.product.description,
+                  stock: ram.product.stock ? "Yes" : "No",
+                  price: ram.product.price,
+                  brand: ram.product.brand.name || "Not found",
                   memory: ram.memory,
-                  ram_version: ram.ram_version,
+                  ramVersion: ram.ramVersion,
                   watts: ram.watts,
-                  min_frec: ram.min_frec,
-                  max_frec: ram.max_frec,
+                  minFrec: ram.minFrec,
+                  maxFrec: ram.maxFrec,
                 }))
               : []
           }

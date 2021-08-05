@@ -1,16 +1,16 @@
 import {
-  GridColumnsToolbarButton,
-  GridDensitySelector,
-  GridFilterToolbarButton,
+  GridToolbarColumnsButton,
   GridToolbarContainer,
+  GridToolbarDensitySelector,
+  GridToolbarFilterButton,
 } from "@material-ui/data-grid";
 
 export default function CustomToolbar() {
   return (
     <GridToolbarContainer>
-      <GridColumnsToolbarButton />
-      <GridFilterToolbarButton />
-      <GridDensitySelector />
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarDensitySelector />
     </GridToolbarContainer>
   );
 }

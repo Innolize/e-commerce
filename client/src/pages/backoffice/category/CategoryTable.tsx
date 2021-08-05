@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Container, Typography } from "@material-ui/core";
-import { DataGrid, GridCellParams, GridColDef, GridPageChangeParams } from "@material-ui/data-grid";
+import { DataGrid, GridCellParams, GridColDef } from "@material-ui/data-grid";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { useState } from "react";
 import { useIsFetching, useIsMutating } from "react-query";
@@ -9,8 +9,8 @@ import CustomNoRowsOverlay from "src/components/CustomNoRowsOverlay";
 import CustomToolbar from "src/components/CustomToolbar";
 import DeleteDialog from "src/components/DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "src/components/SnackbarAlert";
-import { apiOptions } from "src/hooks/apiOptions";
-import { IGetCategories } from "src/hooks/types";
+import { apiRoutes } from "src/hooks/apiRoutes";
+import { IGetAllCategories } from "src/hooks/types";
 import useDelete from "src/hooks/useDelete";
 import useGetAll from "src/hooks/useGetAll";
 import { ICategory } from "src/types";
@@ -19,14 +19,14 @@ const CategoryTable = () => {
   const PAGE_SIZE = 12;
   const [offset, setOffset] = useState(0);
   const [open, setOpen] = useState(false);
-  const isFetching = useIsFetching(apiOptions.category.cacheString);
+  const isFetching = useIsFetching(apiRoutes.category.cacheString);
   const isMutating = useIsMutating();
   const [deleteId, setDeleteId] = useState<string>("");
   const deleteCategory = useDelete<ICategory>("category");
-  const queryCategories = useGetAll<IGetCategories>("category", offset, PAGE_SIZE);
+  const queryCategories = useGetAll<IGetAllCategories>("category", offset, PAGE_SIZE);
 
-  const handlePageChange = (params: GridPageChangeParams) => {
-    setOffset(params.page * PAGE_SIZE);
+  const handlePageChange = (page: number) => {
+    setOffset(page * PAGE_SIZE);
   };
 
   const handleClickDeleteBtn = (id: string) => {

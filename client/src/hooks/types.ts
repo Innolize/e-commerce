@@ -4,6 +4,7 @@ import {
   ICategory,
   IDiskStorage,
   IMotherboard,
+  IOrder,
   IPowerSupply,
   IProcessor,
   IProduct,
@@ -11,52 +12,57 @@ import {
   IVideoCard,
 } from "src/types";
 
-export interface IGetBrands {
+export interface IGetAllBrands {
   count: number;
   results: IBrand[];
 }
 
-export interface IGetProducts {
+export interface IGetAllProducts {
   count: number;
   results: IProduct[];
 }
 
-export interface IGetCategories {
+export interface IGetAllCategories {
   count: number;
   results: ICategory[];
 }
 
-export interface IGetCabinets {
+export interface IGetAllCabinets {
   count: number;
   results: ICabinet[];
 }
 
-export interface IGetRams {
+export interface IGetAllRams {
   count: number;
   results: IRam[];
 }
 
-export interface IGetDiskStorages {
+export interface IGetAllDiskStorages {
   count: number;
   results: IDiskStorage[];
 }
 
-export interface IGetProcessors {
+export interface IGetAllProcessors {
   count: number;
   results: IProcessor[];
 }
 
-export interface IGetMotherboards {
+export interface IGetAllMotherboards {
   count: number;
   results: IMotherboard[];
 }
 
-export interface IGetVideoCards {
+export interface IGetAllVideoCards {
   count: number;
   results: IVideoCard[];
 }
 
-export interface IGetPowerSupplies {
+export interface IGetAllPowerSupplies {
   count: number;
   results: IPowerSupply[];
+}
+
+export interface IGetAllOrders {
+  count: number;
+  results: IOrder[];
 }

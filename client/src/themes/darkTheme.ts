@@ -1,6 +1,6 @@
-import { createMuiTheme, responsiveFontSizes } from "@material-ui/core/styles";
+import { createTheme, responsiveFontSizes } from "@material-ui/core/styles";
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     type: "dark",
     primary: {
@@ -9,7 +9,9 @@ const theme = createMuiTheme({
       contrastText: "#fff",
     },
     background: {
-      default: "#303030",
+      // 121212
+      default: "#212121",
+      // default: "#303030",
     },
     secondary: {
       main: "#FFAA33",
@@ -28,6 +30,18 @@ const theme = createMuiTheme({
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
+        },
+        "*::-webkit-scrollbar": {
+          width: "10px",
+        },
+        "*::-webkit-scrollbar-track": {
+          boxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+          webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+          borderRadius: "10px",
+        },
+        "*::-webkit-scrollbar-thumb": {
+          borderRadius: "10px",
+          backgroundColor: "#555",
         },
       },
     },
