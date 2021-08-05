@@ -56,8 +56,17 @@ const Orders = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {queryOrders.isSuccess &&
-                  queryOrders.data.results.map((order) => <OrderRow key={order.id} order={order} />)}
+                {queryOrders.isSuccess && !!queryOrders.data.results.length ? (
+                  queryOrders.data.results.map((order) => <OrderRow key={order.id} order={order} />)
+                ) : (
+                  <TableRow>
+                    <TableCell variant="head" align="center" colSpan={12}>
+                      <Box my={2}>
+                        <Typography variant="h5">No orders found</Typography>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
               <TableFooter>
                 <TableRow>
@@ -65,7 +74,7 @@ const Orders = () => {
                     rowsPerPageOptions={[]}
                     page={page}
                     rowsPerPage={LIMIT}
-                    count={queryOrders.data?.count || -1}
+                    count={queryOrders.data?.count || 0}
                     onPageChange={handlePageChange}
                   />
                 </TableRow>
