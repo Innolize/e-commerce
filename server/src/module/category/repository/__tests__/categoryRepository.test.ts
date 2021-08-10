@@ -13,7 +13,7 @@ let sequelizeInstance: Sequelize
 let category: typeof CategoryModel
 let repository: CategoryRepository
 
-beforeAll(async (done) => {
+beforeAll(async () => {
     sequelizeInstance = new Sequelize(<string>process.env.TEST_DATABASE_URL, {
         logging: false,
         username: process.env.DATABASE_USERNAME,
@@ -22,22 +22,18 @@ beforeAll(async (done) => {
     })
     await sequelizeInstance.drop({ cascade: true })
     category = CategoryModel.setup(sequelizeInstance)
-    await sequelizeInstance.sync({ force: true });
-
-    done();
-})
+    repository = new CategoryRepository(category)
+});
 
 beforeEach(async (done) => {
-    repository = new CategoryRepository(category)
     await sequelizeInstance.sync({ force: true });
     done();
 });
 
-afterAll(async (done) => {
-    await sequelizeInstance.drop({ cascade: true });
+afterAll(async () => {
     await sequelizeInstance.close();
-    done();
 });
+
 
 const CATEGORY_1: ICategoryCreate = {
     name: 'CATEGORY_1'

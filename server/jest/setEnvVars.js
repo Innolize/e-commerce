@@ -1,1 +1,0 @@
-process.env.AWS_BUCKET = "test"

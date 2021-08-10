@@ -23,7 +23,7 @@ let cartItem: typeof CartItemModel
 
 let repository: ProductRepository
 
-beforeAll(async (done) => {
+beforeAll(async () => {
     sequelizeInstance = new Sequelize(<string>process.env.TEST_DATABASE_URL, {
         logging: false,
         username: process.env.DATABASE_USERNAME,
@@ -39,20 +39,15 @@ beforeAll(async (done) => {
     product.setupBrandAssociation(brand)
     product.setupCartItemAssociation(cartItem)
     repository = new ProductRepository(product)
-    await sequelizeInstance.sync({ force: true });
-    done();
 });
 
 beforeEach(async (done) => {
-    repository = new ProductRepository(product);
-    await sequelizeInstance.sync({ force: true });
+    await sequelizeInstance.sync({ force: true })
     done();
 })
 
-afterAll(async (done) => {
-    await sequelizeInstance.drop({ cascade: true });
+afterAll(async () => {
     await sequelizeInstance.close();
-    done();
 });
 
 const sampleProduct = new Product(
@@ -84,8 +79,7 @@ describe('createProduct', () => {
     })
 });
 
-
-describe('Get a product by id', () => {
+describe('getById', () => {
     it("get product with correct id", async () => {
         await brand.create(sampleBrand)
         await category.create(sampleCategory)
@@ -103,10 +97,10 @@ describe('Get a product by id', () => {
             expect(error).toBeInstanceOf(ProductError)
         }
     })
+});
 
-})
 
-describe('Delete a product', () => {
+describe('deleteProduct', () => {
     it("should delete a product by id", async () => {
         await brand.create(sampleBrand)
         await category.create(sampleCategory)
@@ -117,9 +111,12 @@ describe('Delete a product', () => {
     it("should throw when trying to delete an inexistent product", async () => {
         await expect(repository.deleteProduct(123)).rejects.toThrowError()
     })
-})
 
-describe("modifyProduct", () => {
+
+});
+
+
+describe('modifyProduct', () => {
     it("modify a product by id", async () => {
         await brand.create(sampleBrand)
         await category.create(sampleCategory)
@@ -147,9 +144,10 @@ describe("modifyProduct", () => {
             expect(err).toBeInstanceOf(ProductError)
         }
     })
-})
+});
 
-describe("getAllProduct", () => {
+
+describe('getAllProduct', () => {
     it("Return all products", async () => {
         await brand.create(sampleBrand)
         await category.create(sampleCategory)
@@ -193,4 +191,6 @@ describe("getAllProduct", () => {
         expect(productList.count).toBe(0)
         expect(productList.results).toHaveLength(0)
     })
-})
+
+});
+

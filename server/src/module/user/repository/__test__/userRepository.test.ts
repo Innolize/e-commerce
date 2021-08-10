@@ -35,25 +35,28 @@ beforeAll(async (done) => {
     userModel.setupRoleAssociation(roleModel);
     cartModel.setupUserAssociation(userModel);
     roleModel.setupPermissionAssociation(permissionModel);
-    done();
-})
-
-beforeEach(async (done) => {
     repository = new UserRepository(userModel);
-    await sequelizeInstance.sync({ force: true });
-    await roleModel.create({ name: "ADMIN" });
-    await roleModel.create({ name: "CLIENT" });
-    done();
-})
-
-afterAll(async (done) => {
-    await sequelizeInstance.drop({ cascade: true });
-    await sequelizeInstance.close();
     done();
 });
 
-describe("Create users", () => {
-    it("Creates an user", async () => {
+beforeEach(async (done) => {
+    try {
+        await sequelizeInstance.sync({ force: true })
+        await roleModel.create({ name: "ADMIN" });
+        await roleModel.create({ name: "CLIENT" });
+        done();
+    } catch (err) {
+        console.log("ENTRE AL ERROR")
+        console.log(err.stack)
+    }
+})
+
+afterAll(async () => {
+    await sequelizeInstance.close();
+});
+
+describe('createUser', () => {
+    test("Creates an user", async () => {
         const newUser: IUserCreate = {
             mail: "userMail@gmail.com",
             password: "testpassword",
@@ -68,10 +71,9 @@ describe("Create users", () => {
             undefined,
             undefined
         )
-        console.log(12345)
         expect(response).toEqual(EXPECTED_RESPONSE);
     });
-    it("Gives error when creating an user with an email already in use", async () => {
+    test("Gives error when creating an user with an email already in use", async () => {
         const newUser: IUserCreate = {
             mail: "userMail@gmail.com",
             password: "testpassword",
@@ -80,11 +82,13 @@ describe("Create users", () => {
         await repository.createUser(newUser)
         await expect(repository.createUser(newUser)).rejects.toThrow(UserError.mailAlreadyInUse())
     });
-})
 
-describe("Test findUserByMail ", () => {
+});
+
+
+describe('Name of the group', () => {
     const TEST_MAIL = "test@gmail.com"
-    it("finds an user by mail", async () => {
+    test("finds an user by mail", async () => {
         const EXPECTED_RESPONSE = new User(
             1,
             TEST_MAIL,
@@ -104,7 +108,7 @@ describe("Test findUserByMail ", () => {
         expect(userFromDB).toBeInstanceOf(User)
         expect(userFromDB).toEqual(EXPECTED_RESPONSE)
     });
-    it("returns false if there is no user with mail", async () => {
+    test("returns false if there is no user with mail", async () => {
         const newUser: IUserCreate = {
             mail: TEST_MAIL,
             password: "testpassword",
@@ -114,10 +118,11 @@ describe("Test findUserByMail ", () => {
         const response = await repository.findUserByMail("invalidEmail@gmail.com")
         expect(response).toBe(false)
     });
-})
+});
 
-describe('Test modifyUser', () => {
-    it('Modify an existent user ', async () => {
+
+describe('modifyUser', () => {
+    test('Modify an existent user ', async () => {
         const newUser: IUserCreate = {
             mail: "testmail@gmail.com",
             password: "testpassword",
@@ -127,7 +132,7 @@ describe('Test modifyUser', () => {
         const response = await repository.modifyUser(1, { mail: "new-password" })
         expect(response.mail).toBe("new-password")
     });
-    it('Returns error if no user was updated', async () => {
+    test('Returns error if no user was updated', async () => {
         try {
             const INEXISTENT_USER_ID = 555
             await repository.modifyUser(INEXISTENT_USER_ID, { mail: "new-password" })
@@ -135,9 +140,9 @@ describe('Test modifyUser', () => {
             expect(err).toBeInstanceOf(UserError)
         }
     });
-});
 
-describe('Test deleteUser', () => {
+});
+describe('deleteUser', () => {
     it('Deletes an existent user from DB', async () => {
         const newUser: IUserCreate = {
             mail: "testmail@gmail.com",
@@ -163,9 +168,10 @@ describe('Test deleteUser', () => {
             expect(err).toBeInstanceOf(UserError)
         }
     });
-})
+});
 
-describe('Test getSingleUser', () => {
+
+describe('getSingleUser', () => {
     it('Retrieves an user successfuly ', async () => {
         const newUser: IUserCreate = {
             mail: "testmail@gmail.com",
@@ -187,9 +193,12 @@ describe('Test getSingleUser', () => {
             expect(err).toBeInstanceOf(UserError)
         }
     });
+
 });
 
-describe('Test getUsers', () => {
+describe('getUsers', () => {
+
+
     it('Retrieves count and array of users', async () => {
         const newUser: IUserCreate = {
             mail: "testUser1@gmail.com",

@@ -6,11 +6,11 @@ export class ImageUploaderError extends BaseError{
         super(name, httpCode, message);
         Object.setPrototypeOf(this, new.target.prototype);
     }
-    static inexistentExtension() {
+    static inexistentExtension(): ImageUploaderError {
         return new ImageUploaderError(this.name, StatusCodes.NOT_FOUND, 'Image has no extension')
     }
 
-    static UnexpectedPath() {
+    static UnexpectedPath(): ImageUploaderError {
         return new ImageUploaderError(this.name, StatusCodes.UNPROCESSABLE_ENTITY, 'Unexpected image path')
     }
 }
