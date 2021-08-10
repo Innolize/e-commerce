@@ -13,9 +13,10 @@ import { fromDbToCart, fromDbToCartItem } from "../mapper/cartMapper";
 import { CartItemModel } from "../model/CartItemModel";
 import { CartModel } from "../model/CartModel";
 import { IGetAllBaseQuery } from "../../common/interfaces/IGetAllBaseQuery";
+import { ICartRepository } from "../interface/ICartRepository";
 
 @injectable()
-export class CartRepository extends AbstractRepository {
+export class CartRepository extends AbstractRepository implements ICartRepository {
     constructor(
         @inject(TYPES.Cart.CartModel) private cartModel: typeof CartModel,
         @inject(TYPES.Cart.CartItemModel) private cartItemModel: typeof CartItemModel,

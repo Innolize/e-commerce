@@ -9,13 +9,13 @@ import { GetCartsDto } from "../dto/getCartsDto";
 import { Cart } from "../entities/Cart";
 import { CartItem } from "../entities/CartItem";
 import { ICartItemCreateFromCartModel } from "../interface/ICartItemCreateFromCart";
-import { CartRepository } from "../repository/CartRepository";
+import { ICartRepository } from "../interface/ICartRepository";
+import { ICartService } from "../interface/ICartService";
 
 @injectable()
-export class CartService extends AbstractService {
-    private test: string
+export class CartService extends AbstractService implements ICartService {
     constructor(
-        @inject(TYPES.Cart.Repository) private cartRepository: CartRepository
+        @inject(TYPES.Cart.Repository) private cartRepository: ICartRepository
     ) {
         super()
     }
@@ -45,7 +45,7 @@ export class CartService extends AbstractService {
         if (foundItem) {
             const cartItemId = foundItem.id as number
             const { quantity } = newCartItem
-            await this.modifyCartItemQuantity(cartId, cartItemId, quantity)
+            await this._modifyCartItemQuantity(cartId, cartItemId, quantity)
             const updatedCart = await this.cartRepository.getCart(cartId, user.id)
             return updatedCart
         }
@@ -62,15 +62,15 @@ export class CartService extends AbstractService {
         return updatedCart
     }
 
-    private async modifyCartItemQuantity(cartId: number, cartItemId: number, quantity: number): Promise<CartItem> {
-        await this.cartRepository.modifyCartItemQuantity(cartId, cartItemId, quantity)
-        return await this.cartRepository.getCartItem(cartItemId)
-    }
-
     async clearCartItems(cartId: number, user: IUserWithAuthorization): Promise<void> {
         const cart = await this.cartRepository.getCart(cartId, user.id)
         ForbiddenError.from<appAbility>(user.role.permissions).throwUnlessCan('delete', cart)
         await this.cartRepository.removeAllItemsFromCart(cartId)
+    }
+
+    private async _modifyCartItemQuantity(cartId: number, cartItemId: number, quantity: number): Promise<CartItem> {
+        await this.cartRepository.modifyCartItemQuantity(cartId, cartItemId, quantity)
+        return await this.cartRepository.getCartItem(cartItemId)
     }
 }
 
