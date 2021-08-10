@@ -13,9 +13,14 @@ export class CartModel extends Model<ICart, ICartCreate> implements ICart {
     user_id: number;
     active: boolean;
     cartItems!: CartItem[];
-    id?: number | undefined;
+    id: number;
     static setup(database: Sequelize): typeof CartModel {
         CartModel.init({
+            id: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+                autoIncrement: true
+            },
             user_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false

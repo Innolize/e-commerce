@@ -30,6 +30,7 @@ const imageUpload = {
     uploadBrand: jest.fn(),
     uploadProduct: jest.fn()
 }
+console.log('123')
 
 const app = mocked(application, true)
 

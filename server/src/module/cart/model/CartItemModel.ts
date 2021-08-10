@@ -15,6 +15,11 @@ export class CartItemModel extends Model<CartItem, ICartItemCreate> implements I
 
     static setup(database: Sequelize): typeof CartItemModel {
         CartItemModel.init({
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true
+            },
             cart_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false

@@ -6,8 +6,8 @@ import { TYPES } from "../../../config/inversify.types";
 import { AbstractController } from "../../abstractClasses/abstractController";
 import { jwtAuthentication } from "../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../authorization/util/authorizationMiddleware";
+import { BaseError } from "../../common/error/BaseError";
 import { bodyValidator } from "../../common/helpers/bodyValidator";
-import { CartError } from "../error/CartError";
 import { validateCreateCartItemDto } from "../helpers/create_cart_item_dto";
 import { validateGetCartDto } from "../helpers/get_cart_dto";
 import { ICartGetAllQuery } from "../interface/ICartGetAllQuery";
@@ -16,7 +16,7 @@ import { CartService } from "../service/CartService";
 
 @injectable()
 export class CartController extends AbstractController {
-    public ROUTE_BASE: string
+    private ROUTE_BASE: string
     constructor(
         @inject(TYPES.Cart.Service) private cartService: CartService,
         @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer
@@ -34,11 +34,12 @@ export class CartController extends AbstractController {
     }
 
     async getAllCarts(req: Request, res: Response, next: NextFunction): Promise<void> {
-        const dto: ICartGetAllQuery = req.query
-        const user = req.user
         try {
-            const { limit, offset, userId } = await bodyValidator(validateGetCartDto, dto)
-            const response = await this.cartService.getCarts({ limit, offset, userId }, user)
+            const dto: ICartGetAllQuery = req.query
+            const user = req.user
+
+            const { limit, offset } = await bodyValidator(validateGetCartDto, dto)
+            const response = await this.cartService.getCarts({ limit, offset }, user)
             res.status(200).send(response)
         } catch (err) {
             next(err)
@@ -46,16 +47,14 @@ export class CartController extends AbstractController {
     }
 
     async getSingleCart(req: Request, res: Response, next: NextFunction): Promise<void> {
-        const { cartId } = req.params
-        const user = req.user
         try {
+            const { cartId } = req.params
+            const user = req.user
             if (!user || !user.id) {
                 throw new Error('Not autenticated')
             }
-            const cartIdNumber = Number(cartId)
-            if (!cartIdNumber || cartIdNumber <= 0) {
-                throw CartError.invalidCartId()
-            }
+            const cartIdNumber = BaseError.validateNumber(cartId)
+
             const response = await this.cartService.getCart(cartIdNumber, user)
             res.status(StatusCodes.OK).send(response)
         } catch (err) {
@@ -64,14 +63,13 @@ export class CartController extends AbstractController {
     }
 
     async addCartItem(req: Request, res: Response, next: NextFunction): Promise<void> {
-        const user = req.user
-        const { cartId } = req.params
-        const dto: ICartItemCreateFromCartModel = req.body
         try {
-            const cartIdNumber = Number(cartId)
-            if (!cartIdNumber || cartIdNumber <= 0) {
-                throw CartError.invalidCartId()
-            }
+            const user = req.user
+            const { cartId } = req.params
+            const dto: ICartItemCreateFromCartModel = req.body
+
+            const cartIdNumber = BaseError.validateNumber(cartId)
+
             const validatedDto = await bodyValidator(validateCreateCartItemDto, dto)
             const response = await this.cartService.addCartItem(cartIdNumber, validatedDto, user)
             res.status(201).send(response)
@@ -81,17 +79,11 @@ export class CartController extends AbstractController {
     }
 
     async removeCartItem(req: Request, res: Response, next: NextFunction): Promise<void> {
-        const { cartId, itemId } = req.params
-        const user = req.user
         try {
-            const cartIdNumber = Number(cartId)
-            if (!cartIdNumber || cartIdNumber <= 0) {
-                throw CartError.invalidCartId()
-            }
-            const itemIdNumber = Number(itemId)
-            if (!itemIdNumber || itemIdNumber <= 0) {
-                throw CartError.invalidCartItemId()
-            }
+            const { cartId, itemId } = req.params
+            const user = req.user
+            const cartIdNumber = BaseError.validateNumber(cartId)
+            const itemIdNumber = BaseError.validateNumber(itemId)
             await this.cartService.removeCartItem(cartIdNumber, itemIdNumber, user)
             res.status(StatusCodes.OK).send({ message: 'Cart item removed successfully!' })
         } catch (err) {
