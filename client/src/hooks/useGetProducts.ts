@@ -8,7 +8,8 @@ export default function useGetProducts(
   page: string | null,
   category_id: string | null,
   name: string | null,
-  limit = 12
+  limit = 12,
+  cacheString?: string
 ) {
   const offset = page && Number(page) !== 0 ? (Number(page) - 1) * limit : 0;
   const params = {
@@ -24,7 +25,7 @@ export default function useGetProducts(
   });
 
   return useQuery(
-    ["products", { category_id, name, offset }],
+    cacheString ? cacheString : ["products", { category_id, name, offset }],
     () => api.get(apiRoutes.product.route + "/", { params }).then((res: AxiosResponse<IGetAllProducts>) => res.data),
     {
       retry: false,
