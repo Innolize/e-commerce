@@ -2,6 +2,7 @@ import { ForbiddenError } from "@casl/ability";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../config/inversify.types";
 import { AbstractService } from "../../abstractClasses/abstractService";
+import { IRoleName } from "../../authorization/interfaces/IRole";
 import { IUserWithAuthorization } from "../../authorization/interfaces/IUserWithAuthorization";
 import { appAbility } from "../../authorization/util/abilityBuilder";
 import { IGetAllBaseQuery } from "../../common/interfaces/IGetAllBaseQuery";
@@ -25,15 +26,16 @@ export class CartService extends AbstractService implements ICartService {
         return await this.cartRepository.getAll(queryParams)
     }
 
-    async getCart(id: number, user: IUserWithAuthorization): Promise<Cart> {
-        const ADMIN_ID = 1
+    async getCart(cartId: number, user: IUserWithAuthorization): Promise<Cart> {
+        const ADMIN_ROLE_NAME: IRoleName = "ADMIN"
+        const currentUserRole = user.role.name
         let cart: Cart
-        if (user.role_id === ADMIN_ID) {
-            cart = await this.cartRepository.getCart(id)
+        if (currentUserRole === ADMIN_ROLE_NAME) {
+            cart = await this.cartRepository.getCart(cartId)
         } else {
-            cart = await this.cartRepository.getCart(id, user.id)
+            cart = await this.cartRepository.getCart(cartId, user.id)
+            ForbiddenError.from<appAbility>(user.role.permissions).throwUnlessCan('read', cart)
         }
-        ForbiddenError.from<appAbility>(user.role.permissions).throwUnlessCan('read', cart)
         return cart
     }
 
@@ -43,7 +45,7 @@ export class CartService extends AbstractService implements ICartService {
         ForbiddenError.from<appAbility>(permissions).throwUnlessCan('update', cart)
         const foundItem = cart.cartItems?.find(x => x.product_id === newCartItem.product_id)
         if (foundItem) {
-            const cartItemId = foundItem.id as number
+            const cartItemId = foundItem.id
             const { quantity } = newCartItem
             await this._modifyCartItemQuantity(cartId, cartItemId, quantity)
             const updatedCart = await this.cartRepository.getCart(cartId, user.id)
