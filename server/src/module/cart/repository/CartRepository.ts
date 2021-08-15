@@ -26,7 +26,7 @@ export class CartRepository extends AbstractRepository implements ICartRepositor
         this.cartModel = cartModel
     }
 
-    async getAll({ limit = 20, offset = 0 }: IGetAllBaseQuery): Promise<GetCartsDto> {
+    async getAll({ limit, offset }: IGetAllBaseQuery): Promise<GetCartsDto> {
         const { count, rows } = await this.cartModel.findAndCountAll({ limit, offset })
         const carts = rows.map(fromDbToCart)
         return new GetCartsDto(count, carts)
@@ -56,16 +56,14 @@ export class CartRepository extends AbstractRepository implements ICartRepositor
                 }]
         })
         if (!cartItemModel) {
-            throw CartError.cartNotFound()
+            throw CartError.cartItemNotFound()
         }
         const cartItem = fromDbToCartItem(cartItemModel)
         return cartItem
     }
 
     async addCartItem(cartId: number, newCartItem: ICartItemCreateFromCartModel): Promise<CartItem> {
-
         try {
-            await this._verifyIfProductExists(newCartItem.product_id)
             const cartItem = await this.cartItemModel.create({ cart_id: cartId, ...newCartItem })
             const populatedCartItem = await this.getCartItem(cartItem.id)
             return fromDbToCartItem(populatedCartItem)
@@ -89,26 +87,17 @@ export class CartRepository extends AbstractRepository implements ICartRepositor
     }
 
     async modifyCartItemQuantity(cartId: number, cartItemId: number, quantity: number): Promise<boolean> {
-        try {
-            await this.cartItemModel.update({ quantity }, { where: { id: cartItemId, } })
-            return true
-        } catch (err) {
-            if (err instanceof ForeignKeyConstraintError) {
-                CartError.CreateErrorIfForeignKeyConstraintError(err)
-            }
-            throw err
+        const id = cartItemId
+        const cart_id = cartId
+        const [updatedItemsCount] = await this.cartItemModel.update({ quantity }, { where: { id, cart_id } })
+        if (!updatedItemsCount) {
+            throw CartError.cartItemNotFound()
         }
+        return true
     }
 
     async removeAllItemsFromCart(cartId: number): Promise<number> {
         const cart_id = cartId
         return await this.cartItemModel.destroy({ where: { cart_id } })
-    }
-
-    private async _verifyIfProductExists(product_id: number): Promise<void> {
-        const item = await this.productModel.findByPk(product_id)
-        if (!item) {
-            throw CartError.InvalidProductId()
-        }
     }
 }
