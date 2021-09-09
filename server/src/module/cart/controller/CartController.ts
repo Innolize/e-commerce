@@ -12,13 +12,13 @@ import { validateCreateCartItemDto } from "../helpers/create_cart_item_dto";
 import { validateGetCartDto } from "../helpers/get_cart_dto";
 import { ICartGetAllQuery } from "../interface/ICartGetAllQuery";
 import { ICartItemCreateFromCartModel } from "../interface/ICartItemCreateFromCart";
-import { CartService } from "../service/CartService";
+import { ICartService } from "../interface/ICartService";
 
 @injectable()
 export class CartController extends AbstractController {
     private ROUTE_BASE: string
     constructor(
-        @inject(TYPES.Cart.Service) private cartService: CartService,
+        @inject(TYPES.Cart.Service) private cartService: ICartService,
         @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer
     ) {
         super()
@@ -37,7 +37,6 @@ export class CartController extends AbstractController {
         try {
             const dto: ICartGetAllQuery = req.query
             const user = req.user
-
             const { limit, offset } = await bodyValidator(validateGetCartDto, dto)
             const response = await this.cartService.getCarts({ limit, offset }, user)
             res.status(200).send(response)
@@ -54,7 +53,6 @@ export class CartController extends AbstractController {
                 throw new Error('Not autenticated')
             }
             const cartIdNumber = BaseError.validateNumber(cartId)
-
             const response = await this.cartService.getCart(cartIdNumber, user)
             res.status(StatusCodes.OK).send(response)
         } catch (err) {

@@ -10,6 +10,6 @@ export const fromDbToRole = (model: IRole): Role => {
 }
 
 export const fromRequestToRole = (request: IRoleCreate): Role => {
-    const { id, name } = request
-    return new Role(name, id)
+    const { name } = request
+    return new Role(name)
 }

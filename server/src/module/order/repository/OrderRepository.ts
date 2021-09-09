@@ -35,7 +35,7 @@ export class OrderRepository extends AbstractRepository {
         const whereOptions: WhereOptions<Order> = {}
         userId ? whereOptions.user_id = userId : ''
         const { count, rows } = await this.orderModel.findAndCountAll(
-            { where: whereOptions, limit, offset, include: [{ association: OrderModel.associations.orderItems, include: [{ association: OrderItemModel.associations.product }] }, { association: OrderModel.associations.payment }] }
+            { where: whereOptions, limit, offset, distinct: true, include: [{ association: OrderModel.associations.orderItems, include: [{ association: OrderItemModel.associations.product }] }, { association: OrderModel.associations.payment }] }
         )
         const orders = rows.map(fromDbToOrder)
         const response: IGetAllResponse<Order> = { count, results: orders }
