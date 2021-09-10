@@ -8,9 +8,10 @@ import { Cabinet } from "../entities/Cabinet";
 import { ICabinetProductless } from "../interface/ICabinetCreate";
 import { ICabinetEdit } from "../interface/ICabinetEdit";
 import { ICabinetRepository } from "../interface/ICabinetRepository";
+import { ICabinetService } from "../interface/ICabinetService";
 
 @injectable()
-export class CabinetService extends AbstractService {
+export class CabinetService extends AbstractService implements ICabinetService {
     private cabinetRepository: ICabinetRepository
     constructor(
         @inject(TYPES.PCBuilder.Cabinet.Repository) cabinetRepository: ICabinetRepository

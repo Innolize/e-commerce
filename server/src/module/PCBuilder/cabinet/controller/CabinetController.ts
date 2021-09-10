@@ -5,27 +5,25 @@ import { Multer } from "multer";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractController } from "../../../abstractClasses/abstractController";
 import { bodyValidator } from "../../../common/helpers/bodyValidator";
-import { ImageUploadService } from "../../../imageUploader/module";
-import { Cabinet } from "../entities/Cabinet";
 import { validateCabinetAndProductDto, validateCabinetEditDto, validateCabinetQuerySchema } from "../helpers/dto-validator";
 import { ICabinetGetCabinets } from "../interface/ICabinetGetCabinets";
 import { ICabinetEdit } from '../interface/ICabinetEdit'
-import { CabinetService } from "../service/CabinetService";
 import { numberParamOrError } from "../../../common/helpers/numberParamOrError";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToCabinetProductless } from "../mapper/cabinetMapper";
-import { CabinetError } from "../error/CabinetError";
 import { GetCabinetsReqDto } from "../dto/getCabinetsReqDto";
 import { ICabinet_Create_Productless } from "../interface/ICabinetCreate";
+import { ICabinetService } from "../interface/ICabinetService";
+import { IImageUploadService } from "../../../imageUploader/interfaces/IImageUploadService";
 
 export class CabinetController extends AbstractController {
     private ROUTE_BASE: string
     constructor(
-        @inject(TYPES.PCBuilder.Cabinet.Service) private cabinetService: CabinetService,
+        @inject(TYPES.PCBuilder.Cabinet.Service) private cabinetService: ICabinetService,
         @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer,
-        @inject(TYPES.ImageUploader.Service) private uploadService: ImageUploadService,
+        @inject(TYPES.ImageUploader.Service) private uploadService: IImageUploadService,
     ) {
         super()
         this.ROUTE_BASE = "/cabinet"
@@ -56,8 +54,8 @@ export class CabinetController extends AbstractController {
 
     getSingleCabinet = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const params = req.params
-            const validId = numberParamOrError(params, "id")
+            const { id } = req.params
+            const validId = numberParamOrError(id)
             const response = await this.cabinetService.getSingleCabinet(validId)
             res.status(StatusCodes.OK).send(response)
         } catch (err) {
@@ -92,11 +90,11 @@ export class CabinetController extends AbstractController {
 
     edit = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const params = req.params
-            const validId = numberParamOrError(params, "id")
+            const { id } = req.params
+            const validId = numberParamOrError(id)
             const dto: ICabinetEdit = req.body
             const validatedDto = await bodyValidator(validateCabinetEditDto, dto)
-            const cabinet = await this.cabinetService.modifyCabinet(validId, validatedDto) as Cabinet
+            const cabinet = await this.cabinetService.modifyCabinet(validId, validatedDto)
             res.status(StatusCodes.OK).send(cabinet)
         } catch (err) {
             next(err)
@@ -104,13 +102,10 @@ export class CabinetController extends AbstractController {
     }
 
     delete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { id } = req.params
         try {
-            const idNumber = Number(id)
-            if (!idNumber || idNumber <= 0) {
-                throw CabinetError.invalidId()
-            }
-            await this.cabinetService.deleteCabinet(idNumber)
+            const { id } = req.params
+            const validId = numberParamOrError(id)
+            await this.cabinetService.deleteCabinet(validId)
             res.status(StatusCodes.OK).send({ message: "Cabinet successfully deleted" })
         } catch (err) {
             next(err)
