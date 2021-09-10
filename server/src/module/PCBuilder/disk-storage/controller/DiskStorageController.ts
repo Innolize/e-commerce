@@ -5,7 +5,6 @@ import { Multer } from "multer";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractController } from "../../../abstractClasses/abstractController";
 import { bodyValidator } from "../../../common/helpers/bodyValidator";
-import { ImageUploadService } from "../../../imageUploader/module";
 import { DiskStorage } from "../entities/DiskStorage";
 import { validateDiskStorageAndProductDto, validateDiskStorageEditDto, validateDiskStorageQuerySchema } from "../helpers/dto-validator";
 import { IDiskStorage_Product } from "../interface/IDiskStorageCreate";
@@ -19,19 +18,16 @@ import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToDiskStorage } from "../mapper/diskStorageMapper";
 import { ProductService } from "../../../product/module";
 import { GetDiskStorageReqDto } from '../dto/getDiskStorageReqDto'
+import { IImageUploadService } from "../../../imageUploader/interfaces/IImageUploadService";
 
 export class DiskStorageController extends AbstractController {
     private ROUTE_BASE: string
-    private diskStorageService: DiskStorageService;
-    private uploadMiddleware: Multer
-    private uploadService: ImageUploadService
-    private productService: ProductService
 
     constructor(
-        @inject(TYPES.PCBuilder.DiskStorage.Service) diskStorageService: DiskStorageService,
-        @inject(TYPES.Common.UploadMiddleware) uploadMiddleware: Multer,
-        @inject(TYPES.ImageUploader.Service) uploadService: ImageUploadService,
-        @inject(TYPES.Product.Service) productService: ProductService
+        @inject(TYPES.PCBuilder.DiskStorage.Service) private diskStorageService: DiskStorageService,
+        @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer,
+        @inject(TYPES.ImageUploader.Service) private uploadService: IImageUploadService,
+        @inject(TYPES.Product.Service) private productService: ProductService
 
     ) {
         super()

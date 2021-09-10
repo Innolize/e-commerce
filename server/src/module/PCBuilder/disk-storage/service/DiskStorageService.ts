@@ -5,13 +5,14 @@ import { Product } from "../../../product/entity/Product";
 import { GetDiskStorageDto } from "../dto/getDiskStorageDto";
 import { GetDiskStorageReqDto } from "../dto/getDiskStorageReqDto";
 import { DiskStorage } from "../entities/DiskStorage";
-import { DiskStorageRepository } from "../repository/DiskStorageRepository";
+import { IDiskStorageRepository } from "../interface/IDiskStorageRepository";
+import { IDiskStorageService } from "../interface/IDiskStorageService";
 
 @injectable()
-export class DiskStorageService extends AbstractService {
-    private diskStorageRepository: DiskStorageRepository
+export class DiskStorageService extends AbstractService implements IDiskStorageService {
+
     constructor(
-        @inject(TYPES.PCBuilder.DiskStorage.Repository) diskStorageRepository: DiskStorageRepository
+        @inject(TYPES.PCBuilder.DiskStorage.Repository) private diskStorageRepository: IDiskStorageRepository
     ) {
         super()
         this.diskStorageRepository = diskStorageRepository
@@ -21,18 +22,18 @@ export class DiskStorageService extends AbstractService {
         return await this.diskStorageRepository.getDisks(query)
     }
 
-    async getSingleDisk(id: number): Promise<DiskStorage | Error> {
+    async getSingleDisk(id: number): Promise<DiskStorage> {
         return await this.diskStorageRepository.getSingleDisk(id)
     }
 
-    async createDisk(product: Product, disk: DiskStorage): Promise<DiskStorage | Error> {
+    async createDisk(product: Product, disk: DiskStorage): Promise<DiskStorage> {
         return await this.diskStorageRepository.createDisk(product, disk)
     }
 
-    async modifyDisk(id: number, disk: DiskStorage): Promise<DiskStorage | Error> {
+    async modifyDisk(id: number, disk: DiskStorage): Promise<DiskStorage> {
         return await this.diskStorageRepository.modifyDisk(id, disk)
     }
-    async deleteDisk(id: number): Promise<true | Error> {
+    async deleteDisk(id: number): Promise<true> {
         return await this.diskStorageRepository.deleteDisk(id)
     }
 }
