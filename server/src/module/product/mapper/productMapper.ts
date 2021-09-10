@@ -10,7 +10,7 @@ export const fromDbToProduct = (model: IProduct): Product => {
     return new Product(name, image, description, price, stock, id_category, id_brand, id || undefined, productCategory, productBrand)
 }
 
-export const fromRequestToProduct = (request: Product): Product => {
+export const fromRequestToProduct = (request: IProduct): Product => {
     const { description, id_brand, id_category, image, name, price, stock, id, brand, category } = request
     return new Product(name, image, description, price, stock, id_category, id_brand, id || undefined, category, brand)
 }

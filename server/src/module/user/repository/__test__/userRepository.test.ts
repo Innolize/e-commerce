@@ -46,8 +46,7 @@ beforeEach(async (done) => {
         await roleModel.create({ name: "CLIENT" });
         done();
     } catch (err) {
-        console.log("ENTRE AL ERROR")
-        console.log(err.stack)
+        console.log('entre al error')
     }
 })
 

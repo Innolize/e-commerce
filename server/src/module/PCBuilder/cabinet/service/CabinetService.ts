@@ -5,14 +5,15 @@ import { Product } from "../../../product/entity/Product";
 import { GetCabinetsDto } from "../dto/getCabinetsDto";
 import { GetCabinetsReqDto } from "../dto/getCabinetsReqDto";
 import { Cabinet } from "../entities/Cabinet";
+import { ICabinetProductless } from "../interface/ICabinetCreate";
 import { ICabinetEdit } from "../interface/ICabinetEdit";
-import { CabinetRepository } from "../repository/CabinetRepository";
+import { ICabinetRepository } from "../interface/ICabinetRepository";
 
 @injectable()
 export class CabinetService extends AbstractService {
-    private cabinetRepository: CabinetRepository
+    private cabinetRepository: ICabinetRepository
     constructor(
-        @inject(TYPES.PCBuilder.Cabinet.Repository) cabinetRepository: CabinetRepository
+        @inject(TYPES.PCBuilder.Cabinet.Repository) cabinetRepository: ICabinetRepository
     ) {
         super()
         this.cabinetRepository = cabinetRepository
@@ -22,18 +23,18 @@ export class CabinetService extends AbstractService {
         return await this.cabinetRepository.getCabinets(query)
     }
 
-    async getSingleCabinet(id: number): Promise<Cabinet | Error> {
+    async getSingleCabinet(id: number): Promise<Cabinet> {
         return await this.cabinetRepository.getSingleCabinet(id)
     }
 
-    async createCabinet(product: Product, cabinet: Cabinet): Promise<Cabinet | Error> {
+    async createCabinet(product: Product, cabinet: ICabinetProductless): Promise<Cabinet> {
         return await this.cabinetRepository.createCabinet(product, cabinet)
     }
 
-    async modifyCabinet(id: number, cabinet: ICabinetEdit): Promise<Cabinet | Error> {
+    async modifyCabinet(id: number, cabinet: ICabinetEdit): Promise<Cabinet> {
         return await this.cabinetRepository.modifyCabinet(id, cabinet)
     }
-    async deleteCabinet(id: number): Promise<true | Error> {
+    async deleteCabinet(id: number): Promise<true> {
         return await this.cabinetRepository.deleteCabinet(id)
     }
 }
