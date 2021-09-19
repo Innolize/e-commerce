@@ -62,6 +62,7 @@ const DiskStorageContainer = () => {
 
       <Box height="525px" marginBottom="50px">
         <DataGrid
+          rowsPerPageOptions={[12]}
           pagination
           paginationMode="server"
           pageSize={PAGE_SIZE}

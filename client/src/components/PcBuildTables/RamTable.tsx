@@ -61,10 +61,10 @@ const RamTableContainer = () => {
 
       <Box height="525px" marginBottom="50px">
         <DataGrid
+          rowsPerPageOptions={[12]}
           pagination
           paginationMode="server"
           pageSize={PAGE_SIZE}
-          rowCount={queryRams.isSuccess ? queryRams.data.count : undefined}
           onPageChange={handlePageChange}
           loading={queryRams.isLoading || !!isFetching || !!isMutating}
           columns={

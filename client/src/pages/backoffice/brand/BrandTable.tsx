@@ -65,6 +65,7 @@ const BrandTable = () => {
 
       <Box height="500px" marginBottom="50px">
         <DataGrid
+          rowsPerPageOptions={[12]}
           pagination
           paginationMode="server"
           pageSize={LIMIT}
