@@ -16,7 +16,7 @@ import CustomToolbar from "../CustomToolbar";
 import DeleteDialog from "../DeleteDialogs/DeleteDialog";
 import SnackbarAlert from "../SnackbarAlert";
 
-const VideoCardContainer = () => {
+const VideoCardTable = () => {
   const PAGE_SIZE = 12;
   const [offset, setOffset] = useState(0);
   const [open, setOpen] = useState(false);
@@ -61,6 +61,7 @@ const VideoCardContainer = () => {
 
       <Box height="525px" marginBottom="50px">
         <DataGrid
+          rowsPerPageOptions={[12]}
           pagination
           paginationMode="server"
           pageSize={PAGE_SIZE}
@@ -155,4 +156,4 @@ const VideoCardContainer = () => {
   );
 };
 
-export default VideoCardContainer;
+export default VideoCardTable;

@@ -62,6 +62,7 @@ const MotherboardContainer = () => {
 
       <Box height="525px" marginBottom="50px">
         <DataGrid
+          rowsPerPageOptions={[12]}
           pagination
           paginationMode="server"
           pageSize={PAGE_SIZE}
@@ -71,7 +72,7 @@ const MotherboardContainer = () => {
           columns={
             [
               { field: "id", type: "number", hide: true },
-              { field: "product_id", type: "number", hide: true },
+              { field: "productId", type: "number", hide: true },
               { field: "name", width: 200, headerName: "Name" },
               { field: "description", width: 200, headerName: "Description" },
               {
@@ -128,12 +129,12 @@ const MotherboardContainer = () => {
             queryMotherboards.isSuccess
               ? queryMotherboards.data.results.map((motherboard: IMotherboard) => ({
                   id: motherboard.id,
-                  product_id: motherboard.product.id,
-                  name: motherboard.product.name,
-                  description: motherboard.product.description,
-                  stock: motherboard.product.stock ? "Yes" : "No",
-                  price: motherboard.product.price,
-                  brand: motherboard.product.brand.name || "Not found",
+                  productId: motherboard.product?.id,
+                  name: motherboard.product?.name,
+                  description: motherboard.product?.description,
+                  stock: motherboard.product?.stock ? "Yes" : "No",
+                  price: motherboard.product?.price,
+                  brand: motherboard.product?.brand.name || "Not found",
                   cpu_brand: motherboard.cpuBrand,
                   cpu_socket: motherboard.cpuSocket,
                   min_frec: motherboard.minFrec,
