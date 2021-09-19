@@ -1,0 +1,186 @@
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  createStyles,
+  Divider,
+  Grid,
+  Paper,
+  Theme,
+  Typography,
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Pagination } from "@material-ui/lab";
+import { AxiosResponse } from "axios";
+import camelcaseKeys from "camelcase-keys";
+import React, { useState } from "react";
+import { useQuery } from "react-query";
+import { apiRoutes } from "src/hooks/apiRoutes";
+import { IGetAllMotherboards } from "src/hooks/types";
+import api from "src/services/api";
+import { IMotherboard } from "src/types";
+import currencyFormatter from "src/utils/formatCurrency";
+import CustomImage from "../CustomImage";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+    },
+    card: {
+      width: "100%",
+      maxWidth: 360,
+      backgroundColor: theme.palette.background.paper,
+    },
+    chip: {
+      margin: theme.spacing(0.5),
+      textAlign: "left",
+    },
+    section1: {
+      margin: theme.spacing(3, 2),
+    },
+    section2: {
+      margin: theme.spacing(2),
+    },
+    section3: {
+      display: "flex",
+      justifyContent: "flex-end",
+      margin: theme.spacing(3, 1, 1),
+    },
+    image: {
+      width: "200px",
+      borderRadius: "5px",
+    },
+  })
+);
+
+type CpuBrand = "AMD" | "INTEL" | "";
+
+interface Props {
+  cpuBrand: CpuBrand;
+  setMotherboard: React.Dispatch<React.SetStateAction<IMotherboard | undefined>>;
+  handleNext: () => void;
+}
+
+const LIMIT = 12;
+
+const MotherboardSelection = ({ cpuBrand, setMotherboard, handleNext }: Props) => {
+  const classes = useStyles();
+  const [page, setPage] = useState(1);
+  const [offset, setOffset] = useState(0);
+  const queryMotherboard = useQuery(
+    [apiRoutes.motherboard.cacheString, { LIMIT, offset, cpu_brand: cpuBrand }],
+    () =>
+      api
+        .get(apiRoutes.motherboard.route, { params: { limit: LIMIT, offset, cpu_brand: cpuBrand } })
+        .then((res: AxiosResponse) => {
+          // converts the response to camelCase and this creates our entity
+          const camelCaseResponse: IGetAllMotherboards = camelcaseKeys(res.data, { deep: true });
+          return camelCaseResponse;
+        }),
+    {
+      staleTime: 60 * 5 * 1000, // 5 minutes
+    }
+  );
+
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+    setOffset((value - 1) * LIMIT);
+  };
+
+  if (queryMotherboard.isLoading) {
+    return (
+      <Box display="flex" justifyContent="center" my={3}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (queryMotherboard.isSuccess && queryMotherboard.data.results.length) {
+    return (
+      <Box>
+        <Box className={classes.root}>
+          <Grid container spacing={2}>
+            {queryMotherboard.data.results.map((mother) => (
+              <Grid item xs={3}>
+                <Paper className={classes.card}>
+                  <Box className={classes.section1}>
+                    <Grid container alignItems="center">
+                      <Grid item xs>
+                        <Box mt={2}>
+                          <Typography variant="h5">{mother.product.name}</Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item>
+                        <Box mt={2}>
+                          <Typography gutterBottom variant="h6">
+                            {currencyFormatter.format(mother.product.price)}
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    </Grid>
+                    <Typography color="textSecondary" variant="body2">
+                      {mother.product.description}
+                    </Typography>
+                  </Box>
+                  <Box textAlign="center">
+                    <CustomImage hasImage={!!mother.product.image} imageSrc={mother.product.image} />
+                  </Box>
+                  <Divider variant="middle" />
+                  <Box className={classes.section2}>
+                    <Typography gutterBottom variant="body1">
+                      Specifications
+                    </Typography>
+                    <Box display="flex" flexDirection="column" textAlign="left">
+                      <Chip className={classes.chip} label={"Watts: " + mother.watts + "W"} />
+                      <Chip className={classes.chip} label={"Size: " + mother.modelSize} />
+                      <Chip className={classes.chip} label={"Socket: " + mother.cpuSocket} />
+                      <Chip className={classes.chip} label={"Ram version: " + mother.ramVersion} />
+                      <Chip className={classes.chip} label={"Video socket: " + mother.videoSocket} />
+                    </Box>
+                  </Box>
+                  <div className={classes.section3}>
+                    <Box mb={2} mr={2}>
+                      <Button
+                        variant="outlined"
+                        onClick={() => {
+                          setMotherboard(mother);
+                          handleNext();
+                        }}
+                        color="primary"
+                      >
+                        Add to build
+                      </Button>
+                    </Box>
+                  </div>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+        <Box display="flex" justifyContent="center" my={3}>
+          <Pagination count={Math.ceil(queryMotherboard.data.count / LIMIT)} page={page} onChange={handleChange} />
+        </Box>
+      </Box>
+    );
+  } else if (queryMotherboard.isSuccess && !queryMotherboard.data.results.length) {
+    return (
+      <Box my={2}>
+        <Typography align="center">No products found</Typography>
+      </Box>
+    );
+  }
+
+  if (queryMotherboard.isError) {
+    return (
+      <Box my={3} display="flex" justifyContent="center">
+        <Typography variant="h5">Some error occurred loading the products.</Typography>
+      </Box>
+    );
+  } else {
+    return <></>;
+  }
+};
+
+export default MotherboardSelection;
