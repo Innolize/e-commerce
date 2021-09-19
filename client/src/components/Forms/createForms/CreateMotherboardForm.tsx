@@ -11,7 +11,7 @@ import { IMotherboardForm, IProductForm } from "src/form_types";
 import { IGetAllBrands } from "src/hooks/types";
 import useCreate from "src/hooks/useCreate";
 import useGetAll from "src/hooks/useGetAll";
-import { IBrand, IMotherboard, RAM_VERSION, SIZE } from "src/types";
+import { IBrand, IMotherboard, RAM_VERSION, SIZE, VIDEO_CARD_VERSION } from "src/types";
 import { MOTHERBOARD_ID } from "src/utils/categoriesIds";
 import { motherboardSchema } from "src/utils/yup.pcPickerValidations";
 import { v4 as uuidv4 } from "uuid";
@@ -157,7 +157,13 @@ const MotherboardForm = () => {
               </Box>
 
               <Box>
-                <InputField label="Video Socket" placeholder="Video Socket" name="video_socket" />
+                <SelectField label="Video Socket" placeholder="Video Socket" name="video_socket">
+                  {VIDEO_CARD_VERSION.map((videoSocket: string) => (
+                    <MenuItem key={uuidv4()} value={videoSocket}>
+                      {videoSocket}
+                    </MenuItem>
+                  ))}
+                </SelectField>
               </Box>
 
               <Box>

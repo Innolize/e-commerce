@@ -54,7 +54,7 @@ const EditProcessorForm = ({ id }: Props) => {
     const processorInitialValues: IProcessorForm = {
       cores: processor.cores.toString(),
       frecuency: processor.frecuency.toString(),
-      socket: processor.socket.toString(),
+      socket: processor.socket,
       watts: processor.watts.toString(),
     };
     return processorInitialValues;

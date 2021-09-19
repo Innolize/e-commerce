@@ -10,7 +10,7 @@ import SnackbarAlert from "src/components/SnackbarAlert";
 import { IMotherboardForm } from "src/form_types";
 import useEdit from "src/hooks/useEdit";
 import useGetById from "src/hooks/useGetById";
-import { IMotherboard, RAM_VERSION, SIZE } from "src/types";
+import { IMotherboard, RAM_VERSION, SIZE, VIDEO_CARD_VERSION } from "src/types";
 import { motherboardSchema } from "src/utils/yup.pcPickerValidations";
 import { v4 as uuidv4 } from "uuid";
 
@@ -148,7 +148,13 @@ const EditMotherboardForm = ({ id }: Props) => {
                 </Box>
 
                 <Box>
-                  <InputField label="Video Socket" placeholder="Video Socket" name="video_socket" />
+                  <SelectField label="Video Socket" placeholder="Video Socket" name="video_socket">
+                    {VIDEO_CARD_VERSION.map((videoSocket: string) => (
+                      <MenuItem key={uuidv4()} value={videoSocket}>
+                        {videoSocket}
+                      </MenuItem>
+                    ))}
+                  </SelectField>
                 </Box>
 
                 <Box>
