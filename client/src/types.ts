@@ -46,7 +46,7 @@ export interface ICabinet {
   id: number;
   size: typeof SIZE[number];
   genericPws: boolean | string;
-  product?: IProduct;
+  product: IProduct;
 }
 
 export interface IRam {
@@ -65,23 +65,23 @@ export interface IDiskStorage {
   type: typeof DISK_TYPE[number];
   mbs: number;
   watts: number;
-  product?: IProduct;
+  product: IProduct;
 }
 
 export interface IPowerSupply {
   id: number;
   watts: number;
   certification: typeof PWS_CERTIFICATION[number];
-  product?: IProduct;
+  product: IProduct;
 }
 
 export interface IProcessor {
   id: number;
   cores: number;
   frecuency: number;
-  socket: number;
+  socket: string;
   watts: number;
-  product?: IProduct;
+  product: IProduct;
 }
 
 export interface IVideoCard {
@@ -90,7 +90,7 @@ export interface IVideoCard {
   memory: number;
   clockSpeed: number;
   watts: number;
-  product?: IProduct;
+  product: IProduct;
 }
 
 type ErrorsObject = {
