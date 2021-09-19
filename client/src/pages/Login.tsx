@@ -64,7 +64,11 @@ const Login = () => {
 
               {loginUser.isError && (
                 <Box my={2}>
-                  <Alert severity="error">Wrong email or password. Please try again.</Alert>
+                  {loginUser.error?.message === "Unauthorized" ? (
+                    <Alert severity="error">Wrong email or password. Please try again.</Alert>
+                  ) : (
+                    <Alert severity="error">{loginUser?.error?.message}</Alert>
+                  )}
                 </Box>
               )}
             </Form>
