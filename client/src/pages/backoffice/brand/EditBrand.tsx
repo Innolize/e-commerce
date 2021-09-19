@@ -1,10 +1,10 @@
-import { Box, CircularProgress, Container, Input, Paper, Typography } from "@material-ui/core";
+import { Box, CircularProgress, Container, Input, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import { ErrorMessage, Form, Formik } from "formik";
-import Image from "material-ui-image";
 import React, { useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
+import CustomImage from "src/components/CustomImage";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SnackbarAlert from "src/components/SnackbarAlert";
@@ -106,24 +106,7 @@ const EditBrand = () => {
                   <InputField label="Name" placeholder="Name" name="name" />
                 </Box>
                 <Box display="flex" justifyContent="center">
-                  <Paper className={classes.image}>
-                    {queryBrand.data.logo ? (
-                      <Image
-                        disableTransition
-                        imageStyle={{ borderRadius: "4px", height: "150px" }}
-                        style={{
-                          borderRadius: "4px",
-                          paddingTop: "0",
-                          height: "150px",
-                        }}
-                        src={queryBrand.data.logo}
-                      />
-                    ) : (
-                      <Paper className={classes.noImage}>
-                        <Typography>Image not found.</Typography>
-                      </Paper>
-                    )}
-                  </Paper>
+                  <CustomImage hasImage={!!queryBrand.data.logo} imageSrc={queryBrand.data.logo} />
                 </Box>
                 <Box my={3}>
                   <Input
