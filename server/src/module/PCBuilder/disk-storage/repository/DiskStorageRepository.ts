@@ -11,6 +11,7 @@ import { DiskStorageError } from "../error/DiskStorageError";
 import { GetDiskStorageReqDto } from "../dto/getDiskStorageReqDto"
 import { GetDiskStorageDto } from "../dto/getDiskStorageDto"
 import { IDiskStorageRepository } from "../interface/IDiskStorageRepository";
+import { IDiskStorageEdit } from "../interface/IDiskStorageEdit";
 
 @injectable()
 export class DiskStorageRepository extends AbstractRepository implements IDiskStorageRepository {
@@ -55,7 +56,7 @@ export class DiskStorageRepository extends AbstractRepository implements IDiskSt
         return response
     }
 
-    async modifyDisk(id: number, diskStorage: DiskStorage): Promise<DiskStorage> {
+    async modifyDisk(id: number, diskStorage: IDiskStorageEdit): Promise<DiskStorage> {
         const [diskEdited, diskArray] = await this.diskStorageModel.update(diskStorage, { where: { id }, returning: true })
         // update returns an array, first argument is the number of elements updated in the
         // database. Second argument are the array of elements. Im updating by id so there is only 

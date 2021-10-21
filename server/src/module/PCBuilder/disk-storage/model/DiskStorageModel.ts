@@ -8,7 +8,7 @@ import { IDiskStorage } from '../interface/IDiskStorage';
 import { Product } from '../../../product/entity/Product';
 
 @injectable()
-export class DiskStorageModel extends Model<DiskStorage, IDiskStorageCreate> implements IDiskStorage{
+export class DiskStorageModel extends Model<DiskStorage, IDiskStorageCreate> implements IDiskStorage {
     public total_storage!: number;
     public type!: typeof DISK_TYPE[number];
     public mbs!: number;
@@ -43,7 +43,7 @@ export class DiskStorageModel extends Model<DiskStorage, IDiskStorageCreate> imp
             },
             id_product: {
                 type: DataTypes.INTEGER,
-                allowNull: false
+                allowNull: false,
             }
         }, {
             sequelize: database,
@@ -54,15 +54,14 @@ export class DiskStorageModel extends Model<DiskStorage, IDiskStorageCreate> imp
     static setupProductAssociation(model: typeof ProductModel): void {
         DiskStorageModel.belongsTo(model, {
             as: "product",
-            onDelete: 'cascade',
+            onDelete: 'CASCADE',
             foreignKey: {
-                name: "id_product",
-                allowNull: false,
-            },
+                name: 'id_product',
+            }
         })
     }
 
-    public static associations:{
+    public static associations: {
         product: Association<DiskStorageModel, ProductModel>
     }
 }

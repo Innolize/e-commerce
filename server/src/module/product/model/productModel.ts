@@ -1,5 +1,5 @@
 import { decorate, injectable } from "inversify";
-import { Association, DataTypes, Sequelize, HasManyGetAssociationsMixin } from "sequelize";
+import { Association, DataTypes, Sequelize, HasManyGetAssociationsMixin, HasOneGetAssociationMixin, HasOneSetAssociationMixin } from "sequelize";
 import { Model } from "sequelize";
 import { CategoryModel } from "../../category/module";
 import { IProduct } from "../interfaces/IProduct";
@@ -9,6 +9,14 @@ import { Product } from "../entity/Product";
 import { Category } from "../../category/entity/Category";
 import { Brand } from "../../brand/entity/Brand";
 import { CartItemModel } from "../../cart/module";
+import { DiskStorageModel } from "../../PCBuilder/disk-storage/module";
+import { CabinetModel } from "../../PCBuilder/cabinet/module";
+import { MotherboardModel } from "../../PCBuilder/motherboard/module";
+import { PowerSupplyModel } from "../../PCBuilder/power-supply/module";
+import { ProcessorModel } from "../../PCBuilder/processor/module";
+import { RamModel } from "../../PCBuilder/ram/module";
+import { VideoCardModel } from "../../PCBuilder/video-card/module";
+import { Motherboard } from "../../PCBuilder/motherboard/entity/Motherboard";
 
 decorate(injectable(), (Model))
 
@@ -87,7 +95,14 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
         return ProductModel
     }
 
-    public getCartItems!: HasManyGetAssociationsMixin<CartItemModel>
+    public getCartItems!: HasManyGetAssociationsMixin<CartItemModel>;
+    public getCabinet!: HasOneGetAssociationMixin<CabinetModel>;
+    public getDiskStorage!: HasOneGetAssociationMixin<DiskStorageModel>;
+    public getMotherboard!: HasOneGetAssociationMixin<MotherboardModel>;
+    public getPowerSupply!: HasOneGetAssociationMixin<PowerSupplyModel>;
+    public getProcessor!: HasOneGetAssociationMixin<ProcessorModel>;
+    public getRam!: HasOneGetAssociationMixin<RamModel>;
+    public getVideoCard!: HasOneGetAssociationMixin<VideoCardModel>;
 
     static setupCategoryAssociation(model: typeof CategoryModel): void {
         ProductModel.belongsTo(model, {
@@ -100,6 +115,7 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
         ProductModel.belongsTo(model, {
             as: "brand",
             foreignKey: "id_brand",
+            onDelete: "cascade"
         })
     }
 
@@ -112,9 +128,198 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
         })
     }
 
+    static setupPCBuilderAssociation(
+        diskStorageModel: typeof DiskStorageModel,
+        cabinetModel: typeof CabinetModel,
+        motherboardModel: typeof MotherboardModel,
+        powerSupplyModel: typeof PowerSupplyModel,
+        processorModel: typeof ProcessorModel,
+        ramModel: typeof RamModel,
+        videoCard: typeof VideoCardModel
+
+    ): void {
+        this.setupDiskStorageAssociation(diskStorageModel)
+        this.setupCabinetAssociation(cabinetModel)
+        this.setupMotherboardAssociation(motherboardModel)
+        this.setupPowerSupplyAssociation(powerSupplyModel)
+        this.setupProcessorAssociation(processorModel)
+        this.setupRamAssociation(ramModel)
+        this.setupVideoCardAssociation(videoCard)
+    }
+    static setupDiskStorageAssociation(model: typeof DiskStorageModel): void {
+        ProductModel.hasOne(model, {
+            as: 'DiskStorage',
+            onDelete: 'CASCADE',
+            foreignKey: "id_product",
+        })
+    }
+
+    static setupCabinetAssociation(model: typeof CabinetModel): void {
+        ProductModel.hasOne(model, {
+            as: 'Cabinet',
+            onDelete: 'CASCADE',
+            foreignKey: {
+                name: "id_product",
+                allowNull: false
+            },
+        })
+    }
+
+    static setupMotherboardAssociation(model: typeof MotherboardModel): void {
+        ProductModel.hasOne(model, {
+            as: 'Motherboard',
+            onDelete: 'CASCADE',
+            foreignKey: {
+                name: "id_product",
+                allowNull: false
+            },
+        })
+    }
+
+    static setupPowerSupplyAssociation(model: typeof PowerSupplyModel): void {
+        ProductModel.hasOne(model, {
+            as: 'PowerSupply',
+            onDelete: 'CASCADE',
+            foreignKey: {
+                name: "id_product",
+                allowNull: false
+            },
+        })
+    }
+
+
+    static setupProcessorAssociation(model: typeof ProcessorModel): void {
+        ProductModel.hasOne(model, {
+            as: 'Processor',
+            onDelete: 'CASCADE',
+            foreignKey: {
+                name: "id_product",
+                allowNull: false
+            },
+        })
+    }
+
+    static setupRamAssociation(model: typeof RamModel): void {
+        ProductModel.hasOne(model, {
+            as: 'Ram',
+            onDelete: 'CASCADE',
+            foreignKey: {
+                name: "id_product",
+                allowNull: false
+            },
+        })
+    }
+
+    static setupVideoCardAssociation(model: typeof VideoCardModel): void {
+        ProductModel.hasOne(model, {
+            as: 'VideoCard',
+            onDelete: 'CASCADE',
+            foreignKey: {
+                name: "id_product",
+                allowNull: false
+            },
+        })
+    }
+
+    static setPCBuilderOnDeleteHook(productModel: typeof ProductModel): void {
+        this.addDiskStorageHookOnDelete(productModel)
+        this.addCabinetHookOnDelete(productModel)
+        this.addMotherboardHookOnDelete(productModel)
+        this.addPowerSupplyHookOnDelete(productModel)
+        this.addProcessorHookOnDelete(productModel)
+        this.addRamHookOnDelete(productModel)
+        this.addVideoCardHookOnDelete(productModel)
+    }
+
+    static addDiskStorageHookOnDelete(productModel: typeof ProductModel): void {
+        productModel.addHook('afterDestroy', 'diskStorageHookOnDelete',
+            async (instance: ProductModel,) => {
+                console.log(instance)
+                const disk = await instance.getDiskStorage();
+                if (disk) {
+                    await disk.destroy();
+                    console.log(`Disk storage associated with product ${instance.id} deleted`)
+                }
+            })
+        console.log('Disk storage on delete hook setted')
+    }
+
+    private static addCabinetHookOnDelete(productModel: typeof ProductModel) {
+        productModel.addHook('afterDestroy', 'cabinetHookOnDelete',
+            async (instance: ProductModel) => {
+                const cabinet = await instance.getCabinet()
+                if (cabinet) {
+                    await cabinet.destroy()
+                    console.log(`Cabinet associated with product ${instance.id} deleted`)
+                }
+            })
+    }
+
+    private static addMotherboardHookOnDelete(productModel: typeof ProductModel) {
+        productModel.addHook('afterDestroy', 'motherboardHookOnDelete',
+            async (instance: ProductModel) => {
+                const motherboard = await instance.getMotherboard()
+                if (motherboard) {
+                    await motherboard.destroy()
+                    console.log(`Motherboard associated with product ${instance.id} deleted`)
+                }
+            })
+    }
+
+    private static addPowerSupplyHookOnDelete(productModel: typeof ProductModel) {
+        productModel.addHook('afterDestroy', 'powerSupplyHookOnDelete',
+            async (instance: ProductModel) => {
+                const powerSupply = await instance.getPowerSupply()
+                if (powerSupply) {
+                    await powerSupply.destroy()
+                    console.log(`Power supply associated with product ${instance.id} deleted`)
+                }
+            })
+    }
+
+    private static addProcessorHookOnDelete(productModel: typeof ProductModel) {
+        productModel.addHook('afterDestroy', 'processorHookOnDelete',
+            async (instance: ProductModel) => {
+                const processor = await instance.getProcessor()
+                if (processor) {
+                    await processor.destroy()
+                    console.log(`Processor associated with product ${instance.id} deleted`)
+                }
+            })
+    }
+
+    private static addRamHookOnDelete(productModel: typeof ProductModel) {
+        productModel.addHook('afterDestroy', 'ramHookOnDelete',
+            async (instance: ProductModel) => {
+                const ram = await instance.getRam()
+                if (ram) {
+                    await ram.destroy()
+                    console.log(`Ram associated with product ${instance.id} deleted`)
+                }
+            })
+    }
+
+    private static addVideoCardHookOnDelete(productModel: typeof ProductModel) {
+        productModel.addHook('afterDestroy', 'videoCardHookOnDelete',
+            async (instance: ProductModel) => {
+                const videoCard = await instance.getVideoCard()
+                if (videoCard) {
+                    await videoCard.destroy()
+                    console.log(`Video card associated with product ${instance.id} deleted`)
+                }
+            })
+    }
+
     public static associations: {
         category: Association<ProductModel, CategoryModel>,
         brand: Association<ProductModel, CategoryModel>,
-        cartItems: Association<ProductModel, CartItemModel>
+        cartItems: Association<ProductModel, CartItemModel>,
+        cabinet: Association<ProductModel, CabinetModel>
+        disk: Association<ProductModel, DiskStorageModel>
+        motherboard: Association<ProductModel, MotherboardModel>
+        powerSupply: Association<ProductModel, PowerSupplyModel>
+        processor: Association<ProductModel, ProcessorModel>
+        ram: Association<ProductModel, RamModel>
+        videoCard: Association<ProductModel, VideoCardModel>
     }
 }

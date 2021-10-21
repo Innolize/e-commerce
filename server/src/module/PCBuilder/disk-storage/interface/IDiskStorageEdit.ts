@@ -1,7 +1,5 @@
 import { IDiskStorageCreate } from "./IDiskStorageCreate";
 
+export type IDiskStorageEditProductless = Omit<IDiskStorageCreate, 'id_product'>
 
-export interface IDiskStorageEdit extends IDiskStorageCreate {
-    id: number,
-    product_id: number
-}
+export type IDiskStorageEdit = Partial<IDiskStorageEditProductless>

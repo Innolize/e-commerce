@@ -10,6 +10,6 @@ export const fromDbToDiskStorage = (model: IDiskStorage): DiskStorage => {
 }
 
 export const fromRequestToDiskStorage = (request: IDiskStorageCreate): DiskStorage => {
-    const { mbs, id_product, id, watts, total_storage, type } = request
-    return new DiskStorage(total_storage, type, mbs, watts, id_product, id, undefined)
+    const { mbs, id_product, watts, total_storage, type } = request
+    return new DiskStorage(total_storage, type, mbs, watts, id_product, undefined, undefined)
 }
