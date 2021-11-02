@@ -1,5 +1,5 @@
 import { decorate, injectable } from "inversify";
-import { Association, DataTypes, Sequelize, HasManyGetAssociationsMixin, HasOneGetAssociationMixin, HasOneSetAssociationMixin } from "sequelize";
+import { Association, DataTypes, Sequelize, HasManyGetAssociationsMixin, HasOneGetAssociationMixin } from "sequelize";
 import { Model } from "sequelize";
 import { CategoryModel } from "../../category/module";
 import { IProduct } from "../interfaces/IProduct";
@@ -222,26 +222,13 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
     }
 
     static setPCBuilderOnDeleteHook(productModel: typeof ProductModel): void {
-        this.addDiskStorageHookOnDelete(productModel)
+        DiskStorageModel.addDiskStorageHookOnDelete(productModel)
         this.addCabinetHookOnDelete(productModel)
         this.addMotherboardHookOnDelete(productModel)
         this.addPowerSupplyHookOnDelete(productModel)
         this.addProcessorHookOnDelete(productModel)
         this.addRamHookOnDelete(productModel)
         this.addVideoCardHookOnDelete(productModel)
-    }
-
-    static addDiskStorageHookOnDelete(productModel: typeof ProductModel): void {
-        productModel.addHook('afterDestroy', 'diskStorageHookOnDelete',
-            async (instance: ProductModel,) => {
-                console.log(instance)
-                const disk = await instance.getDiskStorage();
-                if (disk) {
-                    await disk.destroy();
-                    console.log(`Disk storage associated with product ${instance.id} deleted`)
-                }
-            })
-        console.log('Disk storage on delete hook setted')
     }
 
     private static addCabinetHookOnDelete(productModel: typeof ProductModel) {

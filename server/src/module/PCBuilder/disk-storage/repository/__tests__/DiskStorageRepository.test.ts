@@ -12,6 +12,8 @@ import { GetDiskStorageReqDto } from '../../dto/getDiskStorageReqDto'
 import { DiskStorageError } from '../../error/DiskStorageError'
 import { IDiskStorageEdit } from '../../interface/IDiskStorageEdit'
 import { CartItemModel } from '../../../../cart/module'
+import { Product } from '../../../../product/entity/Product'
+import { IDiskStorage_Product } from '../../interface/IDiskStorageCreate'
 
 let sequelizeInstance: Sequelize
 let diskStorageModel: typeof DiskStorageModel
@@ -43,9 +45,9 @@ beforeAll(async (done) => {
 
         cartItemModel.setupProductAssociation(productModel)
         productModel.setupCartItemAssociation(cartItemModel)
-        ProductModel.addDiskStorageHookOnDelete(productModel)
+        DiskStorageModel.addDiskStorageHookOnDelete(productModel)
 
-        repository = new DiskStorageRepository(diskStorageModel, sequelizeInstance, productModel)
+        repository = new DiskStorageRepository(diskStorageModel)
         done();
     } catch (err) {
         console.log(err)
@@ -126,8 +128,7 @@ describe('modifyDisk', () => {
 });
 
 describe('deleteDisk', () => {
-    it('should delete disk successfully', async () => {
-        // const product = 
+    it('should delete disk if product is deleted', async () => {
         const product = await productModel.findByPk(1)
         await product?.destroy()
         const DISK_ID = 1
@@ -147,4 +148,26 @@ describe('deleteDisk', () => {
             expect(err).toEqual(DiskStorageError.notFound())
         }
     })
+
+    it('should delete disk successfully', async () => {
+        const response = await repository.deleteDisk(1)
+        expect(response).toStrictEqual(true)
+    });
+});
+
+describe('createDisk', () => {
+    it('should create a new disk storage ', async () => {
+        const product = new Product('product-name', null, 'product-description', 1111, true, 1, 1)
+        const disk: IDiskStorage_Product = { mbs: 300, total_storage: 100, type: 'HDD', watts: 500, product }
+        const diskCreated = await repository.createDisk(disk)
+        const diskCreatedId = diskCreated.id as number
+        const foundDiskCreated = await diskStorageModel.findByPk(diskCreatedId)
+        expect(foundDiskCreated?.total_storage).toBe(disk.total_storage)
+        expect(foundDiskCreated?.mbs).toBe(disk.mbs)
+        const productCreatedId = diskCreated.product?.id
+        const foundProductCreated = await productModel.findByPk(productCreatedId)
+        expect(foundProductCreated?.name).toBe(product.name)
+        expect(foundProductCreated?.image).toBe(product.image)
+    });
+
 });

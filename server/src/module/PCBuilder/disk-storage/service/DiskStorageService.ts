@@ -1,10 +1,11 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
-import { Product } from "../../../product/entity/Product";
 import { GetDiskStorageDto } from "../dto/getDiskStorageDto";
 import { GetDiskStorageReqDto } from "../dto/getDiskStorageReqDto";
 import { DiskStorage } from "../entities/DiskStorage";
+import { IDiskStorage_Product } from "../interface/IDiskStorageCreate";
+import { IDiskStorageEdit } from "../interface/IDiskStorageEdit";
 import { IDiskStorageRepository } from "../interface/IDiskStorageRepository";
 import { IDiskStorageService } from "../interface/IDiskStorageService";
 
@@ -26,11 +27,11 @@ export class DiskStorageService extends AbstractService implements IDiskStorageS
         return await this.diskStorageRepository.getSingleDisk(id)
     }
 
-    async createDisk(product: Product, disk: DiskStorage): Promise<DiskStorage> {
-        return await this.diskStorageRepository.createDisk(product, disk)
+    async createDisk(newDiskStorage: IDiskStorage_Product): Promise<DiskStorage> {
+        return await this.diskStorageRepository.createDisk(newDiskStorage)
     }
 
-    async modifyDisk(id: number, disk: DiskStorage): Promise<DiskStorage> {
+    async modifyDisk(id: number, disk: IDiskStorageEdit): Promise<DiskStorage> {
         return await this.diskStorageRepository.modifyDisk(id, disk)
     }
     async deleteDisk(id: number): Promise<true> {

@@ -7,7 +7,7 @@ import { AbstractController } from "../../../abstractClasses/abstractController"
 import { bodyValidator } from "../../../common/helpers/bodyValidator";
 import { DiskStorage } from "../entities/DiskStorage";
 import { validateDiskStorageAndProductDto, validateDiskStorageEditDto, validateDiskStorageQuerySchema } from "../helpers/dto-validator";
-import { IDiskStorage_Product } from "../interface/IDiskStorageCreate";
+import { IDiskStorageCreate, IDiskStorage_Product, IDiskStorage_Product_Form } from "../interface/IDiskStorageCreate";
 import { IDiskStorageGetAllQuery } from "../interface/IDiskStorageGetAllQuery";
 import { IDiskStorageEdit } from '../interface/IDiskStorageEdit'
 import { DiskStorageService } from "../service/DiskStorageService";
@@ -28,7 +28,6 @@ export class DiskStorageController extends AbstractController {
         @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer,
         @inject(TYPES.ImageUploader.Service) private uploadService: IImageUploadService,
         @inject(TYPES.Product.Service) private productService: ProductService
-
     ) {
         super()
         this.ROUTE_BASE = "/disk-storage"
@@ -75,11 +74,11 @@ export class DiskStorageController extends AbstractController {
         const DISK_STORAGE_CATEGORY = 1
         let productImage: string | undefined
         try {
-            const dto: IDiskStorage_Product = req.body
+            const dto: IDiskStorage_Product_Form = req.body
             const validatedDto = await bodyValidator(validateDiskStorageAndProductDto, dto)
-            const newDiskStorage = fromRequestToDiskStorage(validatedDto)
             const newProduct = fromRequestToProduct({ ...validatedDto, id_category: DISK_STORAGE_CATEGORY })
             await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
+            const newDiskStorage = fromRequestToDiskStorage({ ...validatedDto, product: newProduct }) as IDiskStorage_Product
             if (req.file) {
                 const upload = await this.uploadService.uploadProduct(req.file)
                 newProduct.image = upload.Location
@@ -87,7 +86,7 @@ export class DiskStorageController extends AbstractController {
             } else {
                 newProduct.image = null
             }
-            const response = await this.diskStorageService.createDisk(newProduct, newDiskStorage)
+            const response = await this.diskStorageService.createDisk(newDiskStorage)
             res.status(200).send(response)
         } catch (err) {
             if (productImage) {
@@ -103,7 +102,7 @@ export class DiskStorageController extends AbstractController {
             const validId = numberParamOrError(id)
             const dto: IDiskStorageEdit = req.body
             const validatedDto = await bodyValidator(validateDiskStorageEditDto, dto)
-            const modifieddisk = await this.diskStorageService.modifyDisk(validId, validatedDto) as DiskStorage
+            const modifieddisk = await this.diskStorageService.modifyDisk(validId, validatedDto)
             res.status(StatusCodes.OK).send(modifieddisk)
         } catch (err) {
             next(err)

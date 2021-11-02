@@ -13,7 +13,7 @@
     "test:product": "jest --watch src/module/product --detectOpenHandles",
     "test:category": "jest --watch src/module/category --detectOpenHandles",
     "test:brand": "jest --watch src/module/brand --detectOpenHandles",
-    "test:disk": "jest --watch src/module/PCBuilder/disk-storage/repository/__test__ --runInBand --detectOpenHandles"
+    "test:disk": "jest --watch src/module/PCBuilder/disk-storage/service/__test__ --runInBand --detectOpenHandles"
   },
   "license": "MIT",
   "dependencies": {
