@@ -23,9 +23,11 @@ export const validateDiskStorageCreateSchema = {
 }
 
 export const validateDiskStorageEditSchema = {
-    ...validateDiskStorageCreateSchema,
-    id: Joi.number()
-        .required
+    total_storage: Joi.number(),
+    type: Joi.string()
+        .valid(...DISK_TYPE),
+    mbs: Joi.number(),
+    watts: Joi.number()
 }
 
 export const validateDiskStorageAndProductDto = Joi.object({ ...validateDiskStorageCreateSchema, ...validateCreateProductSchema })

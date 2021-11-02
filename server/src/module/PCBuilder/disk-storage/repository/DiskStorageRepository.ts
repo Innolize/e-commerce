@@ -11,7 +11,7 @@ import { GetDiskStorageReqDto } from "../dto/getDiskStorageReqDto"
 import { GetDiskStorageDto } from "../dto/getDiskStorageDto"
 import { IDiskStorageRepository } from "../interface/IDiskStorageRepository";
 import { IDiskStorageEdit } from "../interface/IDiskStorageEdit";
-import { IDiskStorage_Product } from "../interface/IDiskStorageCreate";
+import { IDiskStorageCreate } from "../interface/IDiskStorageCreate";
 
 @injectable()
 export class DiskStorageRepository extends AbstractRepository implements IDiskStorageRepository {
@@ -41,7 +41,7 @@ export class DiskStorageRepository extends AbstractRepository implements IDiskSt
         return disk
     }
 
-    async createDisk(newDiskStorage: IDiskStorage_Product): Promise<DiskStorage> {
+    async createDisk(newDiskStorage: IDiskStorageCreate): Promise<DiskStorage> {
         const newDisk = await this.diskStorageModel.create(newDiskStorage, { include: DiskStorageModel.associations.product })
         const response = fromDbToDiskStorage(newDisk)
         return response

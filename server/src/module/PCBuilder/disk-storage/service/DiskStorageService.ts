@@ -4,7 +4,7 @@ import { AbstractService } from "../../../abstractClasses/abstractService";
 import { GetDiskStorageDto } from "../dto/getDiskStorageDto";
 import { GetDiskStorageReqDto } from "../dto/getDiskStorageReqDto";
 import { DiskStorage } from "../entities/DiskStorage";
-import { IDiskStorage_Product } from "../interface/IDiskStorageCreate";
+import { IDiskStorageCreate } from "../interface/IDiskStorageCreate";
 import { IDiskStorageEdit } from "../interface/IDiskStorageEdit";
 import { IDiskStorageRepository } from "../interface/IDiskStorageRepository";
 import { IDiskStorageService } from "../interface/IDiskStorageService";
@@ -27,7 +27,7 @@ export class DiskStorageService extends AbstractService implements IDiskStorageS
         return await this.diskStorageRepository.getSingleDisk(id)
     }
 
-    async createDisk(newDiskStorage: IDiskStorage_Product): Promise<DiskStorage> {
+    async createDisk(newDiskStorage: IDiskStorageCreate): Promise<DiskStorage> {
         return await this.diskStorageRepository.createDisk(newDiskStorage)
     }
 

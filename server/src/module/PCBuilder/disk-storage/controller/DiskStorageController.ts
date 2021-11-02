@@ -7,27 +7,27 @@ import { AbstractController } from "../../../abstractClasses/abstractController"
 import { bodyValidator } from "../../../common/helpers/bodyValidator";
 import { DiskStorage } from "../entities/DiskStorage";
 import { validateDiskStorageAndProductDto, validateDiskStorageEditDto, validateDiskStorageQuerySchema } from "../helpers/dto-validator";
-import { IDiskStorageCreate, IDiskStorage_Product, IDiskStorage_Product_Form } from "../interface/IDiskStorageCreate";
+import { IDiskStorage_Product_Form } from "../interface/IDiskStorageCreate";
 import { IDiskStorageGetAllQuery } from "../interface/IDiskStorageGetAllQuery";
 import { IDiskStorageEdit } from '../interface/IDiskStorageEdit'
-import { DiskStorageService } from "../service/DiskStorageService";
 import { numberParamOrError } from "../../../common/helpers/numberParamOrError";
 import { jwtAuthentication } from "../../../auth/util/passportMiddlewares";
 import { authorizationMiddleware } from "../../../authorization/util/authorizationMiddleware";
 import { fromRequestToProduct } from "../../../product/mapper/productMapper";
-import { fromRequestToDiskStorage } from "../mapper/diskStorageMapper";
-import { ProductService } from "../../../product/module";
 import { GetDiskStorageReqDto } from '../dto/getDiskStorageReqDto'
 import { IImageUploadService } from "../../../imageUploader/interfaces/IImageUploadService";
+import { IDiskStorageService } from "../interface/IDiskStorageService";
+import { IProductService } from "../../../product/interfaces/IProductService";
+import { fromRequestToDiskStorageCreate } from "../mapper/diskStorageMapper";
 
 export class DiskStorageController extends AbstractController {
     private ROUTE_BASE: string
 
     constructor(
-        @inject(TYPES.PCBuilder.DiskStorage.Service) private diskStorageService: DiskStorageService,
+        @inject(TYPES.PCBuilder.DiskStorage.Service) private diskStorageService: IDiskStorageService,
         @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer,
         @inject(TYPES.ImageUploader.Service) private uploadService: IImageUploadService,
-        @inject(TYPES.Product.Service) private productService: ProductService
+        @inject(TYPES.Product.Service) private productService: IProductService
     ) {
         super()
         this.ROUTE_BASE = "/disk-storage"
@@ -78,7 +78,7 @@ export class DiskStorageController extends AbstractController {
             const validatedDto = await bodyValidator(validateDiskStorageAndProductDto, dto)
             const newProduct = fromRequestToProduct({ ...validatedDto, id_category: DISK_STORAGE_CATEGORY })
             await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
-            const newDiskStorage = fromRequestToDiskStorage({ ...validatedDto, product: newProduct }) as IDiskStorage_Product
+            const newDiskStorage = fromRequestToDiskStorageCreate({ ...validatedDto, product: newProduct })
             if (req.file) {
                 const upload = await this.uploadService.uploadProduct(req.file)
                 newProduct.image = upload.Location
@@ -87,7 +87,7 @@ export class DiskStorageController extends AbstractController {
                 newProduct.image = null
             }
             const response = await this.diskStorageService.createDisk(newDiskStorage)
-            res.status(200).send(response)
+            res.status(StatusCodes.CREATED).send(response)
         } catch (err) {
             if (productImage) {
                 this.uploadService.deleteProduct(productImage)
