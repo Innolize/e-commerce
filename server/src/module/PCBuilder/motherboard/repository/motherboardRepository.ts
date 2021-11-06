@@ -2,31 +2,26 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractRepository } from "../../../abstractClasses/abstractRepository";
 import { MotherboardModel } from "../model/motherboardModel";
-import { fromDbToMotherboard, fromRequestToMotherboard } from '../mapper/motherboardMapper'
-import { Sequelize, WhereOptions } from "sequelize";
+import { fromDbToMotherboard } from '../mapper/motherboardMapper'
+import { WhereOptions } from "sequelize";
 import { ProductModel } from "../../../product/module";
 import { Motherboard } from "../entity/Motherboard";
-import { Product } from "../../../product/entity/Product";
 import { MotherboardError } from "../error/MotherboardError";
 import { GetMotherboardReqDto } from "../dto/getMotherboardsReqDto";
 import { GetMotherboardDto } from "../dto/getMotherboardsDto";
+import { IMotherboardCreate } from "../interface/IMotherboardCreate";
+import { IMotherboardEdit } from "../interface/IMotherboardEdit";
+import { IMotherboardRepository } from "../interface/IMotherboardRepository";
 
 @injectable()
-export class MotherboardRepository extends AbstractRepository {
+export class MotherboardRepository extends AbstractRepository implements IMotherboardRepository {
     private motherboardModel: typeof MotherboardModel
-    private productModel: typeof ProductModel
-    private ORM: Sequelize
 
     constructor(
         @inject(TYPES.PCBuilder.Motherboard.Model) motherboardModel: typeof MotherboardModel,
-        @inject(TYPES.Common.Database) ORM: Sequelize,
-        @inject(TYPES.Product.Model) productModel: typeof ProductModel
     ) {
         super()
         this.motherboardModel = motherboardModel
-        this.productModel = productModel
-        this.ORM = ORM
-
     }
 
     async getAll(queryParams: GetMotherboardReqDto): Promise<GetMotherboardDto> {
@@ -50,19 +45,14 @@ export class MotherboardRepository extends AbstractRepository {
 
     }
 
-    async createMotherboard(product: Product, motherboard: Motherboard): Promise<Motherboard | Error> {
-        const transaction = await this.ORM.transaction()
-        const newProduct = await this.productModel.create(product, { transaction, isNewRecord: true });
-        const id_product = newProduct.getDataValue("id") as number
-        const myMotherboard = fromRequestToMotherboard({ ...motherboard, id_product })
-        const createdMotherboard = await this.motherboardModel.create(myMotherboard, { transaction, isNewRecord: true })
-        transaction.commit()
+    async create(newMotherBoard: IMotherboardCreate): Promise<Motherboard> {
+        const createdMotherboard = await this.motherboardModel.create(newMotherBoard, { include: MotherboardModel.associations.product })
         const response = fromDbToMotherboard(createdMotherboard)
         return response
     }
 
-    async modifyMotherboard(motherboard: Motherboard): Promise<Motherboard | Error> {
-        const [motherboardEdited, motherboardArray] = await this.motherboardModel.update(motherboard, { where: { id: motherboard.id }, returning: true })
+    async modify(id: number, motherboard: IMotherboardEdit): Promise<Motherboard> {
+        const [motherboardEdited, motherboardArray] = await this.motherboardModel.update(motherboard, { where: { id }, returning: true })
         // update returns an array, first argument is the number of elements updated in the
         // database. Second argument are the array of elements. Im updating by id so there is only 
         // one element in the array.
@@ -73,7 +63,7 @@ export class MotherboardRepository extends AbstractRepository {
         return fromDbToMotherboard(modifiedProduct)
     }
 
-    async deleteMotherboard(id: number): Promise<true | Error> {
+    async delete(id: number): Promise<true> {
 
         const response = await this.motherboardModel.destroy({ where: { id } })
         if (!response) {

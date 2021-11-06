@@ -16,7 +16,6 @@ import { PowerSupplyModel } from "../../PCBuilder/power-supply/module";
 import { ProcessorModel } from "../../PCBuilder/processor/module";
 import { RamModel } from "../../PCBuilder/ram/module";
 import { VideoCardModel } from "../../PCBuilder/video-card/module";
-import { Motherboard } from "../../PCBuilder/motherboard/entity/Motherboard";
 
 decorate(injectable(), (Model))
 
@@ -222,9 +221,9 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
     }
 
     static setPCBuilderOnDeleteHook(productModel: typeof ProductModel): void {
-        DiskStorageModel.addDiskStorageHookOnDelete(productModel)
         this.addCabinetHookOnDelete(productModel)
-        this.addMotherboardHookOnDelete(productModel)
+        DiskStorageModel.addDiskStorageHookOnDelete(productModel)
+        MotherboardModel.addMotherboardHookOnDelete(productModel)
         this.addPowerSupplyHookOnDelete(productModel)
         this.addProcessorHookOnDelete(productModel)
         this.addRamHookOnDelete(productModel)
@@ -238,17 +237,6 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
                 if (cabinet) {
                     await cabinet.destroy()
                     console.log(`Cabinet associated with product ${instance.id} deleted`)
-                }
-            })
-    }
-
-    private static addMotherboardHookOnDelete(productModel: typeof ProductModel) {
-        productModel.addHook('afterDestroy', 'motherboardHookOnDelete',
-            async (instance: ProductModel) => {
-                const motherboard = await instance.getMotherboard()
-                if (motherboard) {
-                    await motherboard.destroy()
-                    console.log(`Motherboard associated with product ${instance.id} deleted`)
                 }
             })
     }

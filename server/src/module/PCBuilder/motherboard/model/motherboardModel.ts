@@ -19,7 +19,7 @@ export class MotherboardModel extends Model<Motherboard, IMotherboardCreate> imp
     public watts!: number
     public id_product!: number
     public id!: number
-    public product?: Product
+    public product?: Product | undefined;
     
     static setup(database: Sequelize): typeof MotherboardModel {
         MotherboardModel.init({
@@ -81,7 +81,18 @@ export class MotherboardModel extends Model<Motherboard, IMotherboardCreate> imp
             },
         })
     }
-    static associations: {
+
+    static addMotherboardHookOnDelete(productModel: typeof ProductModel):void {
+        productModel.addHook('afterDestroy', 'motherboardHookOnDelete',
+            async (instance: ProductModel) => {
+                const motherboard = await instance.getMotherboard()
+                if (motherboard) {
+                    await motherboard.destroy()
+                    console.log(`Motherboard associated with product ${instance.id} deleted`)
+                }
+            })
+    }
+    public static associations: {
         product: Association<MotherboardModel, ProductModel>
     }
 }

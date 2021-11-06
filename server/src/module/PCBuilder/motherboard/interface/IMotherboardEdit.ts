@@ -1,6 +1,5 @@
 import { IMotherboardCreate } from "./IMotherboardCreate";
 
-export interface IMotherboardEdit extends IMotherboardCreate {
-    id: number,
-    product_id: number
-}
+export type IDiskStorageEditProductless = Omit<IMotherboardCreate, 'id_product'>
+
+export type IMotherboardEdit = Partial<IDiskStorageEditProductless>
