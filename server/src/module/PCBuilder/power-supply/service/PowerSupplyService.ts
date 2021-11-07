@@ -1,38 +1,40 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
-import { Product } from "../../../product/entity/Product";
 import { GetPowerSupplyDto } from "../dto/getPowerSupplyDto";
 import { GetPowerSupplyReqDto } from "../dto/getPowerSupplyReqDto";
 import { PowerSupply } from "../entities/PowerSupply";
-import { PowerSupplyRepository } from "../repository/PowerSupplyRepository";
+import { IPowerSupplyCreate } from "../interface/IPowerSupplyCreate";
+import { IPowerSupplyEdit } from "../interface/IPowerSupplyEdit";
+import { IPowerSupplyRepository } from "../interface/IPowerSupplyRepository";
+import { IPowerSupplyService } from "../interface/IPowerSupplyService";
 
 @injectable()
-export class PowerSupplyService extends AbstractService {
-    private powerSupplyRepository: PowerSupplyRepository
+export class PowerSupplyService extends AbstractService implements IPowerSupplyService {
+    private powerSupplyRepository: IPowerSupplyRepository
     constructor(
-        @inject(TYPES.PCBuilder.PowerSupply.Repository) powerSupplyRepository: PowerSupplyRepository
+        @inject(TYPES.PCBuilder.PowerSupply.Repository) powerSupplyRepository: IPowerSupplyRepository
     ) {
         super()
         this.powerSupplyRepository = powerSupplyRepository
     }
 
-    async getPowerSupply(queryParams: GetPowerSupplyReqDto): Promise<GetPowerSupplyDto> {
-        return await this.powerSupplyRepository.getPowerSupplies(queryParams)
+    async getAll(queryParams: GetPowerSupplyReqDto): Promise<GetPowerSupplyDto> {
+        return await this.powerSupplyRepository.getAll(queryParams)
     }
 
-    async getSinglePowerSupply(id: number): Promise<PowerSupply | Error> {
-        return await this.powerSupplyRepository.getSinglePowerSupply(id)
+    async getSingle(id: number): Promise<PowerSupply> {
+        return await this.powerSupplyRepository.getSingle(id)
     }
 
-    async createPowerSupply(product: Product, powerSupply: PowerSupply): Promise<PowerSupply | Error> {
-        return await this.powerSupplyRepository.createPowerSupply(product, powerSupply)
+    async create(powerSupply: IPowerSupplyCreate): Promise<PowerSupply> {
+        return await this.powerSupplyRepository.create(powerSupply)
     }
 
-    async modifyPowerSupply(id: number, powerSupply: PowerSupply): Promise<PowerSupply | Error> {
-        return await this.powerSupplyRepository.modifyPowerSupply(id, powerSupply)
+    async modify(id: number, powerSupply: IPowerSupplyEdit): Promise<PowerSupply> {
+        return await this.powerSupplyRepository.modify(id, powerSupply)
     }
-    async deletePowerSupply(id: number): Promise<true | Error> {
-        return await this.powerSupplyRepository.deletePowerSupply(id)
+    async delete(id: number): Promise<true> {
+        return await this.powerSupplyRepository.delete(id)
     }
 }
