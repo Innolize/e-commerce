@@ -1,5 +1,5 @@
 import { Processor } from "../entities/Processor"
-import { IProcessorCreate } from '../interface/IProcessorCreate'
+import { IProcessorCreate, IProcessor_Product } from '../interface/IProcessorCreate'
 import { fromDbToProduct } from "../../../product/mapper/productMapper"
 import { IProcessor } from "../interface/IProcessor"
 
@@ -9,7 +9,7 @@ export const fromDbToProcessor = (model: IProcessor): Processor => {
     return new Processor(cores, frecuency, socket, watts, id_product, id, processorProduct)
 }
 
-export const fromRequestToProcessor = (request: IProcessorCreate): Processor => {
-    const { cores, socket, frecuency, watts, id_product, id } = request
-    return new Processor(cores, frecuency, socket, watts, id_product, id)
+export const fromRequestToProcessorCreate = (request: IProcessor_Product): IProcessorCreate => {
+    const { frecuency, cores, socket, watts, product } = request
+    return { frecuency, cores, socket, watts, product }
 }

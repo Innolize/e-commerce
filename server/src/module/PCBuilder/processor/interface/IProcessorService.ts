@@ -1,5 +1,5 @@
-import { GetProcessorDto } from "../dto/getProcessorsDto";
-import { GetProcessorReqDto } from "../dto/getProcessorsReqDto";
+import { GetProcessorDto } from "../dto/getProcessorDto";
+import { GetProcessorReqDto } from "../dto/getProcessorReqDto";
 import { Processor } from "../entities/Processor";
 import { IProcessorCreate } from "./IProcessorCreate";
 import { IProcessorEdit } from "./IProcessorEdit";

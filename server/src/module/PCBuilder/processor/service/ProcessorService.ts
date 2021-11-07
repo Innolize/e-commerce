@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
-import { GetProcessorDto } from "../dto/getProcessorsDto";
-import { GetProcessorReqDto } from "../dto/getProcessorsReqDto";
+import { GetProcessorDto } from "../dto/getProcessorDto";
+import { GetProcessorReqDto } from "../dto/getProcessorReqDto";
 import { Processor } from "../entities/Processor";
 import { IProcessorCreate } from "../interface/IProcessorCreate";
 import { IProcessorEdit } from "../interface/IProcessorEdit";
