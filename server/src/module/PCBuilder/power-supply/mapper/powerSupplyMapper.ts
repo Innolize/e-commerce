@@ -1,7 +1,7 @@
 import { PowerSupply } from "../entities/PowerSupply"
-import { IPowerSupplyCreate } from '../interface/IPowerSupplyCreate'
 import { fromDbToProduct } from "../../../product/mapper/productMapper"
 import { IPowerSupply } from "../interface/IPowerSupply"
+import { IPowerSupplyCreate, IPowerSupply_Product } from "../interface/IPowerSupplyCreate"
 
 export const fromDbToPowerSupply = (model: IPowerSupply): PowerSupply => {
     const { certification, watts, id, id_product, product } = model
@@ -9,7 +9,7 @@ export const fromDbToPowerSupply = (model: IPowerSupply): PowerSupply => {
     return new PowerSupply(watts, certification, id_product, id, powerSupplyProduct)
 }
 
-export const fromRequestToPowerSupply = (request: IPowerSupplyCreate): PowerSupply => {
-    const { certification, watts, id_product, id } = request
-    return new PowerSupply(watts, certification, id_product, id)
+export const fromRequestToPowerSupplyCreate = (request: IPowerSupply_Product): IPowerSupplyCreate => {
+    const { certification, watts, product } = request
+    return { certification, watts, product }
 }

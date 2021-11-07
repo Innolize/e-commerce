@@ -14,14 +14,14 @@ export const validatePowerSupplyCreateSchema = {
         .required(),
     certification: Joi.string()
         .valid(...PWS_CERTIFICATION)
+        .required()
 }
 
 export const validatePowerSupplyEditSchema = {
-    ...validatePowerSupplyCreateSchema,
-    id: Joi.number()
-        .required,
-    product_id: Joi.number()
-        .required,
+    watts: Joi.number(),
+    certification: Joi.string()
+        .valid(...PWS_CERTIFICATION)
+        .optional()
 }
 
 export const validatePowerSupplyAndProductDto = Joi.object({ ...validatePowerSupplyCreateSchema, ...validateCreateProductSchema })
