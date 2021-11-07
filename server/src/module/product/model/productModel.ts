@@ -241,16 +241,7 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
             })
     }
 
-    private static addVideoCardHookOnDelete(productModel: typeof ProductModel) {
-        productModel.addHook('afterDestroy', 'videoCardHookOnDelete',
-            async (instance: ProductModel) => {
-                const videoCard = await instance.getVideoCard()
-                if (videoCard) {
-                    await videoCard.destroy()
-                    console.log(`Video card associated with product ${instance.id} deleted`)
-                }
-            })
-    }
+
 
     public static associations: {
         category: Association<ProductModel, CategoryModel>,

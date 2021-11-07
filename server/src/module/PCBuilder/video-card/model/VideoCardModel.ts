@@ -62,6 +62,18 @@ export class VideoCardModel extends Model<VideoCard, IVideoCardCreate> implement
             },
         })
     }
+
+    static addVideoCardHookOnDelete(productModel: typeof ProductModel): void {
+        productModel.addHook('afterDestroy', 'videoCardHookOnDelete',
+            async (instance: ProductModel) => {
+                const videoCard = await instance.getVideoCard()
+                if (videoCard) {
+                    await videoCard.destroy()
+                    console.log(`Video card associated with product ${instance.id} deleted`)
+                }
+            })
+    }
+
     static associations: {
         product: Association<VideoCardModel, ProductModel>
     }

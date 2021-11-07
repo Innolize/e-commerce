@@ -2,8 +2,8 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
 import { Product } from "../../../product/entity/Product";
-import { GetVideoCardsDto } from "../dto/getVideoCardsDto";
-import { GetVideoCardsReqDto } from "../dto/getVideoCardsReqDto";
+import { GetVideoCardDto } from "../dto/getVideoCardDto";
+import { GetVideoCardReqDto } from "../dto/getVideoCardReqDto";
 import { VideoCard } from "../entities/VideoCard";
 import { VideoCardRepository } from "../repository/VideoCardRepository";
 
@@ -17,7 +17,7 @@ export class VideoCardService extends AbstractService {
         this.videoCardRepository = videoCardRepository
     }
 
-    async getVideoCard(queryParams: GetVideoCardsReqDto): Promise<GetVideoCardsDto> {
+    async getVideoCard(queryParams: GetVideoCardReqDto): Promise<GetVideoCardDto> {
         return await this.videoCardRepository.getVideoCards(queryParams)
     }
 

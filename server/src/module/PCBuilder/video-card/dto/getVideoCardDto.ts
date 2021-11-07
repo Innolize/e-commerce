@@ -1,6 +1,6 @@
 import { VideoCard } from "../entities/VideoCard";
 
-export class GetVideoCardsDto {
+export class GetVideoCardDto {
     constructor(
         public count: number,
         public results: VideoCard[]

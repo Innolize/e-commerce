@@ -1,7 +1,5 @@
 import { IVideoCardCreate } from "./IVideoCardCreate";
 
+export type IVideoCardEditProductless = Omit<IVideoCardCreate, 'id_product'>
 
-export interface IVideoCardEdit extends IVideoCardCreate {
-    id: number,
-    product_id: number
-}
+export type IVideoCardEdit = Partial<IVideoCardEditProductless>
