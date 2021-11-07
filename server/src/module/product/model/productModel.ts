@@ -225,7 +225,7 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
         DiskStorageModel.addDiskStorageHookOnDelete(productModel)
         MotherboardModel.addMotherboardHookOnDelete(productModel)
         PowerSupplyModel.addPowerSupplyHookOnDelete(productModel)
-        this.addProcessorHookOnDelete(productModel)
+        ProcessorModel.addProcessorHookOnDelete(productModel)
         this.addRamHookOnDelete(productModel)
         this.addVideoCardHookOnDelete(productModel)
     }
@@ -241,16 +241,7 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
             })
     }
 
-    private static addProcessorHookOnDelete(productModel: typeof ProductModel) {
-        productModel.addHook('afterDestroy', 'processorHookOnDelete',
-            async (instance: ProductModel) => {
-                const processor = await instance.getProcessor()
-                if (processor) {
-                    await processor.destroy()
-                    console.log(`Processor associated with product ${instance.id} deleted`)
-                }
-            })
-    }
+
 
     private static addRamHookOnDelete(productModel: typeof ProductModel) {
         productModel.addHook('afterDestroy', 'ramHookOnDelete',
