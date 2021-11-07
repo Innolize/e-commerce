@@ -1,11 +1,13 @@
-import { PWS_CERTIFICATION } from "../../../../config/constants/pcbuilder";
+import { Product } from "../../../product/entity/Product";
 import { IProductCreate } from "../../../product/interfaces/IProductCreate";
+import { IPowerSupply } from "./IPowerSupply";
 
-export interface IPowerSupply_Product extends IPowerSupplyCreate, IProductCreate { }
-
-export interface IPowerSupplyCreate {
-    id?: number,
-    watts: number
-    certification: typeof PWS_CERTIFICATION[number]
-    id_product: number
+export type IPowerSupplyCreate = Omit<IPowerSupply, 'id' | 'id_product'> & {
+    id_product?: number
 }
+
+export type IPowerSupply_Product = IPowerSupplyCreate & {
+    product: Product
+}
+
+export interface IPowerSupply_Product_Form extends IPowerSupplyCreate, IProductCreate { }

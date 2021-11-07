@@ -19,7 +19,7 @@ import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToPowerSupply } from "../mapper/powerSupplyMapper";
 import { ProductService } from "../../../product/module";
 import { PowerSupplyError } from "../error/PowerSupplyError";
-import { GetPowerSuppliesReqDto } from "../dto/getPowerSuppliesReqDto";
+import { GetPowerSupplyReqDto } from "../dto/getPowerSupplyReqDto";
 
 export class PowerSupplyController extends AbstractController {
     private ROUTE_BASE: string
@@ -49,30 +49,30 @@ export class PowerSupplyController extends AbstractController {
         app.delete(`/api${ROUTE}/:id`, [jwtAuthentication, authorizationMiddleware({ action: 'delete', subject: 'PowerSupply' })], this.delete.bind(this))
     }
 
-    getAll = async (req: Request, res: Response, next: NextFunction) => {
+    getAll = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const dto: IPowerSupplyGetAllQuery = req.query
             const { limit, offset, watts } = await bodyValidator(validatePowerSupplyQuerySchema, dto)
-            const queryParams = new GetPowerSuppliesReqDto(limit, offset, watts)
+            const queryParams = new GetPowerSupplyReqDto(limit, offset, watts)
             const response = await this.powerSupplyService.getPowerSupply(queryParams)
-            return res.status(StatusCodes.OK).send(response)
+            res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
         }
     }
 
-    getSinglePowerSupply = async (req: Request, res: Response, next: NextFunction) => {
+    getSinglePowerSupply = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const params = req.params
-            const validId = numberParamOrError(params, "id")
+            const { id } = req.params
+            const validId = numberParamOrError(id)
             const response = await this.powerSupplyService.getSinglePowerSupply(validId) as PowerSupply
-            return res.status(StatusCodes.OK).send(response)
+            res.status(StatusCodes.OK).send(response)
         } catch (err) {
             next(err)
         }
     }
 
-    create = async (req: Request, res: Response, next: NextFunction) => {
+    create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const POWER_SUPPLY_CATEGORY = 4
         let productImage: string | undefined
         try {
@@ -82,15 +82,14 @@ export class PowerSupplyController extends AbstractController {
             const newProduct = fromRequestToProduct({ ...validatedDto, id_category: POWER_SUPPLY_CATEGORY })
             await this.productService.verifyCategoryAndBrandExistence(newProduct.id_category, newProduct.id_brand)
             if (req.file) {
-                const { buffer, originalname } = req.file
-                const upload = await this.uploadService.uploadProduct(buffer, originalname)
+                const upload = await this.uploadService.uploadProduct(req.file)
                 newProduct.image = upload.Location
                 productImage = upload.Location
             } else {
                 newProduct.image = null
             }
             const response = await this.powerSupplyService.createPowerSupply(newProduct, newPowerSupply)
-            return res.status(StatusCodes.CREATED).send(response)
+            res.status(StatusCodes.CREATED).send(response)
         } catch (err) {
             if (productImage) {
                 this.uploadService.deleteProduct(productImage)
@@ -99,29 +98,30 @@ export class PowerSupplyController extends AbstractController {
         }
     }
 
-    edit = async (req: Request, res: Response, next: NextFunction) => {
+    edit = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         let powerSupply: PowerSupply | undefined
         try {
-            const params = req.params
-            const validId = numberParamOrError(params, "id")
+            const { id } = req.params
+            const validId = numberParamOrError(id)
             const dto: IPowerSupplyEdit = req.body
             const validatedDto = await bodyValidator(validatePowerSupplyEditDto, dto)
             powerSupply = await this.powerSupplyService.modifyPowerSupply(validId, validatedDto) as PowerSupply
-            return res.status(StatusCodes.OK).send(powerSupply)
+            res.status(StatusCodes.OK).send(powerSupply)
         } catch (err) {
             next(err)
         }
     }
 
-    delete = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params
+    delete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
         try {
+            const { id } = req.params
             const idNumber = Number(id)
             if (!idNumber || idNumber <= 0) {
                 throw PowerSupplyError.invalidId()
             }
             await this.powerSupplyService.deletePowerSupply(idNumber)
-            return res.status(StatusCodes.NO_CONTENT).send({ message: "Power supply successfully deleted" })
+            res.status(StatusCodes.NO_CONTENT).send({ message: "Power supply successfully deleted" })
         } catch (err) {
             next(err)
         }

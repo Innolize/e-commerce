@@ -2,8 +2,8 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
 import { Product } from "../../../product/entity/Product";
-import { GetPowerSuppliesDto } from "../dto/getPowerSuppliesDto";
-import { GetPowerSuppliesReqDto } from "../dto/getPowerSuppliesReqDto";
+import { GetPowerSupplyDto } from "../dto/getPowerSupplyDto";
+import { GetPowerSupplyReqDto } from "../dto/getPowerSupplyReqDto";
 import { PowerSupply } from "../entities/PowerSupply";
 import { PowerSupplyRepository } from "../repository/PowerSupplyRepository";
 
@@ -17,7 +17,7 @@ export class PowerSupplyService extends AbstractService {
         this.powerSupplyRepository = powerSupplyRepository
     }
 
-    async getPowerSupply(queryParams: GetPowerSuppliesReqDto): Promise<GetPowerSuppliesDto> {
+    async getPowerSupply(queryParams: GetPowerSupplyReqDto): Promise<GetPowerSupplyDto> {
         return await this.powerSupplyRepository.getPowerSupplies(queryParams)
     }
 
