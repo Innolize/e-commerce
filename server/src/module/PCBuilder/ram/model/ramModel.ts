@@ -66,6 +66,17 @@ export class RamModel extends Model<Ram, IRamCreate> implements IRam {
         })
     }
 
+    static addRamHookOnDelete(productModel: typeof ProductModel): void {
+        productModel.addHook('afterDestroy', 'ramHookOnDelete',
+            async (instance: ProductModel) => {
+                const ram = await instance.getRam()
+                if (ram) {
+                    await ram.destroy()
+                    console.log(`Ram associated with product ${instance.id} deleted`)
+                }
+            })
+    }
+
     static associations: {
         product: Association<RamModel, ProductModel>
     }

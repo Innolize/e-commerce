@@ -1,6 +1,6 @@
 import { Ram } from "../entities/Ram";
 
-export class GetRamsDto {
+export class GetRamDto {
     constructor(
         public count: number,
         public results: Ram[]

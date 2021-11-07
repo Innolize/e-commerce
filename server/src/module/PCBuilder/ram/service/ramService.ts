@@ -2,8 +2,8 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
 import { Product } from "../../../product/entity/Product";
-import { GetRamsDto } from "../dto/getRamsDto";
-import { GetRamsReqDto } from "../dto/getRamsReqDto";
+import { GetRamDto } from "../dto/getRamDto";
+import { GetRamReqDto } from "../dto/getRamReqDto";
 import { Ram } from "../entities/Ram";
 import { RamRepository } from "../repository/RamRepository";
 
@@ -17,7 +17,7 @@ export class RamService extends AbstractService {
         this.ramRepository = ramRepository
     }
 
-    async getRams(queryParams: GetRamsReqDto): Promise<GetRamsDto> {
+    async getRams(queryParams: GetRamReqDto): Promise<GetRamDto> {
         return await this.ramRepository.getRams(queryParams)
     }
 

@@ -18,7 +18,7 @@ import { fromRequestToProduct } from "../../../product/mapper/productMapper";
 import { fromRequestToRam } from "../mapper/ramMapper";
 import { ProductService } from "../../../product/module";
 import { RamError } from "../error/RamError";
-import { GetRamsReqDto } from "../dto/getRamsReqDto"
+import { GetRamReqDto } from "../dto/getRamReqDto"
 import { IRamGetAllQuery } from "../interface/IRamGetAllQuery";
 
 export class RamController extends AbstractController {
