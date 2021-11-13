@@ -1,11 +1,11 @@
 import { fromDbToProduct } from "../../../product/mapper/productMapper"
 import { VideoCard } from "../entities/VideoCard"
 import { IVideoCard } from "../interface/IVideoCard"
-import { IVideoCardCreate } from "../interface/IVideoCardCreate"
+import { IVideoCardCreate, IVideoCard_Product } from "../interface/IVideoCardCreate"
 
-export const fromRequestToVideoCard = (model: IVideoCardCreate): VideoCard => {
-    const { clock_speed, watts, memory, id_product, id, version } = model
-    return new VideoCard(version, memory, clock_speed, watts, id_product, id)
+export const fromRequestToVideoCardCreate = (request: IVideoCard_Product): IVideoCardCreate => {
+    const { version, memory, clock_speed, watts, product } = request
+    return { version, memory, clock_speed, watts, product }
 }
 
 export const fromDbToVideoCard = (model: IVideoCard): VideoCard => {

@@ -227,7 +227,7 @@ export class ProductModel extends Model<Product, IProductCreate> implements IPro
         PowerSupplyModel.addPowerSupplyHookOnDelete(productModel)
         ProcessorModel.addProcessorHookOnDelete(productModel)
         RamModel.addRamHookOnDelete(productModel)
-        this.addVideoCardHookOnDelete(productModel)
+        VideoCardModel.addVideoCardHookOnDelete(productModel)
     }
 
     private static addCabinetHookOnDelete(productModel: typeof ProductModel) {

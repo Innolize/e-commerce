@@ -56,7 +56,6 @@ beforeAll(async (done) => {
 
 beforeEach(async (done) => {
     await sequelizeInstance.sync({ force: true })
-    await sequelizeInstance.sync({ force: true })
     await brandModel.create({ logo: null, name: 'brand-test-1' })
     await categoryModel.create({ name: 'category-test-1' })
     const product1 = new Product('product-1', null, 'product-description-1', 100, true, 1, 1)

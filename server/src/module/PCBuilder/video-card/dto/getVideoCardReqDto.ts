@@ -1,4 +1,4 @@
-import { RAM_VERSION, VIDEO_CARD_VERSION } from "../../../../config/constants/pcbuilder";
+import { VIDEO_CARD_VERSION } from "../../../../config/constants/pcbuilder";
 
 export class GetVideoCardReqDto {
     constructor(
