@@ -69,7 +69,7 @@ export class CartRepository extends AbstractRepository implements ICartRepositor
             return fromDbToCartItem(populatedCartItem)
         } catch (err) {
             if (err instanceof ForeignKeyConstraintError) {
-                CartError.CreateErrorIfForeignKeyConstraintError(err)
+                CartError.createErrorIfForeignKeyConstraintError(err)
             }
             throw err
         }

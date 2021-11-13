@@ -155,7 +155,7 @@ describe('addCartItem', () => {
             const ITEM: ICartItemCreateFromCartModel = { product_id: INVALID_PRODUCT_ID, quantity: 1 }
             await repository.addCartItem(CART_ID, ITEM)
         } catch (err) {
-            expect(err).toEqual(CartError.InvalidProductId())
+            expect(err).toEqual(CartError.invalidProductId())
         }
     });
 });
