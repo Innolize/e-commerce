@@ -1,6 +1,6 @@
-export { CartController } from './controller/CartController'
-export { CartItemModel } from './model/CartItemModel'
-export { CartModel } from './model/CartModel'
+export * from './controller/CartController'
+export * from './model/CartItemModel'
+export * from './model/CartModel'
 
 import { Application } from 'express'
 import { Container } from 'inversify'

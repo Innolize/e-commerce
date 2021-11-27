@@ -21,6 +21,7 @@ import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import { BaseError } from "./module/common/error/BaseError";
 import { ValidationError } from "joi";
+
 import cors from "cors"
 
 const app = express()

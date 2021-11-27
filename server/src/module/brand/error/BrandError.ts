@@ -5,13 +5,13 @@ export class BrandError extends BaseError{
     constructor(name: string,httpCode: number, message: string){
         super(name, httpCode, message)
     }
-    static notFound(){
+    static notFound(): BrandError{
         return new BrandError(this.name,StatusCodes.NOT_FOUND, 'Brand not found')
     }
-    static missingId(){
+    static missingId(): BrandError{
         return new BrandError(this.name,StatusCodes.CONFLICT, 'Brand id missing')
     }
-    static invalidId(){
+    static invalidId(): BrandError{
         return new BrandError(this.name,StatusCodes.CONFLICT, 'Invalid brand id')
     }
 }

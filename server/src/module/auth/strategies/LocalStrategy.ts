@@ -1,13 +1,13 @@
 import { PassportStatic } from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
-import { UserService } from '../../user/module';
 import { compare } from 'bcrypt'
+import { IUserRepository } from '../../user/interfaces/IUserRepository';
 
-export function configureLocalStrategy(userService: UserService, passport: PassportStatic): void {
+export function configureLocalStrategy(userRepository: IUserRepository, passport: PassportStatic): void {
     passport.use(new LocalStrategy({ usernameField: 'mail' },
         async (mail, password, done) => {
             try {
-                const user = await userService.findUserByMail(mail)
+                const user = await userRepository.findUserByMail(mail)
                 if (!user) {
                     return done(null, false, { message: "Incorrect mail" })
                 }

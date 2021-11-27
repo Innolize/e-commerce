@@ -1,38 +1,40 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
-import { Product } from "../../../product/entity/Product";
-import { GetProcessorDto } from "../dto/getProcessorsDto";
-import { GetProcessorReqDto } from "../dto/getProcessorsReqDto";
+import { GetProcessorDto } from "../dto/getProcessorDto";
+import { GetProcessorReqDto } from "../dto/getProcessorReqDto";
 import { Processor } from "../entities/Processor";
-import { ProcessorRepository } from "../repository/ProcessorRepository";
+import { IProcessorCreate } from "../interface/IProcessorCreate";
+import { IProcessorEdit } from "../interface/IProcessorEdit";
+import { IProcessorRepository } from "../interface/IProcessorRepository";
+import { IProcessorService } from "../interface/IProcessorService";
 
 @injectable()
-export class ProcessorService extends AbstractService {
-    private processorRepository: ProcessorRepository
+export class ProcessorService extends AbstractService implements IProcessorService {
+    private processorRepository: IProcessorRepository
     constructor(
-        @inject(TYPES.PCBuilder.Processor.Repository) processorRepository: ProcessorRepository
+        @inject(TYPES.PCBuilder.Processor.Repository) processorRepository: IProcessorRepository
     ) {
         super()
         this.processorRepository = processorRepository
     }
 
-    async getprocessors(queryParams: GetProcessorReqDto): Promise<GetProcessorDto> {
-        return await this.processorRepository.getProcessor(queryParams)
+    async getAll(queryParams: GetProcessorReqDto): Promise<GetProcessorDto> {
+        return await this.processorRepository.getAll(queryParams)
     }
 
-    async getSingleProcessor(id: number): Promise<Processor | Error> {
-        return await this.processorRepository.getSingleProcessor(id)
+    async getSingle(id: number): Promise<Processor> {
+        return await this.processorRepository.getSingle(id)
     }
 
-    async createprocessors(product: Product, processor: Processor): Promise<Processor | Error> {
-        return await this.processorRepository.createProcessor(product, processor)
+    async create(processor: IProcessorCreate): Promise<Processor> {
+        return await this.processorRepository.create(processor)
     }
 
-    async modifyprocessors(id: number, processor: Processor): Promise<Processor | Error> {
-        return await this.processorRepository.modifyProcessor(id, processor)
+    async modify(id: number, processor: IProcessorEdit): Promise<Processor> {
+        return await this.processorRepository.modify(id, processor)
     }
-    async deleteprocessors(id: number): Promise<true | Error> {
-        return await this.processorRepository.deleteProcessor(id)
+    async delete(id: number): Promise<true> {
+        return await this.processorRepository.delete(id)
     }
 }

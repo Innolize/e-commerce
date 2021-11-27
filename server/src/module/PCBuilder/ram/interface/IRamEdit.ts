@@ -1,7 +1,5 @@
 import { IRamCreate } from "./IRamCreate";
 
+export type IRamEditProductless = Omit<IRamCreate, 'id_product'>
 
-export interface IRamEdit extends IRamCreate {
-    id: number,
-    product_id: number
-}
+export type IRamEdit = Partial<IRamEditProductless>

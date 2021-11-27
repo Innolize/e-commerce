@@ -7,12 +7,13 @@ import { GetBrandsDto } from "../dto/getBrandsDto";
 import { GetBrandsReqDto } from "../dto/getBrandsReqDto";
 import { Brand } from "../entity/Brand";
 import { BrandError } from "../error/BrandError";
-import { IEditableBrand } from "../interfaces/IEditableBrand";
+import { IBrandRepository } from "../interfaces/IBrandRepository";
+import { IBrandEdit } from "../interfaces/IBrandEdit";
 import { fromDbToBrand } from "../mapper/brandMapper";
 import { BrandModel } from "../model/brandModel";
 
 @injectable()
-export class BrandRepository extends AbstractRepository {
+export class BrandRepository extends AbstractRepository implements IBrandRepository {
     private brandModel: typeof BrandModel
     constructor(
         @inject(TYPES.Brand.Model) brandModel: typeof BrandModel
@@ -21,7 +22,7 @@ export class BrandRepository extends AbstractRepository {
         this.brandModel = brandModel
     }
 
-    public async getAllBrands(queryParams: GetBrandsReqDto): Promise<Error | GetBrandsDto> {
+    public async getAllBrands(queryParams: GetBrandsReqDto): Promise<GetBrandsDto> {
         const { name, offset, limit } = queryParams
         const whereOptions: WhereOptions<Brand> = {}
         name ? whereOptions.name = { [Op.substring]: name } : ''
@@ -42,17 +43,12 @@ export class BrandRepository extends AbstractRepository {
         return fromDbToBrand(response)
     }
 
-    public async createBrand(brand: Brand): Promise<Error | Brand> {
-        try {
-            const response = await this.brandModel.create(brand)
-            return fromDbToBrand(response)
-        }
-        catch (err) {
-            throw err
-        }
+    public async createBrand(brand: Brand): Promise<Brand> {
+        const response = await this.brandModel.create(brand)
+        return fromDbToBrand(response)
     }
 
-    public async deleteBrand(id: number): Promise<Error | boolean> {
+    public async deleteBrand(id: number): Promise<boolean> {
         if (id <= 0) {
             throw BrandError.invalidId()
         }
@@ -63,20 +59,15 @@ export class BrandRepository extends AbstractRepository {
         return true
     }
 
-    public async modifyBrand(brand: IEditableBrand): Promise<Error | Brand> {
-        try {
-            const [brandEdited, brandArray] = await this.brandModel.update(brand, { where: { id: brand.id }, returning: true })
-            // update returns an array, first argument is the number of elements updated in the
-            // database. Second argument are the array of elements. Im updating by id so there is only 
-            // one element in the array.
-            if (!brandEdited) {
-                throw BrandError.notFound()
-            }
-            const newProduct = fromDbToBrand(brandArray[0])
-            return newProduct
+    public async modifyBrand(id: number, brand: IBrandEdit): Promise<Brand> {
+        const [brandEdited, brandArray] = await this.brandModel.update(brand, { where: { id }, returning: true })
+        // update returns an array, first argument is the number of elements updated in the
+        // database. Second argument are the array of elements. Im updating by id so there is only 
+        // one element in the array.
+        if (!brandEdited) {
+            throw BrandError.notFound()
         }
-        catch (err) {
-            throw err
-        }
+        const newProduct = fromDbToBrand(brandArray[0])
+        return newProduct
     }
 }

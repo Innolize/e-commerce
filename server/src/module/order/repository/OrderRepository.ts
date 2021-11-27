@@ -8,12 +8,13 @@ import { IPaymentType } from "../../payment/interfaces/IPayment";
 import { Order } from "../entities/Order";
 import { OrderError } from "../error/OrderError";
 import { IOrderItemAssociated, IOrderPaymentAssociated } from "../interfaces/IOrderCreate";
+import { IOrderRepository } from "../interfaces/IOrderRepository";
 import { fromDbToOrder, mapOrderItemsFromCart } from "../mapper/orderMapper";
 import { OrderItemModel } from "../model/OrderItemModel";
 import { OrderModel } from "../model/OrderModel";
 
 @injectable()
-export class OrderRepository extends AbstractRepository {
+export class OrderRepository extends AbstractRepository implements IOrderRepository{
     constructor(
         @inject(TYPES.Order.OrderModel) private orderModel: typeof OrderModel,
     ) {
@@ -31,11 +32,11 @@ export class OrderRepository extends AbstractRepository {
         return order
     }
 
-    async getOrders(limit?: number, offset?: number, userId?: number): Promise<IGetAllResponse<Order>> {
+    async getAll(limit?: number, offset?: number, userId?: number): Promise<IGetAllResponse<Order>> {
         const whereOptions: WhereOptions<Order> = {}
         userId ? whereOptions.user_id = userId : ''
         const { count, rows } = await this.orderModel.findAndCountAll(
-            { where: whereOptions, limit, offset, include: [{ association: OrderModel.associations.orderItems, include: [{ association: OrderItemModel.associations.product }] }, { association: OrderModel.associations.payment }] }
+            { where: whereOptions, limit, offset, distinct: true, include: [{ association: OrderModel.associations.orderItems, include: [{ association: OrderItemModel.associations.product }] }, { association: OrderModel.associations.payment }] }
         )
         const orders = rows.map(fromDbToOrder)
         const response: IGetAllResponse<Order> = { count, results: orders }
@@ -44,7 +45,7 @@ export class OrderRepository extends AbstractRepository {
 
 
 
-    async getSingleOrder(id: number): Promise<Order> {
+    async getSingle(id: number): Promise<Order> {
         const response = await this.orderModel.findByPk(id, { include: [{ association: OrderModel.associations.orderItems }, { association: OrderModel.associations.payment }] })
         if (!response) {
             throw OrderError.notFound()
@@ -53,7 +54,7 @@ export class OrderRepository extends AbstractRepository {
         return order
     }
 
-    async deleteOrder(id: number): Promise<true> {
+    async delete(id: number): Promise<true> {
         const response = await this.orderModel.destroy({ where: { id } })
         if (!response) {
             throw OrderError.notFound()

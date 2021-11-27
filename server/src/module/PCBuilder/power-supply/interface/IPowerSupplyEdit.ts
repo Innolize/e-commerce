@@ -1,7 +1,5 @@
 import { IPowerSupplyCreate } from "./IPowerSupplyCreate";
 
+export type IPowerSupplyEditProductless = Omit<IPowerSupplyCreate, 'id_product'>
 
-export interface IPowerSupplyEdit extends IPowerSupplyCreate {
-    id: number,
-    product_id: number
-}
+export type IPowerSupplyEdit = Partial<IPowerSupplyEditProductless>

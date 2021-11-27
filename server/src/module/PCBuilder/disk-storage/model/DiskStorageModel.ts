@@ -1,14 +1,13 @@
 import { Association, DataTypes, Model, Sequelize } from 'sequelize'
 import { injectable } from "inversify";
 import { ProductModel } from "../../../product/module";
-import { DiskStorage } from '../entities/DiskStorage'
 import { IDiskStorageCreate } from '../interface/IDiskStorageCreate'
 import { DISK_TYPE } from '../../../../config/constants/pcbuilder';
 import { IDiskStorage } from '../interface/IDiskStorage';
 import { Product } from '../../../product/entity/Product';
 
 @injectable()
-export class DiskStorageModel extends Model<DiskStorage, IDiskStorageCreate> implements IDiskStorage{
+export class DiskStorageModel extends Model<IDiskStorage, IDiskStorageCreate> implements IDiskStorage {
     public total_storage!: number;
     public type!: typeof DISK_TYPE[number];
     public mbs!: number;
@@ -43,7 +42,7 @@ export class DiskStorageModel extends Model<DiskStorage, IDiskStorageCreate> imp
             },
             id_product: {
                 type: DataTypes.INTEGER,
-                allowNull: false
+                allowNull: false,
             }
         }, {
             sequelize: database,
@@ -54,15 +53,27 @@ export class DiskStorageModel extends Model<DiskStorage, IDiskStorageCreate> imp
     static setupProductAssociation(model: typeof ProductModel): void {
         DiskStorageModel.belongsTo(model, {
             as: "product",
-            onDelete: 'cascade',
+            onDelete: 'CASCADE',
             foreignKey: {
-                name: "id_product",
-                allowNull: false,
-            },
+                name: 'id_product',
+            }
         })
     }
 
-    public static associations:{
+    static addDiskStorageHookOnDelete(productModel: typeof ProductModel): void {
+        productModel.addHook('afterDestroy', 'diskStorageHookOnDelete',
+            async (instance: ProductModel,) => {
+                console.log(instance)
+                const disk = await instance.getDiskStorage();
+                if (disk) {
+                    await disk.destroy();
+                    console.log(`Disk storage associated with product ${instance.id} deleted`)
+                }
+            })
+        console.log('Disk storage on delete hook setted')
+    }
+
+    public static associations: {
         product: Association<DiskStorageModel, ProductModel>
     }
 }

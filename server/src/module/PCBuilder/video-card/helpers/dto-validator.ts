@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { RAM_VERSION, VIDEO_CARD_VERSION } from "../../../../config/constants/pcbuilder";
+import { VIDEO_CARD_VERSION } from "../../../../config/constants/pcbuilder";
 import { validateCreateProductSchema } from "../../../product/helper/create_dto_validator";
 
 
@@ -23,11 +23,12 @@ export const validateVideoCardCreateSchema = {
 }
 
 export const validateVideoCardEditSchema = {
-    ...validateVideoCardCreateSchema,
-    id: Joi.number()
-        .required,
-    product_id: Joi.number()
-        .required,
+    version: Joi.any()
+        .valid(...VIDEO_CARD_VERSION)
+        .optional(),
+    memory: Joi.number(),
+    clock_speed: Joi.number(),
+    watts: Joi.number()
 }
 
 export const validateVideoCardAndProductDto = Joi.object({ ...validateVideoCardCreateSchema, ...validateCreateProductSchema })

@@ -20,11 +20,10 @@ export const validateProcessorCreateSchema = {
 }
 
 export const validateProcessorEditSchema = {
-    ...validateProcessorCreateSchema,
-    id: Joi.number()
-        .required,
-    product_id: Joi.number()
-        .required,
+    cores: Joi.number(),
+    socket: Joi.string(),
+    frecuency: Joi.number(),
+    watts: Joi.number()
 }
 
 export const validateProcessorAndProductDto = Joi.object({ ...validateProcessorCreateSchema, ...validateCreateProductSchema })

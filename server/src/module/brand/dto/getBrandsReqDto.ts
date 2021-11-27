@@ -1,7 +1,7 @@
 export class GetBrandsReqDto {
     constructor(
-        public limit: number = 20,
-        public offset: number = 0,
+        public limit?: number,
+        public offset?: number,
         public name?: string
     ) { }
 }

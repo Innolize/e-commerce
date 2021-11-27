@@ -61,6 +61,18 @@ export class ProcessorModel extends Model<Processor, IProcessorCreate> implement
             },
         })
     }
+
+    static addProcessorHookOnDelete(productModel: typeof ProductModel): void {
+        productModel.addHook('afterDestroy', 'processorHookOnDelete',
+            async (instance: ProductModel) => {
+                const processor = await instance.getProcessor()
+                if (processor) {
+                    await processor.destroy()
+                    console.log(`Processor associated with product ${instance.id} deleted`)
+                }
+            })
+    }
+
     static associations: {
         product: Association<ProcessorModel, ProductModel>
     }

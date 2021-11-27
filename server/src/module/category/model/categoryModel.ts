@@ -2,11 +2,12 @@ import { injectable } from "inversify";
 import { DataTypes, Sequelize } from "sequelize";
 import { Model } from "sequelize";
 import { ICategory } from "../interfaces/ICategory";
+import { ICategoryCreate } from "../interfaces/ICategoryCreate";
 
 // decorate(injectable(), (Model))
 
 @injectable()
-export class CategoryModel extends Model<ICategory> implements ICategory {
+export class CategoryModel extends Model<ICategory, ICategoryCreate> implements ICategory {
     id?: number | undefined;
     name: string;
 

@@ -12,6 +12,7 @@ const api = axios.create({
   withCredentials: true,
 });
 
+
 // Sets token from local storage
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");

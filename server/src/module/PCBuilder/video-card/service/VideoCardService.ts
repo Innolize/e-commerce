@@ -1,38 +1,40 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
-import { Product } from "../../../product/entity/Product";
-import { GetVideoCardsDto } from "../dto/getVideoCardsDto";
-import { GetVideoCardsReqDto } from "../dto/getVideoCardsReqDto";
+import { GetVideoCardDto } from "../dto/getVideoCardDto";
+import { GetVideoCardReqDto } from "../dto/getVideoCardReqDto";
 import { VideoCard } from "../entities/VideoCard";
-import { VideoCardRepository } from "../repository/VideoCardRepository";
+import { IVideoCardCreate } from "../interface/IVideoCardCreate";
+import { IVideoCardEdit } from "../interface/IVideoCardEdit";
+import { IVideoCardRepository } from "../interface/IVideoCardRepository";
+import { IVideoCardService } from "../interface/IVideoCardService";
 
 @injectable()
-export class VideoCardService extends AbstractService {
-    private videoCardRepository: VideoCardRepository
+export class VideoCardService extends AbstractService implements IVideoCardService {
+    private videoCardRepository: IVideoCardRepository
     constructor(
-        @inject(TYPES.PCBuilder.VideoCard.Repository) videoCardRepository: VideoCardRepository
+        @inject(TYPES.PCBuilder.VideoCard.Repository) videoCardRepository: IVideoCardRepository
     ) {
         super()
         this.videoCardRepository = videoCardRepository
     }
 
-    async getVideoCard(queryParams: GetVideoCardsReqDto): Promise<GetVideoCardsDto> {
-        return await this.videoCardRepository.getVideoCards(queryParams)
+    async getAll(queryParams: GetVideoCardReqDto): Promise<GetVideoCardDto> {
+        return await this.videoCardRepository.getAll(queryParams)
     }
 
-    async getSingleVideoCard(id: number): Promise<VideoCard | Error> {
-        return await this.videoCardRepository.getSingleVideoCard(id)
+    async getSingle(id: number): Promise<VideoCard> {
+        return await this.videoCardRepository.getSingle(id)
     }
 
-    async createVideoCard(product: Product, videoCard: VideoCard): Promise<VideoCard | Error> {
-        return await this.videoCardRepository.createVideoCard(product, videoCard)
+    async create(videoCard: IVideoCardCreate): Promise<VideoCard> {
+        return await this.videoCardRepository.create(videoCard)
     }
 
-    async modifyVideoCard(id: number, videoCard: VideoCard): Promise<VideoCard | Error> {
-        return await this.videoCardRepository.modifyVideoCard(id, videoCard)
+    async modify(id: number, videoCard: IVideoCardEdit): Promise<VideoCard> {
+        return await this.videoCardRepository.modify(id, videoCard)
     }
-    async deleteVideoCard(id: number): Promise<true | Error> {
-        return await this.videoCardRepository.deleteVideoCard(id)
+    async delete(id: number): Promise<true> {
+        return await this.videoCardRepository.delete(id)
     }
 }

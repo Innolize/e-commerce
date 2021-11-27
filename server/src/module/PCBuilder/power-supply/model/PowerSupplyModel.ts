@@ -52,6 +52,18 @@ export class PowerSupplyModel extends Model<PowerSupply, IPowerSupplyCreate> imp
             },
         })
     }
+
+    static addPowerSupplyHookOnDelete(productModel: typeof ProductModel): void {
+        productModel.addHook('afterDestroy', 'powerSupplyHookOnDelete',
+            async (instance: ProductModel) => {
+                const powerSupply = await instance.getPowerSupply()
+                if (powerSupply) {
+                    await powerSupply.destroy()
+                    console.log(`Power supply associated with product ${instance.id} deleted`)
+                }
+            })
+    }
+
     static associations: {
         product: Association<PowerSupplyModel, ProductModel>
     }

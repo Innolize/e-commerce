@@ -1,13 +1,13 @@
-import { VIDEO_CARD_VERSION } from "../../../../config/constants/pcbuilder";
+import { Product } from "../../../product/entity/Product";
 import { IProductCreate } from "../../../product/interfaces/IProductCreate";
+import { IVideoCard } from "./IVideoCard";
 
-export interface IVideoCard_Product extends IVideoCardCreate, IProductCreate { }
-
-export interface IVideoCardCreate {
-    id?: number,
-    version: typeof VIDEO_CARD_VERSION[number]
-    memory: number
-    clock_speed: number
-    watts: number
-    id_product: number
+export type IVideoCardCreate = Omit<IVideoCard, 'id' | 'id_product'> & {
+    id_product?: number
 }
+
+export type IVideoCard_Product = IVideoCardCreate & {
+    product: Product
+}
+
+export interface IVideoCard_Product_Form extends IVideoCardCreate, IProductCreate { }

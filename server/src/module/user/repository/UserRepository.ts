@@ -9,11 +9,11 @@ import { IUserEdit } from "../interfaces/IUserEdit";
 import { fromDbToUser } from "../mapper/userMapper";
 import { UserModel } from "../model/UserModel";
 import { GetUsersDto } from '../dto/getUsersDto'
-import { GetUserReqDto } from "../dto/getUsersReqDto";
 import { IUserCreate } from "../interfaces/IUserCreate";
+import { IUserRepository } from "../interfaces/IUserRepository";
 
 @injectable()
-export class UserRepository extends AbstractRepository {
+export class UserRepository extends AbstractRepository implements IUserRepository {
     private userModel: typeof UserModel
     constructor(
         @inject(TYPES.User.Model) userModel: typeof UserModel
@@ -22,8 +22,7 @@ export class UserRepository extends AbstractRepository {
         this.userModel = userModel
     }
 
-    async getUsers(queryParams: GetUserReqDto): Promise<GetUsersDto> {
-        const { offset, limit } = queryParams
+    async getUsers(limit?: number, offset?: number): Promise<GetUsersDto> {
         const { count, rows } = await this.userModel.findAndCountAll({ limit, offset })
         const usersList = rows.map(fromDbToUser)
         const response = new GetUsersDto(count, usersList)
@@ -36,7 +35,6 @@ export class UserRepository extends AbstractRepository {
             throw UserError.notFound()
         }
         const response = fromDbToUser(user)
-        console.log(response)
         return response
     }
 
@@ -49,7 +47,7 @@ export class UserRepository extends AbstractRepository {
             if (err instanceof UniqueConstraintError) {
                 throw UserError.mailAlreadyInUse()
             }
-            throw Error(err)
+            throw err
         }
     }
 
@@ -61,9 +59,9 @@ export class UserRepository extends AbstractRepository {
         return fromDbToUser(user)
     }
 
-    async modifyUser(user: IUserEdit): Promise<User | Error> {
+    async modifyUser(id: number, user: IUserEdit): Promise<User> {
 
-        const [userEdited, userArray] = await this.userModel.update(user, { where: { id: user.id }, returning: true })
+        const [userEdited, userArray] = await this.userModel.update(user, { where: { id }, returning: true })
         // update returns an array, first argument is the number of elements updated in the
         // database. Second argument are the array of elements. Im updating by id so there is only 
         // one element in the array.
@@ -75,16 +73,12 @@ export class UserRepository extends AbstractRepository {
 
     }
 
-    async deleteUser(id: number): Promise<true | Error> {
-        try {
-            const response = await this.userModel.destroy({ where: { id } })
-            if (!response) {
-                throw UserError.notFound()
-            }
-            return true
-        } catch (err) {
-            throw Error(err.message)
+    async deleteUser(id: number): Promise<true> {
+        const response = await this.userModel.destroy({ where: { id } })
+        if (!response) {
+            throw UserError.notFound()
         }
+        return true
     }
 
 }

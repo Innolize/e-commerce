@@ -1,7 +1,5 @@
 import { IProcessorCreate } from "./IProcessorCreate";
 
+export type IProcessorEditProductless = Omit<IProcessorCreate, 'id_product'>
 
-export interface IProcessorEdit extends IProcessorCreate {
-    id: number,
-    product_id: number
-}
+export type IProcessorEdit = Partial<IProcessorEditProductless>

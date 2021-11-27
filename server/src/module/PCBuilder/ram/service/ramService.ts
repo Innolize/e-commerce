@@ -1,38 +1,40 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../config/inversify.types";
 import { AbstractService } from "../../../abstractClasses/abstractService";
-import { Product } from "../../../product/entity/Product";
-import { GetRamsDto } from "../dto/getRamsDto";
-import { GetRamsReqDto } from "../dto/getRamsReqDto";
+import { GetRamDto } from "../dto/getRamDto";
+import { GetRamReqDto } from "../dto/getRamReqDto";
 import { Ram } from "../entities/Ram";
-import { RamRepository } from "../repository/RamRepository";
+import { IRamCreate } from "../interface/IRamCreate";
+import { IRamEdit } from "../interface/IRamEdit";
+import { IRamRepository } from "../interface/IRamRepository";
+import { IRamService } from "../interface/IRamService";
 
 @injectable()
-export class RamService extends AbstractService {
-    private ramRepository: RamRepository
+export class RamService extends AbstractService implements IRamService {
+    private ramRepository: IRamRepository
     constructor(
-        @inject(TYPES.PCBuilder.Ram.Repository) ramRepository: RamRepository
+        @inject(TYPES.PCBuilder.Ram.Repository) ramRepository: IRamRepository
     ) {
         super()
         this.ramRepository = ramRepository
     }
 
-    async getRams(queryParams: GetRamsReqDto): Promise<GetRamsDto> {
-        return await this.ramRepository.getRams(queryParams)
+    async getAll(queryParams: GetRamReqDto): Promise<GetRamDto> {
+        return await this.ramRepository.getAll(queryParams)
     }
 
-    async getSingleRam(id: number): Promise<Ram | Error> {
-        return await this.ramRepository.getSingleRam(id)
+    async getSingle(id: number): Promise<Ram> {
+        return await this.ramRepository.getSingle(id)
     }
 
-    async createRam(product: Product, ram: Ram): Promise<Ram | Error> {
-        return await this.ramRepository.createRam(product, ram)
+    async create(ram: IRamCreate): Promise<Ram> {
+        return await this.ramRepository.create(ram)
     }
 
-    async modifyRam(id: number, motherboard: Ram): Promise<Ram | Error> {
-        return await this.ramRepository.modifyRam(id, motherboard)
+    async modify(id: number, ram: IRamEdit): Promise<Ram> {
+        return await this.ramRepository.modify(id, ram)
     }
-    async deleteRam(id: number): Promise<true | Error> {
-        return await this.ramRepository.deleteRam(id)
+    async delete(id: number): Promise<true> {
+        return await this.ramRepository.delete(id)
     }
 }

@@ -29,11 +29,13 @@ export const validateRamCreateSchema = {
 }
 
 export const validateRamEditSchema = {
-    ...validateRamCreateSchema,
-    id: Joi.number()
-        .required,
-    product_id: Joi.number()
-        .required,
+    min_frec: Joi.number(),
+    max_frec: Joi.number()
+        .greater(Joi.ref('min_frec')),
+    memory: Joi.number(),
+    ram_version: Joi.any()
+        .valid(...RAM_VERSION),
+    watts: Joi.number()
 }
 
 export const validateRamAndProductDto = Joi.object({ ...validateRamCreateSchema, ...validateCreateProductSchema })
