@@ -21,11 +21,12 @@ import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import { BaseError } from "./module/common/error/BaseError";
 import { ValidationError } from "joi";
-import cors from 'cors'
+
+import cors from "cors"
 
 const app = express()
 const port = process.env.PORT
-app.use(cors({ credentials: true, origin: 'http://localhost:3001' }))
+app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 app.use(morgan('dev'))
 app.use(cookieParser())
 app.use(express.json())
@@ -33,7 +34,6 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use(passport.initialize())
 configurePassportStrategies(container, passport)
-//
 initProductModule(app, container)
 initCategoryModule(app, container)
 initBrandModule(app, container)

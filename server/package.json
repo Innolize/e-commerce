@@ -18,6 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "@casl/ability": "^5.2.2",
+    "@types/cors": "^2.8.10",
     "@types/multer": "^1.4.5",
     "aws-sdk": "^2.864.0",
     "bcrypt": "^5.0.1",
