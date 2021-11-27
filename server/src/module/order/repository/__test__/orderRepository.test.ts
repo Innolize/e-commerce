@@ -30,7 +30,6 @@ let brandModel: typeof BrandModel
 let userModel: typeof UserModel
 let paymentModel: typeof PaymentModel
 let roleModel: typeof RoleModel
-let permissionModel: typeof PermissionModel
 let cartModel: typeof CartModel
 
 const PRODUCT_1 = new Product('product-name-1', null, 'product-description-1', 120, true, 1, 1, 1)
@@ -142,7 +141,7 @@ describe('getOrders', () => {
             { amount: 300, order_id: 3, type: 'CREDIT CARD' },
             { amount: 400, order_id: 4, type: 'CREDIT CARD' },
         ])
-        const orders = await repository.getOrders()
+        const orders = await repository.getAll()
         expect(orders.count).toBe(4)
         expect(orders.results).toHaveLength(4)
         expect(orders.results[3].user_id).toBe(1)
