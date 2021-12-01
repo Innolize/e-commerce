@@ -44,6 +44,7 @@ export default function useLoginUser() {
         localStorage.setItem("token", user.accessToken);
         setUser(user);
       },
+      onError: (error: Error) => {},
     }
   );
 }

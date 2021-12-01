@@ -176,8 +176,16 @@ const Home = () => {
               <DesktopCard products={queryProducts.data.results}></DesktopCard>
             </Box>
           )
+        ) : queryProducts.isLoading ? (
+          <CircularProgress></CircularProgress>
         ) : (
-          queryProducts.isLoading && <CircularProgress></CircularProgress>
+          queryProducts.isError && (
+            <Box my={2}>
+              <Typography align="center" color="error">
+                Error loading the products.
+              </Typography>
+            </Box>
+          )
         )}
         <Box mb={6} display="flex" justifyContent="center">
           <Button color="secondary" variant="contained" to="/products" component={Link}>
