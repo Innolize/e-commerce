@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Alert } from "@material-ui/lab";
 import { Form, Formik } from "formik";
 import { useContext } from "react";
-import { Redirect, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import FormWrapper from "src/components/FormWrapper";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
@@ -23,18 +23,14 @@ const loginSchema = yup.object({
   password: yup.string().required("Password is required."),
 });
 
-interface ILocationState {
-  from: string;
-}
-
 const Login = () => {
   const { user } = useContext(UserContext);
   const classes = useStyles();
   const loginUser = useLoginUser();
-  const { state } = useLocation<ILocationState>();
+  const { state } = useLocation();
 
   if (user) {
-    return <Redirect to={state?.from || "/"} />;
+    return <Navigate to={state?.from || "/"} />;
   }
 
   return (

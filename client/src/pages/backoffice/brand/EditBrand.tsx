@@ -2,8 +2,7 @@ import { Box, CircularProgress, Container, Input, Typography } from "@material-u
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import { ErrorMessage, Form, Formik } from "formik";
-import React, { useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import CustomImage from "src/components/CustomImage";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
@@ -48,21 +47,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EditBrand = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const queryBrand = useGetById<IBrand>("brand", id);
   const editBrand = useEdit<IBrand>("brand", id);
   const classes = useStyles();
-  const history = useHistory();
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (editBrand.isSuccess) {
-      timer = setTimeout(() => {
-        history.replace("/admin/brands");
-      }, 2000);
-    }
-    return () => clearTimeout(timer);
-  }, [editBrand.isSuccess, history]);
 
   return (
     <Container>

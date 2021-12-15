@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 import { useContext } from "react";
 import { UserContext } from "src/contexts/UserContext";
-import { Redirect, Link as RouterLink } from "react-router-dom";
+import { Navigate, Link as RouterLink } from "react-router-dom";
 import CartItem from "src/components/CartItem";
 import useUpdateCart from "src/hooks/useUpdateCart";
 import useGetCart from "src/hooks/useGetCart";
@@ -71,7 +71,7 @@ const Cart = () => {
   const updateCart = useUpdateCart();
 
   if (!user) {
-    return <Redirect to="/login" />;
+    return <Navigate to="/login" />;
   }
 
   const updateQuantity = (productId: number, quantity: number) => {

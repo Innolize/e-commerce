@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Container, makeStyles } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import { useHistory, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Filters from "src/components/ProductsPage/Filters";
 import ProductsContainer from "src/components/ProductsPage/ProductsContainer";
 import { IGetAllCategories } from "src/hooks/types";
@@ -25,7 +25,7 @@ const Products = () => {
   const LIMIT = 9;
   const classes = useStyles();
   const queryParam = useQuery();
-  const history = useHistory();
+  const navigate = useNavigate();
   const queryProducts = useGetProducts(
     queryParam.get("page"),
     queryParam.get("category"),
@@ -37,7 +37,7 @@ const Products = () => {
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     window.scrollTo({ top: 0 });
     queryParam.set("page", value.toString());
-    history.push("/products?" + queryParam.toString());
+    navigate("/products?" + queryParam.toString());
   };
 
   return (

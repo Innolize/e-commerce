@@ -116,7 +116,7 @@ const MotherboardContainer = () => {
                     <Button to={"/admin/products/edit/" + params.row.productId} component={RouterLink}>
                       Edit product
                     </Button>
-                    <Button to={"edit/motherboard/" + params.row.id} component={RouterLink}>
+                    <Button to={"/admin/build/edit/motherboard/" + params.row.id} component={RouterLink}>
                       Edit specs
                     </Button>
                     <Button onClick={() => handleClickDeleteBtn(params.row.id as string)}>Delete</Button>

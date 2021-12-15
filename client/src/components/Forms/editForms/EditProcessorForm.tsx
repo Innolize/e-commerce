@@ -2,7 +2,7 @@ import { Box, CircularProgress, Container, makeStyles, Typography } from "@mater
 import { Alert } from "@material-ui/lab";
 import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SnackbarAlert from "src/components/SnackbarAlert";
@@ -130,7 +130,7 @@ const EditProcessorForm = ({ id }: Props) => {
                   </Box>
                 )}
 
-                {redirect && <Redirect to={`/admin/build/processor`} />}
+                {redirect && <Navigate to={`/admin/build/processor`} />}
 
                 <Box my={3}>
                   {editProcessor.isLoading ? (

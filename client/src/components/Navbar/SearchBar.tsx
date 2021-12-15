@@ -2,7 +2,7 @@ import InputBase from "@material-ui/core/InputBase";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -47,12 +47,12 @@ const useStyles = makeStyles((theme: Theme) =>
 const SearchBar = () => {
   const classes = useStyles();
   const [searchQuery, setSearchQuery] = useState("");
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleSumbit = (e: React.FormEvent) => {
     e.preventDefault();
     const name = `name=${searchQuery}`;
-    history.push("/products?" + name);
+    navigate("/products?" + name);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

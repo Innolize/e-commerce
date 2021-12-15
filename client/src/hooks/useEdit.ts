@@ -4,7 +4,7 @@ import api from "src/services/api";
 import { ServerError } from "src/types";
 import { apiRoutes, IApiRoutes } from "./apiRoutes";
 
-export default function useEdit<T>(option: IApiRoutes, id: string | number) {
+export default function useEdit<T>(option: IApiRoutes, id?: string | number) {
   const queryClient = useQueryClient();
 
   return useMutation(

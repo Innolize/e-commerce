@@ -12,9 +12,9 @@ const api = axios.create({
   withCredentials: true,
 });
 
-
 // Sets token from local storage
-api.interceptors.request.use((config) => {
+api.interceptors.request.use((config: any) => {
+  // types
   const token = localStorage.getItem("token");
   const currentToken = config.headers.Authorization;
   if (token && `Bearer ${token}` !== currentToken) {

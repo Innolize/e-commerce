@@ -3,9 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import Image from "material-ui-image";
-import React, { useEffect } from "react";
 import { useQueryClient } from "react-query";
-import { useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
@@ -56,24 +55,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EditProduct = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const queryCategories = useGetAll<IGetAllCategories>("category");
   const queryBrands = useGetAll<IGetAllBrands>("brand");
   const queryProduct = useGetById<IProduct>("product", id);
   const editProduct = useEdit<IProduct>("product", id);
   const classes = useStyles();
-  const history = useHistory();
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (editProduct.isSuccess) {
-      timer = setTimeout(() => {
-        history.goBack();
-      }, 2000);
-    }
-    return () => clearTimeout(timer);
-  }, [editProduct.isSuccess, history]);
 
   const mapProduct = (product: IProduct): IGeneralProductForm => {
     const productForm: IGeneralProductForm = {

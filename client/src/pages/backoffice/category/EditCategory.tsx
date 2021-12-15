@@ -2,8 +2,7 @@ import { Box, CircularProgress, Container, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import { Form, Formik } from "formik";
-import { useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SnackbarAlert from "src/components/SnackbarAlert";
@@ -47,21 +46,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EditCategory = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const queryCategory = useGetById<ICategory>("category", id);
   const editCategory = useEdit<ICategory>("category", id);
   const classes = useStyles();
-  const history = useHistory();
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (editCategory.isSuccess) {
-      timer = setTimeout(() => {
-        history.replace("/admin/categories");
-      }, 2000);
-    }
-    return () => clearTimeout(timer);
-  }, [editCategory.isSuccess, history]);
 
   return (
     <Container>

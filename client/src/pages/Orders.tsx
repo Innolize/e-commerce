@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { useContext, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import OrderRow from "src/components/OrderRow";
 import { UserContext } from "src/contexts/UserContext";
 import { IGetAllOrders } from "src/hooks/types";
@@ -27,7 +27,7 @@ const Orders = () => {
   const queryOrders = useGetAll<IGetAllOrders>("order", offset, LIMIT);
 
   if (!user) {
-    return <Redirect to="/login" />;
+    return <Navigate to="/login" />;
   }
 
   const handlePageChange = (event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, page: number) => {

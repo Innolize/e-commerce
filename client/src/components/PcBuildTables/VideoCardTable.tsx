@@ -119,7 +119,7 @@ const VideoCardTable = () => {
                     <Button to={"/admin/products/edit/" + params.row.productId} component={RouterLink}>
                       Edit product
                     </Button>
-                    <Button to={"edit/video-card/" + params.row.id} component={RouterLink}>
+                    <Button to={"/admin/build/edit/video-card/" + params.row.id} component={RouterLink}>
                       Edit specs
                     </Button>
                     <Button onClick={() => handleClickDeleteBtn(params.row.id as string)}>Delete</Button>

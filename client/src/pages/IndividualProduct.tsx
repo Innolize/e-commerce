@@ -19,7 +19,7 @@ import SecurityIcon from "@material-ui/icons/Security";
 import Image from "material-ui-image";
 import { useSnackbar } from "notistack";
 import { useContext, useState } from "react";
-import { Link as RouterLink, useHistory, useLocation, useParams } from "react-router-dom";
+import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import LoadingButton from "src/components/LoadingButton";
 import { UserContext } from "src/contexts/UserContext";
 import useGetById from "src/hooks/useGetById";
@@ -117,11 +117,10 @@ const useStyles = makeStyles((theme) => ({
 
 const IndividualProduct = () => {
   const { user } = useContext(UserContext);
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const { isSuccess, data, isLoading, isError } = useGetById<IProduct>("product", id);
   const classes = useStyles();
-  const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const cartQuery = useGetCart(user?.userInfo.id);
   const updateCart = useUpdateCart();
   const { enqueueSnackbar } = useSnackbar();
@@ -131,7 +130,7 @@ const IndividualProduct = () => {
 
   const handleAddItem = (productId: number, quantity: number) => {
     if (!user) {
-      history.push("/login", { from: location.pathname });
+      navigate("/login");
     } else {
       // If we have that item in the cart we sum the quantities..
       const cartItem = cartQuery.data?.cartItems.find((item) => item.productId === productId);

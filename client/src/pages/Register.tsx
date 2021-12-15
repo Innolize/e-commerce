@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Alert } from "@material-ui/lab";
 import { Form, Formik } from "formik";
 import { useContext } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import FormWrapper from "src/components/FormWrapper";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
@@ -31,7 +31,7 @@ const Register = () => {
   const createUser = useCreateUser();
 
   if (user) {
-    return <Redirect to="/" />;
+    return <Navigate to="/" />;
   }
 
   return (

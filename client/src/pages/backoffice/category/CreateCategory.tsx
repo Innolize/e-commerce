@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SnackbarAlert from "src/components/SnackbarAlert";
@@ -76,7 +76,7 @@ const CreateCategory = () => {
                 </Box>
               )}
 
-              {redirect && <Redirect to="/admin/categories" />}
+              {redirect && <Navigate to="/admin/categories" />}
 
               <Box my={3}>
                 {createCategory.isLoading ? (

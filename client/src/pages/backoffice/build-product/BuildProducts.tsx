@@ -1,5 +1,5 @@
 import { Box, Breadcrumbs, Container, Link, Typography } from "@material-ui/core";
-import { Redirect, useParams } from "react-router";
+import { Navigate, useParams } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
 import CabinetTable from "src/components/PcBuildTables/CabinetTable";
 import DiskStorageTable from "src/components/PcBuildTables/DiskStorageTable";
@@ -9,12 +9,8 @@ import ProcessorTable from "src/components/PcBuildTables/ProcessorTable";
 import RamTable from "src/components/PcBuildTables/RamTable";
 import VideoCardTable from "src/components/PcBuildTables/VideoCardTable";
 
-interface ParamProps {
-  category: string;
-}
-
 const PcBuildProducts = () => {
-  const { category } = useParams<ParamProps>();
+  const { category } = useParams();
 
   const tableToRender = {
     ram: <RamTable />,
@@ -34,31 +30,31 @@ const PcBuildProducts = () => {
         </Box>
         <Box my={2} display="flex" justifyContent="center">
           <Breadcrumbs>
-            <Link color="secondary" to="ram" component={RouterLink}>
+            <Link color="secondary" to="/admin/build/ram" component={RouterLink}>
               Ram
             </Link>
-            <Link color="secondary" to="video-card" component={RouterLink}>
+            <Link color="secondary" to="/admin/build/video-card" component={RouterLink}>
               Video Card
             </Link>
-            <Link color="secondary" to="motherboard" component={RouterLink}>
+            <Link color="secondary" to="/admin/build/motherboard" component={RouterLink}>
               Motherboard
             </Link>
-            <Link color="secondary" to="processor" component={RouterLink}>
+            <Link color="secondary" to="/admin/build/processor" component={RouterLink}>
               Processor
             </Link>
-            <Link color="secondary" to="power-supply" component={RouterLink}>
+            <Link color="secondary" to="/admin/build/power-supply" component={RouterLink}>
               Power Supply
             </Link>
-            <Link color="secondary" to="cabinet" component={RouterLink}>
+            <Link color="secondary" to="/admin/build/cabinet" component={RouterLink}>
               Cabinet
             </Link>
-            <Link color="secondary" to="disk-storage" component={RouterLink}>
+            <Link color="secondary" to="/admin/build/disk-storage" component={RouterLink}>
               Disk Storage
             </Link>
           </Breadcrumbs>
         </Box>
       </Box>
-      <Box>{tableToRender[category] || <Redirect to="ram"></Redirect>}</Box>
+      {!!category && <Box>{tableToRender[category] || <Navigate to="ram"></Navigate>}</Box>}
     </Container>
   );
 };

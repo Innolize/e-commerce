@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import { ErrorMessage, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SnackbarAlert from "src/components/SnackbarAlert";
@@ -53,7 +53,7 @@ const CreateBrand = () => {
         ></SnackbarAlert>
       )}
 
-      {redirect && <Redirect to="/admin/brands" />}
+      {redirect && <Navigate to="/admin/brands" />}
 
       <Box className={classes.formContainer}>
         <Formik
