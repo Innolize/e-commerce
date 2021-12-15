@@ -2,7 +2,7 @@ import { Box, Checkbox, Container, Input, makeStyles, MenuItem, Typography } fro
 import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import InputField from "src/components/InputField";
 import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
@@ -203,7 +203,7 @@ const MotherboardForm = () => {
                 </Box>
               )}
 
-              {redirect && <Redirect to={`/admin/build/motherboard`} />}
+              {redirect && <Navigate to={`/admin/build/motherboard`} />}
 
               <Box my={3}>
                 {createMotherboard.isLoading ? (

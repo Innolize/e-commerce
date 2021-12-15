@@ -2,7 +2,7 @@ import { Box, Checkbox, CircularProgress, Container, makeStyles, MenuItem, Typog
 import { Alert } from "@material-ui/lab";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import LoadingButton from "src/components/LoadingButton";
 import SelectField from "src/components/SelectField";
 import SnackbarAlert from "src/components/SnackbarAlert";
@@ -127,7 +127,7 @@ const EditCabinetForm = ({ id }: Props) => {
                   </Box>
                 )}
 
-                {redirect && <Redirect to={`/admin/build/cabinet`} />}
+                {redirect && <Navigate to={`/admin/build/cabinet`} />}
 
                 <Box my={3}>
                   {editCabinet.isLoading ? (

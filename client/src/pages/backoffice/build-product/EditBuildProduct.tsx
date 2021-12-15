@@ -8,13 +8,12 @@ import EditProcessorForm from "src/components/Forms/editForms/EditProcessorForm"
 import EditRamForm from "src/components/Forms/editForms/EditRamForm";
 import EditVideoCardForm from "src/components/Forms/editForms/EditVideoCardForm";
 
-interface ParamProps {
-  category: string;
-  id: string;
-}
-
 const EditBuildProduct = () => {
-  const { category, id } = useParams<ParamProps>();
+  const { category, id } = useParams();
+
+  if (!category || !id) {
+    return <></>;
+  }
 
   const formToRender = {
     ram: <EditRamForm id={id} />,

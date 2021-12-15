@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import camelcaseKeys from "camelcase-keys";
 import { useSnackbar } from "notistack";
 import { useMutation, useQueryClient } from "react-query";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "src/services/api";
 import { ICart, IServerCartResponse } from "src/types";
 
@@ -16,7 +16,7 @@ interface IData {
 export default function useUpdateCart() {
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return useMutation(
     (data: IData) =>
@@ -38,7 +38,7 @@ export default function useUpdateCart() {
         queryClient.setQueryData("cart", cart);
         if (data.action === "add") {
           enqueueSnackbar("Product added to cart", { variant: "success" });
-          history.push("/cart");
+          navigate("/cart");
         }
       },
       onError: (err) => {

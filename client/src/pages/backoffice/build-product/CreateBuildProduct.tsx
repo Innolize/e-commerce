@@ -8,12 +8,8 @@ import ProcessorForm from "src/components/Forms/createForms/CreateProcessorForm"
 import RamForm from "src/components/Forms/createForms/CreateRamForm";
 import VideoCardForm from "src/components/Forms/createForms/CreateVideoCardForm";
 
-interface ParamProps {
-  category: string;
-}
-
 const CreateBuildProduct = () => {
-  const { category } = useParams<ParamProps>();
+  const { category } = useParams();
 
   const formToRender = {
     ram: <RamForm />,
@@ -25,7 +21,11 @@ const CreateBuildProduct = () => {
     "disk-storage": <DiskStorageForm />,
   };
 
-  return <Container>{formToRender[category]}</Container>;
+  if (!!category){
+    return <Container>{formToRender[category]}</Container>;
+  }else{
+    return <></>
+  }
 };
 
 export default CreateBuildProduct;

@@ -1,15 +1,11 @@
-import { ReactNode } from "react";
+import { Outlet } from "react-router-dom";
 import AdminNavbar from "src/components/Navbar/AdminNavbar";
 
-interface Props {
-  children: ReactNode;
-}
-
-export const AdminLayout = ({ children }: Props) => {
+export const AdminLayout = () => {
   return (
     <>
       <AdminNavbar />
-      {children}
+      <Outlet />
     </>
   );
 };

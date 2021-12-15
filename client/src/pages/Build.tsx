@@ -1,6 +1,6 @@
 import { Box, Button, Container, Grid, Paper, Step, StepLabel, Stepper, Typography } from "@material-ui/core";
 import React, { useContext, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import BrandSelection from "src/components/PcBuild/BrandSelection";
 import CabinetSelection from "src/components/PcBuild/CabinetSelection";
 import DiskStorageSelection from "src/components/PcBuild/DiskStorageSelection";
@@ -42,7 +42,7 @@ const Build = () => {
   };
 
   if (!user) {
-    return <Redirect to="/login" />;
+    return <Navigate to="/login" />;
   }
 
   const handleBack = () => {
