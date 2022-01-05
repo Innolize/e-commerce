@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "tsc-watch --onSuccess \"node . \"",
     "dev": "tsc -w & node .",
-    "coverage": "jest --i --coverage",
+    "coverage": "jest --i --runInBand --coverage",
     "dbconfig": "tsc-watch --onSuccess \"node ./dist/config/database/dbConfig.js\"",
     "test": "jest --watch --detectOpenHandles",
     "test:user": "jest --watch src/module/user --detectOpenHandles",

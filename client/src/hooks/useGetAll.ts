@@ -15,6 +15,7 @@ export default function useGetAll<Entity>(option: IApiRoutes, offset?: number, l
       }),
     {
       staleTime: 60 * 5 * 1000, // 5 minutes
+      retry: 3,
     }
   );
 }

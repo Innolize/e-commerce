@@ -6,7 +6,7 @@ export const PROCESSOR_ID = 5;
 export const RAM_ID = 6;
 export const VIDEO_CARD_ID = 7;
 
-export const BUILD_CATEGORIES_IDS = [
+export const BUILD_CATEGORIES_IDS = Object.freeze([
   CABINET_ID,
   DISK_STORAGE_ID,
   MOTHERBOARD_ID,
@@ -14,4 +14,4 @@ export const BUILD_CATEGORIES_IDS = [
   PROCESSOR_ID,
   RAM_ID,
   VIDEO_CARD_ID,
-];
+]);

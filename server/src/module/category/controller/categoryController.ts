@@ -28,6 +28,7 @@ export class CategoryController extends AbstractController {
         @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer
     ) {
         super()
+        this.ROUTE_BASE = "/category"
         this.categoryService = categoryService
         this.uploadMiddleware = uploadMiddleware
     }
