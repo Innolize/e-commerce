@@ -48,5 +48,6 @@ export class CartError extends BaseError {
         if (error.index.includes("cart_id")) {
             throw this.invalidCartId()
         }
+        throw error
     }
 }

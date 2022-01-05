@@ -19,20 +19,19 @@ import { BaseError } from '../../common/error/BaseError'
 import { IBrandService } from '../interfaces/IBrandService'
 import { IImageUploadService } from '../../imageUploader/interfaces/IImageUploadService'
 
-
 @injectable()
 export class BrandController extends AbstractController {
-    private ROUTE_BASE: "/brand"
+    private ROUTE_BASE: string
     constructor(
         @inject(TYPES.Brand.Service) private brandService: IBrandService,
         @inject(TYPES.Common.UploadMiddleware) private uploadMiddleware: Multer,
         @inject(TYPES.ImageUploader.Service) private uploadService: IImageUploadService
     ) {
         super()
+        this.ROUTE_BASE = "/brand"
         this.brandService = brandService
         this.uploadMiddleware = uploadMiddleware
         this.uploadService = uploadService
-
     }
 
     configureRoutes(app: App): void {
