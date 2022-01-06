@@ -26,7 +26,7 @@ import cors from "cors"
 
 const app = express()
 const port = process.env.PORT
-app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
+app.use(cors({credentials: true, origin: <string>process.env.ORIGIN_API_CONSUMER}))
 app.use(morgan('dev'))
 app.use(cookieParser())
 app.use(express.json())
