@@ -42,7 +42,11 @@ function configureDatabase() {
         logging: false,
         username: process.env.DATABASE_USERNAME,
         password: process.env.DATABASE_PASSWORD,
-
+        dialectOptions: {
+    ssl: {
+        rejectUnauthorized: false
+    }
+}
     })
 }
 
