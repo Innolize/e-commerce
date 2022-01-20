@@ -131,7 +131,7 @@ function Sidebar({ state, setState }: Props) {
 
           <Divider />
 
-          {isAdmin(user) && <ListLink label="Admin panel" to="/admin" icon={<SupervisorAccountIcon />} />}
+          {isAdmin(user) && <ListLink label="Admin panel" to="/admin/products" icon={<SupervisorAccountIcon />} />}
         </List>
       </div>
     </SwipeableDrawer>

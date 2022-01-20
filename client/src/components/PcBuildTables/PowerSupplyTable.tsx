@@ -52,7 +52,7 @@ const PowerSupplyContainer = () => {
         deletePowerSupply.isError && <SnackbarAlert severity="error" text="Something went wrong"></SnackbarAlert>
       )}
       <Box mb={1}>
-        <Button to="create/power-supply" component={RouterLink} variant="outlined" endIcon={<AddCircleOutlineIcon />}>
+        <Button to="create" component={RouterLink} variant="outlined" endIcon={<AddCircleOutlineIcon />}>
           Add new power supply
         </Button>
       </Box>
@@ -105,7 +105,7 @@ const PowerSupplyContainer = () => {
                     <Button to={"/admin/products/edit/" + params.row.productId} component={RouterLink}>
                       Edit product
                     </Button>
-                    <Button to={"/admin/build/edit/power-supply/" + params.row.id} component={RouterLink}>
+                    <Button to={"edit/" + params.row.id} component={RouterLink}>
                       Edit specs
                     </Button>
                     <Button onClick={() => handleClickDeleteBtn(params.row.id as string)}>Delete</Button>

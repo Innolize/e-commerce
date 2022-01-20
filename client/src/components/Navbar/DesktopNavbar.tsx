@@ -24,6 +24,16 @@ const useStyles = makeStyles((theme: Theme) =>
     topBar: {
       backgroundColor: theme.palette.primary.dark,
     },
+    logoLink: {
+      color: theme.palette.text.primary,
+      textDecoration: "none",
+      margin: "0 10px",
+      "&:hover": {
+        transition: "transform 0.15s ease-in-out",
+        transform: "scale(1.1)",
+        textDecoration: "none",
+      },
+    },
     link: {
       color: theme.palette.secondary.main,
       margin: "0 10px",
@@ -82,14 +92,16 @@ const DesktopNavbar = React.memo(() => {
     <AppBar color="default" position="static">
       <Toolbar className={classes.topBar}>
         <Container className={classes.container} maxWidth="lg">
-          <Box display="flex" alignItems="center">
-            <img src="/logo192.png" alt="logo" className={classes.logo} />
-            <Box ml={2}>
-              <Typography className={classes.nowrap} variant="h6">
-                Master Tech
-              </Typography>
+          <Link className={classes.logoLink} component={RouterLink} to="/">
+            <Box display="flex" alignItems="center">
+              <img src="/logo192.png" alt="logo" className={classes.logo} />
+              <Box ml={2}>
+                <Typography className={classes.nowrap} variant="h6">
+                  Master Tech
+                </Typography>
+              </Box>
             </Box>
-          </Box>
+          </Link>
           <SearchBar />
           <Box className={classes.nowrap}>
             {user ? (
@@ -130,7 +142,7 @@ const DesktopNavbar = React.memo(() => {
           </Tabs>
           <ChangeThemeButton className={classes.autoMarginLeft} />
           {isAdmin(user) && (
-            <Link className={classes.link} component={RouterLink} to="/admin" variant="body1">
+            <Link className={classes.link} component={RouterLink} to="/admin/products" variant="body1">
               Admin panel
             </Link>
           )}

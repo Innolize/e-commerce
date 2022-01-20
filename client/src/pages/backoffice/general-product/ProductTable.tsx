@@ -73,7 +73,7 @@ const Products = () => {
       )}
 
       <Box mb={1}>
-        <Button to="products/create" component={RouterLink} variant="outlined" endIcon={<AddCircleOutlineIcon />}>
+        <Button to="create" component={RouterLink} variant="outlined" endIcon={<AddCircleOutlineIcon />}>
           Add new product
         </Button>
       </Box>
@@ -113,7 +113,7 @@ const Products = () => {
                 width: 300,
                 renderCell: (params: GridCellParams) => (
                   <ButtonGroup>
-                    <Button variant="outlined" to={"products/edit/" + params.row.id} component={RouterLink}>
+                    <Button variant="outlined" to={"edit/" + params.row.id} component={RouterLink}>
                       Edit
                     </Button>
                     <Button variant="outlined" onClick={() => handleClickDeleteBtn(params.row.id as string)}>

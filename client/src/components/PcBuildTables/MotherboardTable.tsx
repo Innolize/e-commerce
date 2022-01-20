@@ -53,7 +53,7 @@ const MotherboardContainer = () => {
       )}
 
       <Box mb={1}>
-        <Button to="create/motherboard" component={RouterLink} variant="outlined" endIcon={<AddCircleOutlineIcon />}>
+        <Button to="create" component={RouterLink} variant="outlined" endIcon={<AddCircleOutlineIcon />}>
           Add new motherboard
         </Button>
       </Box>
@@ -116,7 +116,7 @@ const MotherboardContainer = () => {
                     <Button to={"/admin/products/edit/" + params.row.productId} component={RouterLink}>
                       Edit product
                     </Button>
-                    <Button to={"/admin/build/edit/motherboard/" + params.row.id} component={RouterLink}>
+                    <Button to={"edit/" + params.row.id} component={RouterLink}>
                       Edit specs
                     </Button>
                     <Button onClick={() => handleClickDeleteBtn(params.row.id as string)}>Delete</Button>

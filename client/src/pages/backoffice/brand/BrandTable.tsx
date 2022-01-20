@@ -58,7 +58,7 @@ const BrandTable = () => {
       <DeleteDialog toDelete="brand" open={open} closeDialog={closeDialog} handleDelete={handleDelete} />
 
       <Box mb={1}>
-        <Button to="brands/create" component={RouterLink} variant="outlined" endIcon={<AddCircleOutlineIcon />}>
+        <Button to="create" component={RouterLink} variant="outlined" endIcon={<AddCircleOutlineIcon />}>
           Add new brand
         </Button>
       </Box>
@@ -83,7 +83,7 @@ const BrandTable = () => {
                 width: 300,
                 renderCell: (params: GridCellParams) => (
                   <ButtonGroup>
-                    <Button to={"brands/edit/" + params.row.id} component={RouterLink}>
+                    <Button to={"edit/" + params.row.id} component={RouterLink}>
                       Edit brand
                     </Button>
                     <Button onClick={() => handleClickDeleteBtn(params.row.id as string)}>Delete</Button>

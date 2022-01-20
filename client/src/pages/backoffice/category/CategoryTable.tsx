@@ -58,7 +58,7 @@ const CategoryTable = () => {
       <DeleteDialog toDelete="category" open={open} closeDialog={closeDialog} handleDelete={handleDelete} />
 
       <Box mb={1}>
-        <Button to="categories/create" component={RouterLink} variant="outlined" endIcon={<AddCircleOutlineIcon />}>
+        <Button to="create" component={RouterLink} variant="outlined" endIcon={<AddCircleOutlineIcon />}>
           Add new category
         </Button>
       </Box>
@@ -83,7 +83,7 @@ const CategoryTable = () => {
                 width: 300,
                 renderCell: (params: GridCellParams) => (
                   <ButtonGroup>
-                    <Button to={"categories/edit/" + params.row.id} component={RouterLink}>
+                    <Button to={"edit/" + params.row.id} component={RouterLink}>
                       Edit category
                     </Button>
                     <Button onClick={() => handleClickDeleteBtn(params.row.id as string)}>Delete</Button>
