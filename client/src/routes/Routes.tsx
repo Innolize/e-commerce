@@ -23,6 +23,7 @@ import Products from "src/pages/Products";
 import Register from "src/pages/Register";
 import { AdminLayout } from "../components/layouts/AdminLayout";
 import { DefaultLayout } from "../components/layouts/DefaultLayout";
+import RequireAdminAuth from "./RequireAdminAuth";
 import ScrollToTop from "./ScrollToTop";
 
 const AppRoutes = () => {
@@ -30,22 +31,6 @@ const AppRoutes = () => {
     <BrowserRouter>
       <ScrollToTop />
       <Routes>
-        <Route element={<AdminLayout />}>
-          <Route path="/admin/build/:category" element={<BuildProducts />} />
-          <Route path="/admin/build/create/:category" element={<CreateBuildProduct />} />
-          <Route path="/admin/build/edit/:category/:id" element={<EditBuildProduct />} />
-          <Route path="/admin/products" element={<AdminProducts />} />
-          <Route path="/admin/products/create" element={<CreateProduct />} />
-          <Route path="/admin/products/edit/:id" element={<EditProduct />} />
-          <Route path="/admin/categories" element={<CategoryTable />} />
-          <Route path="/admin/categories/create" element={<CreateCategory />} />
-          <Route path="/admin/categories/edit/:id" element={<EditCategory />} />
-          <Route path="/admin/brands" element={<Brands />} />
-          <Route path="/admin/brands/create" element={<CreateBrand />} />
-          <Route path="/admin/brands/edit/:id" element={<EditBrand />} />
-          <Route path="*" element={<NoMatch />} />
-        </Route>
-
         <Route element={<DefaultLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="products" element={<Products />} />
@@ -57,6 +42,24 @@ const AppRoutes = () => {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="*" element={<NoMatch />} />
+        </Route>
+
+        <Route element={<RequireAdminAuth />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/build/:category" element={<BuildProducts />} />
+            <Route path="/admin/build/:category/create" element={<CreateBuildProduct />} />
+            <Route path="/admin/build/:category/edit/:id" element={<EditBuildProduct />} />
+            <Route path="/admin/products" element={<AdminProducts />} />
+            <Route path="/admin/products/create" element={<CreateProduct />} />
+            <Route path="/admin/products/edit/:id" element={<EditProduct />} />
+            <Route path="/admin/categories" element={<CategoryTable />} />
+            <Route path="/admin/categories/create" element={<CreateCategory />} />
+            <Route path="/admin/categories/edit/:id" element={<EditCategory />} />
+            <Route path="/admin/brands" element={<Brands />} />
+            <Route path="/admin/brands/create" element={<CreateBrand />} />
+            <Route path="/admin/brands/edit/:id" element={<EditBrand />} />
+            <Route path="*" element={<NoMatch />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
